@@ -1,0 +1,19 @@
+[
+  {
+    "id": "4",
+    "date": "2025-11-01",
+    "version": "10.3.0",
+    "description": "刀剑驯",
+    "details": {
+      "releaseDate": "2025-11-01 08:00:00",
+      "developer": null,
+      "svnRevision": null,
+      "changes": [
+        "任务：剑术任务，奖励——剑术（技能，多段伤害）",
+        "任务：刀法任务，奖励——刀法（技能，群体伤害）",
+        "任务：宠物任务，奖励——驯兽（技能）、小狗（宠物）"
+      ],
+      "bugFixes": null
+    }
+  }
+]

@@ -1,0 +1,74 @@
+{
+  "MergeId": "MERGE_202501",
+  "MergeDate": "2025-01-31T02:00:00",
+  "Description": "2025年1月合服计划",
+  "Batches": [
+    {
+      "BatchId": "Batch_1",
+      "TargetServerId": "S1001",
+      "SourceServerIds": ["S1001", "S1002", "S1003", "S1004", "S1005", "S1006", "S1007", "S1008", "S1009", "S1010"],
+      "TargetName": "风云1服（合）",
+      "Options": {
+        "GoldDiscount": 0.8,
+        "BackupEnabled": true,
+        "CompensationEnabled": true
+      }
+    },
+    {
+      "BatchId": "Batch_2",
+      "TargetServerId": "S1011",
+      "SourceServerIds": ["S1011", "S1012", "S1013", "S1014", "S1015", "S1016", "S1017", "S1018", "S1019", "S1020"],
+      "TargetName": "风云2服（合）",
+      "Options": {
+        "GoldDiscount": 0.8,
+        "BackupEnabled": true,
+        "CompensationEnabled": true
+      }
+    },
+    {
+      "BatchId": "Batch_3",
+      "TargetServerId": "S1021",
+      "SourceServerIds": ["S1021", "S1022", "S1023", "S1024", "S1025", "S1026", "S1027", "S1028", "S1029", "S1030"],
+      "TargetName": "风云3服（合）",
+      "Options": {
+        "GoldDiscount": 0.8,
+        "BackupEnabled": true,
+        "CompensationEnabled": true
+      }
+    }
+  ],
+  "GlobalOptions": {
+    "MaintenanceStartTime": "2025-01-31T02:00:00",
+    "EstimatedDuration": "6 hours",
+    "NotificationDays": 7,
+    "RollbackEnabled": true
+  },
+  "Compensation": {
+    "BaseRewards": {
+      "VipDays": 7,
+      "Gold": 1000000,
+      "Items": {
+        "高级礼包": 10
+      }
+    },
+    "RankRewards": [
+      {
+        "Rank": 1,
+        "VipDays": 30,
+        "Gold": 5000000,
+        "Title": "原服霸主"
+      },
+      {
+        "RankRange": "2-10",
+        "VipDays": 15,
+        "Gold": 2000000
+      },
+      {
+        "RankRange": "11-100",
+        "VipDays": 7,
+        "Gold": 500000
+      }
+    ]
+  }
+}
+

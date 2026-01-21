@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+
+# 术语定义：System 与 Module
+
+为避免歧义，本项目中的术语定义如下：
+
+- System（系统）：指 Domain（业务层）程序集下的业务文件夹
+- Module（模块）：指某个 System 文件夹下的单个 .cs 文件
+
+补充约定（系统内通用模块）：
+
+- 通用模块是指各 System 下的 Agent.cs 文件。
+- 通用模块用于承载该 System 内各模块之间都会调用到的通用函数、字段、属性等内容。
+- 若某通用能力需要被多个 System 复用，应上移至合适的公共层（如 Basic 或 Utils），而不是通过 Agent.cs 实现。
+
+使用约束：
+
+- 不得将程序集（Assembly）称为 System
+- 不得将命名空间（Namespace）称为 System
+- 讨论“系统 / 模块”时，必须以上述定义与补充约定为准

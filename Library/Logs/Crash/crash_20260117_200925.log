@@ -1,0 +1,256 @@
+﻿=== CRASH REPORT ===
+Time: 2026-01-17 20:09:25.033
+IsTerminating: True
+Server: Unknown
+Environment: Development
+
+=== EXCEPTION ===
+System.Exception: Design data validation failed with 32 errors. Check logs above.
+   at Logic.Validation.Agent.RunDesignValidation() in E:\LOA-Server\1.1\Logic\Validation\Agent.cs:line 94
+   at Logic.Design.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Design\Agent.cs:line 44
+   at Logic.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Agent.cs:line 37
+   at WorldService.Program.InitializeServer(Boolean isDevelopment, String serverId) in E:\LOA-Server\1.1\Program.cs:line 91
+   at WorldService.Program.Main(String[] args) in E:\LOA-Server\1.1\Program.cs:line 58
+
+=== LAST 1000 DEBUG LOGS ===
+[2026-01-17 12:09:24.947] [Error] [VALIDATION] ========================================
+[2026-01-17 12:09:24.951] [Error] [VALIDATION] FOUND 32 VALIDATION ERRORS:
+[2026-01-17 12:09:24.951] [Error] [VALIDATION] ========================================
+[2026-01-17 12:09:24.951] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.951] [Error] [VALIDATION] ERROR #1:
+[2026-01-17 12:09:24.951] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.951] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.951] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.951] [Error] [VALIDATION]   Problem Value: [10]
+[2026-01-17 12:09:24.951] [Error] [VALIDATION]   Details: Mall [10] references multilingual key [基础月卡描述] which is not defined in language csv
+[2026-01-17 12:09:24.951] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.952] [Error] [VALIDATION] ERROR #2:
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Problem Value: [11]
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Details: Mall [11] references multilingual key [高级月卡描述] which is not defined in language csv
+[2026-01-17 12:09:24.952] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.952] [Error] [VALIDATION] ERROR #3:
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Problem Value: [20]
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Details: Mall [20] references multilingual key [人物经验倍率100] which is not defined in language csv
+[2026-01-17 12:09:24.952] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.952] [Error] [VALIDATION] ERROR #4:
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Problem Value: [20]
+[2026-01-17 12:09:24.952] [Error] [VALIDATION]   Details: Mall [20] references multilingual key [人物经验倍率100描述] which is not defined in language csv
+[2026-01-17 12:09:24.952] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.953] [Error] [VALIDATION] ERROR #5:
+[2026-01-17 12:09:24.953] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.953] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.953] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.953] [Error] [VALIDATION]   Problem Value: [21]
+[2026-01-17 12:09:24.953] [Error] [VALIDATION]   Details: Mall [21] references multilingual key [人物经验倍率300] which is not defined in language csv
+[2026-01-17 12:09:24.953] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.954] [Error] [VALIDATION] ERROR #6:
+[2026-01-17 12:09:24.954] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.954] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.954] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.954] [Error] [VALIDATION]   Problem Value: [21]
+[2026-01-17 12:09:24.954] [Error] [VALIDATION]   Details: Mall [21] references multilingual key [人物经验倍率300描述] which is not defined in language csv
+[2026-01-17 12:09:24.955] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.955] [Error] [VALIDATION] ERROR #7:
+[2026-01-17 12:09:24.955] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.955] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.955] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.955] [Error] [VALIDATION]   Problem Value: [22]
+[2026-01-17 12:09:24.956] [Error] [VALIDATION]   Details: Mall [22] references multilingual key [人物经验倍率1000] which is not defined in language csv
+[2026-01-17 12:09:24.956] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.956] [Error] [VALIDATION] ERROR #8:
+[2026-01-17 12:09:24.956] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.956] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.956] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.957] [Error] [VALIDATION]   Problem Value: [22]
+[2026-01-17 12:09:24.957] [Error] [VALIDATION]   Details: Mall [22] references multilingual key [人物经验倍率1000描述] which is not defined in language csv
+[2026-01-17 12:09:24.957] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.958] [Error] [VALIDATION] ERROR #9:
+[2026-01-17 12:09:24.958] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.958] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.958] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.958] [Error] [VALIDATION]   Problem Value: [23]
+[2026-01-17 12:09:24.959] [Error] [VALIDATION]   Details: Mall [23] references multilingual key [人物经验倍率3000] which is not defined in language csv
+[2026-01-17 12:09:24.959] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.959] [Error] [VALIDATION] ERROR #10:
+[2026-01-17 12:09:24.959] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.959] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.960] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.960] [Error] [VALIDATION]   Problem Value: [23]
+[2026-01-17 12:09:24.960] [Error] [VALIDATION]   Details: Mall [23] references multilingual key [人物经验倍率3000描述] which is not defined in language csv
+[2026-01-17 12:09:24.960] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.960] [Error] [VALIDATION] ERROR #11:
+[2026-01-17 12:09:24.961] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.961] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.961] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.961] [Error] [VALIDATION]   Problem Value: [24]
+[2026-01-17 12:09:24.961] [Error] [VALIDATION]   Details: Mall [24] references multilingual key [人物经验倍率10000] which is not defined in language csv
+[2026-01-17 12:09:24.961] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.961] [Error] [VALIDATION] ERROR #12:
+[2026-01-17 12:09:24.962] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.962] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.962] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.962] [Error] [VALIDATION]   Problem Value: [24]
+[2026-01-17 12:09:24.962] [Error] [VALIDATION]   Details: Mall [24] references multilingual key [人物经验倍率10000描述] which is not defined in language csv
+[2026-01-17 12:09:24.962] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.963] [Error] [VALIDATION] ERROR #13:
+[2026-01-17 12:09:24.963] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.963] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.963] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.963] [Error] [VALIDATION]   Problem Value: [30]
+[2026-01-17 12:09:24.963] [Error] [VALIDATION]   Details: Mall [30] references multilingual key [技能经验倍率100] which is not defined in language csv
+[2026-01-17 12:09:24.963] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.963] [Error] [VALIDATION] ERROR #14:
+[2026-01-17 12:09:24.964] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.964] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.964] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.964] [Error] [VALIDATION]   Problem Value: [30]
+[2026-01-17 12:09:24.964] [Error] [VALIDATION]   Details: Mall [30] references multilingual key [技能经验倍率100描述] which is not defined in language csv
+[2026-01-17 12:09:24.964] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.965] [Error] [VALIDATION] ERROR #15:
+[2026-01-17 12:09:24.965] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.965] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.965] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.965] [Error] [VALIDATION]   Problem Value: [31]
+[2026-01-17 12:09:24.966] [Error] [VALIDATION]   Details: Mall [31] references multilingual key [技能经验倍率300] which is not defined in language csv
+[2026-01-17 12:09:24.966] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.966] [Error] [VALIDATION] ERROR #16:
+[2026-01-17 12:09:24.970] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.971] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.971] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.972] [Error] [VALIDATION]   Problem Value: [31]
+[2026-01-17 12:09:24.972] [Error] [VALIDATION]   Details: Mall [31] references multilingual key [技能经验倍率300描述] which is not defined in language csv
+[2026-01-17 12:09:24.972] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.972] [Error] [VALIDATION] ERROR #17:
+[2026-01-17 12:09:24.972] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.972] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.972] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.972] [Error] [VALIDATION]   Problem Value: [32]
+[2026-01-17 12:09:24.973] [Error] [VALIDATION]   Details: Mall [32] references multilingual key [技能经验倍率1000] which is not defined in language csv
+[2026-01-17 12:09:24.973] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.973] [Error] [VALIDATION] ERROR #18:
+[2026-01-17 12:09:24.973] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.973] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.973] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.974] [Error] [VALIDATION]   Problem Value: [32]
+[2026-01-17 12:09:24.974] [Error] [VALIDATION]   Details: Mall [32] references multilingual key [技能经验倍率1000描述] which is not defined in language csv
+[2026-01-17 12:09:24.974] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.974] [Error] [VALIDATION] ERROR #19:
+[2026-01-17 12:09:24.974] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.975] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.975] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.975] [Error] [VALIDATION]   Problem Value: [33]
+[2026-01-17 12:09:24.975] [Error] [VALIDATION]   Details: Mall [33] references multilingual key [技能经验倍率3000] which is not defined in language csv
+[2026-01-17 12:09:24.975] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.975] [Error] [VALIDATION] ERROR #20:
+[2026-01-17 12:09:24.975] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.976] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.976] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.976] [Error] [VALIDATION]   Problem Value: [33]
+[2026-01-17 12:09:24.976] [Error] [VALIDATION]   Details: Mall [33] references multilingual key [技能经验倍率3000描述] which is not defined in language csv
+[2026-01-17 12:09:24.976] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.976] [Error] [VALIDATION] ERROR #21:
+[2026-01-17 12:09:24.976] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.976] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.977] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.977] [Error] [VALIDATION]   Problem Value: [34]
+[2026-01-17 12:09:24.977] [Error] [VALIDATION]   Details: Mall [34] references multilingual key [技能经验倍率10000] which is not defined in language csv
+[2026-01-17 12:09:24.977] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.977] [Error] [VALIDATION] ERROR #22:
+[2026-01-17 12:09:24.977] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.977] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.977] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.978] [Error] [VALIDATION]   Problem Value: [34]
+[2026-01-17 12:09:24.979] [Error] [VALIDATION]   Details: Mall [34] references multilingual key [技能经验倍率10000描述] which is not defined in language csv
+[2026-01-17 12:09:24.979] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.979] [Error] [VALIDATION] ERROR #23:
+[2026-01-17 12:09:24.980] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.980] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.980] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.980] [Error] [VALIDATION]   Problem Value: [40]
+[2026-01-17 12:09:24.980] [Error] [VALIDATION]   Details: Mall [40] references multilingual key [宠物经验倍率100] which is not defined in language csv
+[2026-01-17 12:09:24.980] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.981] [Error] [VALIDATION] ERROR #24:
+[2026-01-17 12:09:24.981] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.981] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.981] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.981] [Error] [VALIDATION]   Problem Value: [40]
+[2026-01-17 12:09:24.981] [Error] [VALIDATION]   Details: Mall [40] references multilingual key [宠物经验倍率100描述] which is not defined in language csv
+[2026-01-17 12:09:24.982] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.982] [Error] [VALIDATION] ERROR #25:
+[2026-01-17 12:09:24.983] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.983] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.983] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.983] [Error] [VALIDATION]   Problem Value: [41]
+[2026-01-17 12:09:24.983] [Error] [VALIDATION]   Details: Mall [41] references multilingual key [宠物经验倍率300] which is not defined in language csv
+[2026-01-17 12:09:24.984] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.984] [Error] [VALIDATION] ERROR #26:
+[2026-01-17 12:09:24.984] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.984] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.984] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.984] [Error] [VALIDATION]   Problem Value: [41]
+[2026-01-17 12:09:24.985] [Error] [VALIDATION]   Details: Mall [41] references multilingual key [宠物经验倍率300描述] which is not defined in language csv
+[2026-01-17 12:09:24.985] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.985] [Error] [VALIDATION] ERROR #27:
+[2026-01-17 12:09:24.986] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.986] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.986] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.986] [Error] [VALIDATION]   Problem Value: [42]
+[2026-01-17 12:09:24.986] [Error] [VALIDATION]   Details: Mall [42] references multilingual key [宠物经验倍率1000] which is not defined in language csv
+[2026-01-17 12:09:24.986] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.988] [Error] [VALIDATION] ERROR #28:
+[2026-01-17 12:09:24.988] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.988] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.988] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.989] [Error] [VALIDATION]   Problem Value: [42]
+[2026-01-17 12:09:24.989] [Error] [VALIDATION]   Details: Mall [42] references multilingual key [宠物经验倍率1000描述] which is not defined in language csv
+[2026-01-17 12:09:24.989] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.989] [Error] [VALIDATION] ERROR #29:
+[2026-01-17 12:09:24.989] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.989] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.990] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.990] [Error] [VALIDATION]   Problem Value: [43]
+[2026-01-17 12:09:24.990] [Error] [VALIDATION]   Details: Mall [43] references multilingual key [宠物经验倍率3000] which is not defined in language csv
+[2026-01-17 12:09:24.990] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.990] [Error] [VALIDATION] ERROR #30:
+[2026-01-17 12:09:24.991] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.991] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.991] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.991] [Error] [VALIDATION]   Problem Value: [43]
+[2026-01-17 12:09:24.992] [Error] [VALIDATION]   Details: Mall [43] references multilingual key [宠物经验倍率3000描述] which is not defined in language csv
+[2026-01-17 12:09:24.992] [Error] [VALIDATION] 
+[2026-01-17 12:09:24.992] [Error] [VALIDATION] ERROR #31:
+[2026-01-17 12:09:24.992] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:24.992] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:24.993] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:24.993] [Error] [VALIDATION]   Problem Value: [44]
+[2026-01-17 12:09:24.993] [Error] [VALIDATION]   Details: Mall [44] references multilingual key [宠物经验倍率10000] which is not defined in language csv
+[2026-01-17 12:09:25.001] [Error] [VALIDATION] 
+[2026-01-17 12:09:25.003] [Error] [VALIDATION] ERROR #32:
+[2026-01-17 12:09:25.006] [Error] [VALIDATION]   Error Type: Multilingual key not found
+[2026-01-17 12:09:25.007] [Error] [VALIDATION]   Module: Design
+[2026-01-17 12:09:25.008] [Error] [VALIDATION]   Config Type: Mall
+[2026-01-17 12:09:25.008] [Error] [VALIDATION]   Problem Value: [44]
+[2026-01-17 12:09:25.008] [Error] [VALIDATION]   Details: Mall [44] references multilingual key [宠物经验倍率10000描述] which is not defined in language csv
+[2026-01-17 12:09:25.008] [Error] [VALIDATION] 
+[2026-01-17 12:09:25.008] [Error] [VALIDATION] ========================================
+[2026-01-17 12:09:25.009] [Error] [VALIDATION] 
+[2026-01-17 12:09:25.009] [Error] [VALIDATION] Missing Multilingual Keys (copy to CSV):
+[2026-01-17 12:09:25.009] [Error] [VALIDATION] ========================================
+[2026-01-17 12:09:25.022] [Error] [VALIDATION] ========================================
+[2026-01-17 12:09:25.038] [Fatal] [FATAL] 捕获未处理异常，开始紧急保存数据...
+[2026-01-17 12:09:25.062] [Fatal] [FATAL] 异常信息: System.Exception: Design data validation failed with 32 errors. Check logs above.
+   at Logic.Validation.Agent.RunDesignValidation() in E:\LOA-Server\1.1\Logic\Validation\Agent.cs:line 94
+   at Logic.Design.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Design\Agent.cs:line 44
+   at Logic.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Agent.cs:line 37
+   at WorldService.Program.InitializeServer(Boolean isDevelopment, String serverId) in E:\LOA-Server\1.1\Program.cs:line 91
+   at WorldService.Program.Main(String[] args) in E:\LOA-Server\1.1\Program.cs:line 58
+[2026-01-17 12:09:25.065] [Fatal] [FATAL] 基础崩溃信息已保存

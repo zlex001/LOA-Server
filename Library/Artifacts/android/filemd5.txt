@@ -1,0 +1,7 @@
+resdepend.txt|d7aca1b2810fb2cb01becc67d9592661|241
+res/audio_ui|e2e915ab568c0ff78ffbf7bd86595015|12328
+res/prefabs_particle|61320d9d329b51b49c537e4ff57347ba|61893
+res/prefabs_ui|f29cc74c11fb0729172c887d3aea47f0|84979
+res/rawassets_texture|8ead4345a320e6252cd37995fb4fc6ca|683262
+res/rawassets_texture_materials|d20ccf5a376cfaf4db07abd0798cba8c|28137
+scripts/game.dll.bytes|e3b3084c1eba7e0468975094b8e1fa75|105984

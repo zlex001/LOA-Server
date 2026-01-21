@@ -1,0 +1,58 @@
+﻿=== CRASH REPORT ===
+Time: 2025-12-27 21:03:51.684
+IsTerminating: True
+Server: Unknown
+Environment: Development
+
+=== EXCEPTION ===
+MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed
+ ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFullyAsync(Stream stream, Byte[] buffer, Int32 offset, Int32 count, Boolean execAsync)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacketAsync(Boolean execAsync)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacketAsync(Boolean execAsync)
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)
+   at MySql.Data.MySqlClient.NativeDriver.OpenAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.Driver.OpenAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.Driver.CreateAsync(MySqlConnectionStringBuilder settings, Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.Driver.CreateAsync(MySqlConnectionStringBuilder settings, Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.CreateNewPooledConnectionAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnectionAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriverAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.GetConnectionAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlConnection.OpenAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlConnection.Open()
+   at Basic.MySql.Query(String connection, String table) in E:\LOA-Server\1.1\Basic\MySql.cs:line 60
+   at Basic.MySql.Load[T](String str) in E:\LOA-Server\1.1\Basic\MySql.cs:line 76
+   at Logic.Database.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Database\Agent.cs:line 20
+   at Logic.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Agent.cs:line 41
+   at WorldService.Program.InitializeServer(Boolean isDevelopment, String serverId) in E:\LOA-Server\1.1\Program.cs:line 91
+   at WorldService.Program.Main(String[] args) in E:\LOA-Server\1.1\Program.cs:line 58
+
+=== LAST 1000 DEBUG LOGS ===
+[2025-12-27 13:03:48.131] [Info] [DESIGN] World table unchanged, loading from cache file
+[2025-12-27 13:03:51.390] [Error] [DATABASE] Failed to ensure DailyAnalytics table: Reading from the stream has failed
+[2025-12-27 13:03:51.521] [Error] [DATABASE] Failed to ensure PlayerHistory table: Reading from the stream has failed
+[2025-12-27 13:03:51.685] [Fatal] [FATAL] 捕获未处理异常，开始紧急保存数据...
+[2025-12-27 13:03:51.705] [Fatal] [FATAL] 异常信息: MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed
+ ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFullyAsync(Stream stream, Byte[] buffer, Int32 offset, Int32 count, Boolean execAsync)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacketAsync(Boolean execAsync)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacketAsync(Boolean execAsync)
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacketAsync(Boolean execAsync)
+   at MySql.Data.MySqlClient.NativeDriver.OpenAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.Driver.OpenAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.Driver.CreateAsync(MySqlConnectionStringBuilder settings, Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.Driver.CreateAsync(MySqlConnectionStringBuilder settings, Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.CreateNewPooledConnectionAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.GetPooledConnectionAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.TryToGetDriverAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlPool.GetConnectionAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlConnection.OpenAsync(Boolean execAsync, CancellationToken cancellationToken)
+   at MySql.Data.MySqlClient.MySqlConnection.Open()
+   at Basic.MySql.Query(String connection, String table) in E:\LOA-Server\1.1\Basic\MySql.cs:line 60
+   at Basic.MySql.Load[T](String str) in E:\LOA-Server\1.1\Basic\MySql.cs:line 76
+   at Logic.Database.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Database\Agent.cs:line 20
+   at Logic.Agent.Init(Object[] args) in E:\LOA-Server\1.1\Logic\Agent.cs:line 41
+   at WorldService.Program.InitializeServer(Boolean isDevelopment, String serverId) in E:\LOA-Server\1.1\Program.cs:line 91
+   at WorldService.Program.Main(String[] args) in E:\LOA-Server\1.1\Program.cs:line 58
+[2025-12-27 13:03:51.708] [Fatal] [FATAL] 基础崩溃信息已保存

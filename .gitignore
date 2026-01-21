@@ -1,0 +1,29 @@
+# 编译输出
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+# NuGet
+packages/
+
+# 系统文件
+*.DS_Store
+Thumbs.db
+
+# SVN
+.svn/
+
+# 日志/缓存
+*.log
+*.tmp
+*.bak
+*.cache

@@ -1,0 +1,261 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\LOA-Server\\1.1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\subscription\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\subscription\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\display\\left.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\display\\left.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\display\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\display\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{909BA3FB-0202-48FB-B4CC-5E066D179A91}|Basic\\Basic.csproj|e:\\loa-server\\1.1\\basic\\threading\\messagechannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{909BA3FB-0202-48FB-B4CC-5E066D179A91}|Basic\\Basic.csproj|solutionrelative:basic\\threading\\messagechannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{909BA3FB-0202-48FB-B4CC-5E066D179A91}|Basic\\Basic.csproj|e:\\loa-server\\1.1\\basic\\threading\\threadworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{909BA3FB-0202-48FB-B4CC-5E066D179A91}|Basic\\Basic.csproj|solutionrelative:basic\\threading\\threadworker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|e:\\loa-server\\1.1\\logic\\validation\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|solutionrelative:logic\\validation\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\develop\\upgrade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\develop\\upgrade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|e:\\loa-server\\1.1\\logic\\design\\code.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|solutionrelative:logic\\design\\code.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\behaviortree\\4.production.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\behaviortree\\4.production.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|e:\\loa-server\\1.1\\logic\\logic.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|solutionrelative:logic\\logic.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\behaviortree\\7.animal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\behaviortree\\7.animal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|e:\\loa-server\\1.1\\logic\\design\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C736C23-943F-40C7-8E14-CC8C260B9341}|Logic\\Logic.csproj|solutionrelative:logic\\design\\agent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\pet\\capture.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\pet\\capture.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\administrator\\command.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\administrator\\command.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|e:\\loa-server\\1.1\\domain\\display\\right.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{64956FA3-BAF5-46E4-A4B7-9EB94B134153}|Domain\\Domain.csproj|solutionrelative:domain\\display\\right.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Left.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Display\\Left.cs",
+              "RelativeDocumentMoniker": "Domain\\Display\\Left.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Display\\Left.cs",
+              "RelativeToolTip": "Domain\\Display\\Left.cs",
+              "ViewState": "AQIAAMgAAAAAAAAAAAAlwOcAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-19T08:31:58.441Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Agent.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Display\\Agent.cs",
+              "RelativeDocumentMoniker": "Domain\\Display\\Agent.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Display\\Agent.cs",
+              "RelativeToolTip": "Domain\\Display\\Agent.cs",
+              "ViewState": "AQIAAAACAAAAAAAAAAAnwDQCAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-18T23:47:13.191Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MessageChannel.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Basic\\Threading\\MessageChannel.cs",
+              "RelativeDocumentMoniker": "Basic\\Threading\\MessageChannel.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Basic\\Threading\\MessageChannel.cs",
+              "RelativeToolTip": "Basic\\Threading\\MessageChannel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAADgAAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-18T16:54:15.917Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ThreadWorker.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Basic\\Threading\\ThreadWorker.cs",
+              "RelativeDocumentMoniker": "Basic\\Threading\\ThreadWorker.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Basic\\Threading\\ThreadWorker.cs",
+              "RelativeToolTip": "Basic\\Threading\\ThreadWorker.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-18T16:54:18.427Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Agent.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Logic\\Validation\\Agent.cs",
+              "RelativeDocumentMoniker": "Logic\\Validation\\Agent.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Logic\\Validation\\Agent.cs",
+              "RelativeToolTip": "Logic\\Validation\\Agent.cs",
+              "ViewState": "AQIAABUAAAAAAAAAAIA5wFwAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-17T12:00:42.095Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Agent.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Subscription\\Agent.cs",
+              "RelativeDocumentMoniker": "Domain\\Subscription\\Agent.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Subscription\\Agent.cs",
+              "RelativeToolTip": "Domain\\Subscription\\Agent.cs",
+              "ViewState": "AQIAACUAAAAAAAAAAAA2wEoAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-17T11:22:20.468Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Upgrade.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Develop\\Upgrade.cs",
+              "RelativeDocumentMoniker": "Domain\\Develop\\Upgrade.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Develop\\Upgrade.cs",
+              "RelativeToolTip": "Domain\\Develop\\Upgrade.cs",
+              "ViewState": "AQIAAHIAAAAAAAAAAAAYwLwAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-17T11:14:15.34Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Code.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Logic\\Design\\Code.cs",
+              "RelativeDocumentMoniker": "Logic\\Design\\Code.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Logic\\Design\\Code.cs",
+              "RelativeToolTip": "Logic\\Design\\Code.cs",
+              "ViewState": "AQIAALcAAAAAAAAAAAAIwBABAABOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-17T11:00:58.617Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "4.Production.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\BehaviorTree\\4.Production.cs",
+              "RelativeDocumentMoniker": "Domain\\BehaviorTree\\4.Production.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\BehaviorTree\\4.Production.cs",
+              "RelativeToolTip": "Domain\\BehaviorTree\\4.Production.cs",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAAAB8AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T08:33:16.889Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Logic.csproj",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Logic\\Logic.csproj",
+              "RelativeDocumentMoniker": "Logic\\Logic.csproj",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Logic\\Logic.csproj",
+              "RelativeToolTip": "Logic\\Logic.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-17T01:58:32.703Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "7.Animal.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\BehaviorTree\\7.Animal.cs",
+              "RelativeDocumentMoniker": "Domain\\BehaviorTree\\7.Animal.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\BehaviorTree\\7.Animal.cs",
+              "RelativeToolTip": "Domain\\BehaviorTree\\7.Animal.cs",
+              "ViewState": "AQIAAGEAAAAAAAAAAAAYwLwAAABeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T08:22:21.57Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Agent.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Logic\\Design\\Agent.cs",
+              "RelativeDocumentMoniker": "Logic\\Design\\Agent.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Logic\\Design\\Agent.cs",
+              "RelativeToolTip": "Logic\\Design\\Agent.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACAAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T13:17:51.264Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Capture.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Pet\\Capture.cs",
+              "RelativeDocumentMoniker": "Domain\\Pet\\Capture.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Pet\\Capture.cs",
+              "RelativeToolTip": "Domain\\Pet\\Capture.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAFgAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T06:30:14.647Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Command.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Administrator\\Command.cs",
+              "RelativeDocumentMoniker": "Domain\\Administrator\\Command.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Administrator\\Command.cs",
+              "RelativeToolTip": "Domain\\Administrator\\Command.cs",
+              "ViewState": "AQIAADsAAAAAAAAAAADgv5QAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-13T08:29:06.724Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Right.cs",
+              "DocumentMoniker": "E:\\LOA-Server\\1.1\\Domain\\Display\\Right.cs",
+              "RelativeDocumentMoniker": "Domain\\Display\\Right.cs",
+              "ToolTip": "E:\\LOA-Server\\1.1\\Domain\\Display\\Right.cs",
+              "RelativeToolTip": "Domain\\Display\\Right.cs",
+              "ViewState": "AQIAAD4AAAAAAAAAAAAvwIYAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-13T07:05:44.281Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

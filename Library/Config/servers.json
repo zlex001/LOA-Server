@@ -1,0 +1,23 @@
+[
+  {
+    "Id": "S1001",
+    "Name": "风云一区",
+    "Database": "game_s1001",
+    "OpenTime": "2025-01-01T00:00:00",
+    "Status": "online"
+  },
+  {
+    "Id": "S1002",
+    "Name": "风云二区",
+    "Database": "game_s1002",
+    "OpenTime": "2025-01-02T00:00:00",
+    "Status": "online"
+  },
+  {
+    "Id": "S1003",
+    "Name": "风云三区",
+    "Database": "game_s1003",
+    "OpenTime": "2025-01-03T00:00:00",
+    "Status": "online"
+  }
+]
