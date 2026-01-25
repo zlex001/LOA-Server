@@ -35,7 +35,10 @@ namespace WorldService
 
         private static void DisableWindowsErrorReporting()
         {
-            SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+            }
         }
 
         static void Main(string[] args)
@@ -74,7 +77,10 @@ namespace WorldService
         private static void InitializeServer(bool isDevelopment, string serverId)
         {
             DisableWindowsErrorReporting();
-            SetConsoleCtrlHandler(ConsoleCtrlHandler, true);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                SetConsoleCtrlHandler(ConsoleCtrlHandler, true);
+            }
             Console.CancelKeyPress += OnCancelKeyPress;
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -405,9 +411,28 @@ namespace WorldService
 
         private static void KeyboardListener()
         {
+            // Skip keyboard listener if console input is not available
+            if (Console.IsInputRedirected || !Environment.UserInteractive)
+            {
+                return;
+            }
+            
             while (true)
             {
-                if (Console.KeyAvailable)
+                try
+                {
+                    if (!Console.KeyAvailable)
+                    {
+                        Thread.Sleep(100);
+                        continue;
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // Console not available, exit listener
+                    return;
+                }
+                
                 {
                     var key = Console.ReadKey(true);
                     if (key.Key == ConsoleKey.Escape)
@@ -464,7 +489,6 @@ namespace WorldService
                         ToggleTcpLog();
                     }
                 }
-                Thread.Sleep(100);
             }
         }
 

@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Logic
-build_property.ProjectDir = e:\LOA-Server\1.1\Logic\
+build_property.ProjectDir = /Users/zhangxi/LOA-Server/trunk/Logic/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
