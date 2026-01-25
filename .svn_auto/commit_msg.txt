@@ -1,1 +1,1 @@
-[修复] 商城购买面板价格单位错误显示为RMB，应为Gem
+[修复] 商城购买数量slider变化后总价不更新的问题（id=0被误判为ScreenUIAdaptation）

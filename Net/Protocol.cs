@@ -615,7 +615,10 @@ namespace Net.Protocol
         {
             Logic.Player player = client.Player;
             
-            if (id == 0)
+            // Settings panel has special sliders: id=0 is ScreenUIAdaptation, id=1 is FontScale
+            bool isSettingsPanel = player.Option?.Type == Logic.Option.Types.Settings;
+            
+            if (isSettingsPanel && id == 0)
             {
                 if (value >= 50 && value <= 150)
                 {
@@ -629,7 +632,7 @@ namespace Net.Protocol
                 return;
             }
             
-            if (id == 1)
+            if (isSettingsPanel && id == 1)
             {
                 // FontScale is client-local storage, no server-side persistence needed
                 return;
