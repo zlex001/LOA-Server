@@ -174,16 +174,9 @@ namespace Domain.Display
             }
             else
             {
-                // Not purchased: show benefits summary
-                string benefits = Text.Agent.Instance.Get(Logic.Text.Labels.BasicMonthlyCardBenefits, player.Language);
-                string[] benefitList = benefits.Split('|');
-                foreach (string benefit in benefitList)
-                {
-                    if (!string.IsNullOrEmpty(benefit))
-                    {
-                        items.Add(new Option.Item($"{Utils.Text.Indent(1)}{benefit.Trim()}"));
-                    }
-                }
+                // Not purchased: show simple status
+                string notSubscribed = Text.Agent.Instance.Get(Logic.Text.Labels.NotSubscribed, player.Language);
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{notSubscribed}"));
             }
             
             // 5: PremiumCard (God's Blessing) - as level 0 item
@@ -203,16 +196,9 @@ namespace Domain.Display
             }
             else
             {
-                // Not purchased: show benefits summary
-                string benefits = Text.Agent.Instance.Get(Logic.Text.Labels.PremiumMonthlyCardBenefits, player.Language);
-                string[] benefitList = benefits.Split('|');
-                foreach (string benefit in benefitList)
-                {
-                    if (!string.IsNullOrEmpty(benefit))
-                    {
-                        items.Add(new Option.Item($"{Utils.Text.Indent(1)}{benefit.Trim()}"));
-                    }
-                }
+                // Not purchased: show simple status
+                string notSubscribed = Text.Agent.Instance.Get(Logic.Text.Labels.NotSubscribed, player.Language);
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{notSubscribed}"));
             }
             
             // Claim Button - only show for card holders
@@ -282,34 +268,16 @@ namespace Domain.Display
             
             // Calculate claim button position:
             // Fixed: Title(0), Gem(1) = 2 items
-            // BasicCard section: name(1) + content items
-            // PremiumCard section: name(1) + content items
+            // BasicCard section: name(1) + status(1) or days+exp(2)
+            // PremiumCard section: name(1) + status(1) or days+exp(2)
             // ClaimButton(1) - only if has any card
             int claimButtonIndex = 2; // Start after Title and Gem
             
             claimButtonIndex += 1; // BasicCard name
-            if (hasBasicCard)
-            {
-                claimButtonIndex += 2; // Days + Exp
-            }
-            else
-            {
-                // Count benefits from multilingual text
-                string basicBenefits = Text.Agent.Instance.Get(Logic.Text.Labels.BasicMonthlyCardBenefits, player.Language);
-                claimButtonIndex += basicBenefits.Split('|').Count(b => !string.IsNullOrEmpty(b));
-            }
+            claimButtonIndex += hasBasicCard ? 2 : 1; // Days+Exp or NotSubscribed
             
             claimButtonIndex += 1; // PremiumCard name
-            if (hasPremiumCard)
-            {
-                claimButtonIndex += 2; // Days + Exp
-            }
-            else
-            {
-                // Count benefits from multilingual text
-                string premiumBenefits = Text.Agent.Instance.Get(Logic.Text.Labels.PremiumMonthlyCardBenefits, player.Language);
-                claimButtonIndex += premiumBenefits.Split('|').Count(b => !string.IsNullOrEmpty(b));
-            }
+            claimButtonIndex += hasPremiumCard ? 2 : 1; // Days+Exp or NotSubscribed
             
             // Check if clicked index matches the claim button
             if (index == claimButtonIndex)

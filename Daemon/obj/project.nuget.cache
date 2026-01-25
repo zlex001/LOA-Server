@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "RhqRP3LLZ2s=",
+  "dgSpecHash": "8CgTgPAd8ns7eaM10fW9o3gXS6Rm6ZAsM9tPy26wCwuDjC9B9OUnpKApTCbWq7+Ru1+xLj8JkzSZdPAVgnZvfw==",
   "success": true,
-  "projectFilePath": "E:\\LOA-Server\\1.1\\Daemon\\Daemon.csproj",
+  "projectFilePath": "/Users/zhangxi/LOA-Server/trunk/Daemon/Daemon.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
