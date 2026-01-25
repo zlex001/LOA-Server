@@ -145,64 +145,113 @@ namespace Domain.Display
                 ("Text", $"{gemLabel}: {player.Gem}"),
                 ("Action", "Recharge")));
             
-            // Calculate accumulated monthly exp for display
-            Subscription.Agent.AccumulateMonthlyExp(player);
+            // Check card ownership
+            bool hasBasicCard = Subscription.Agent.HasBasicCard(player);
+            bool hasPremiumCard = Subscription.Agent.HasPremiumCard(player);
+            bool hasAnyCard = hasBasicCard || hasPremiumCard;
+            
+            // Calculate accumulated monthly exp for display (only if has card)
+            if (hasAnyCard)
+            {
+                Subscription.Agent.AccumulateMonthlyExp(player);
+            }
             string monthlyExpLabel = Text.Agent.Instance.Get(Logic.Text.Labels.MonthlyExp, player.Language);
             
             // 2: BasicCard (Angel's Blessing) - as level 0 item
             string basicCardName = Text.Agent.Instance.Get(Logic.Text.Labels.BasicMonthlyCard, player.Language);
             items.Add(new Option.Item($"{Utils.Text.Indent(0)}{basicCardName}"));
             
-            // 3: BasicCard days remaining - as level 1 item
-            int basicDaysRemaining = Math.Max(0, (int)(player.TokenMonthBasicLastTime - DateTime.Now).TotalDays);
-            string basicDaysText = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.DaysRemaining, player.Language, 
-                ("days", basicDaysRemaining.ToString()));
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{basicDaysText}"));
-            
-            // 4: BasicCard blessing exp - as level 1 item (show basic card accumulated exp)
-            double basicAccumulatedExp = player.MonthlyExpAccumulatorBasic;
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{monthlyExpLabel}: {basicAccumulatedExp:F2}"));
+            if (hasBasicCard)
+            {
+                // Purchased: show days remaining and accumulated exp
+                int basicDaysRemaining = Math.Max(0, (int)(player.TokenMonthBasicLastTime - DateTime.Now).TotalDays);
+                string basicDaysText = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.DaysRemaining, player.Language, 
+                    ("days", basicDaysRemaining.ToString()));
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{basicDaysText}"));
+                
+                double basicAccumulatedExp = player.MonthlyExpAccumulatorBasic;
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{monthlyExpLabel}: {basicAccumulatedExp:F2}"));
+            }
+            else
+            {
+                // Not purchased: show benefits summary
+                string benefits = Text.Agent.Instance.Get(Logic.Text.Labels.BasicMonthlyCardBenefits, player.Language);
+                string[] benefitList = benefits.Split('|');
+                foreach (string benefit in benefitList)
+                {
+                    if (!string.IsNullOrEmpty(benefit))
+                    {
+                        items.Add(new Option.Item($"{Utils.Text.Indent(1)}{benefit.Trim()}"));
+                    }
+                }
+            }
             
             // 5: PremiumCard (God's Blessing) - as level 0 item
             string premiumCardName = Text.Agent.Instance.Get(Logic.Text.Labels.PremiumMonthlyCard, player.Language);
             items.Add(new Option.Item($"{Utils.Text.Indent(0)}{premiumCardName}"));
             
-            // 6: PremiumCard days remaining - as level 1 item
-            int premiumDaysRemaining = Math.Max(0, (int)(player.TokenMonthPremiumLastTime - DateTime.Now).TotalDays);
-            string premiumDaysText = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.DaysRemaining, player.Language, 
-                ("days", premiumDaysRemaining.ToString()));
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{premiumDaysText}"));
+            if (hasPremiumCard)
+            {
+                // Purchased: show days remaining and accumulated exp
+                int premiumDaysRemaining = Math.Max(0, (int)(player.TokenMonthPremiumLastTime - DateTime.Now).TotalDays);
+                string premiumDaysText = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.DaysRemaining, player.Language, 
+                    ("days", premiumDaysRemaining.ToString()));
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{premiumDaysText}"));
+                
+                double premiumAccumulatedExp = player.MonthlyExpAccumulatorPremium;
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{monthlyExpLabel}: {premiumAccumulatedExp:F2}"));
+            }
+            else
+            {
+                // Not purchased: show benefits summary
+                string benefits = Text.Agent.Instance.Get(Logic.Text.Labels.PremiumMonthlyCardBenefits, player.Language);
+                string[] benefitList = benefits.Split('|');
+                foreach (string benefit in benefitList)
+                {
+                    if (!string.IsNullOrEmpty(benefit))
+                    {
+                        items.Add(new Option.Item($"{Utils.Text.Indent(1)}{benefit.Trim()}"));
+                    }
+                }
+            }
             
-            // 7: PremiumCard blessing exp - as level 1 item (show premium card accumulated exp)
-            double premiumAccumulatedExp = player.MonthlyExpAccumulatorPremium;
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{monthlyExpLabel}: {premiumAccumulatedExp:F2}"));
+            // Claim Button - only show for card holders
+            if (hasAnyCard)
+            {
+                string claimLabel = Text.Agent.Instance.Get(Logic.Text.Labels.ClaimMonthlyExp, player.Language);
+                items.Add(new Option.Item(Option.Item.Type.Button, ("Text", claimLabel), ("Action", "ClaimMonthlyExp")));
+            }
             
-            // 8: Claim Button
-            string claimLabel = Text.Agent.Instance.Get(Logic.Text.Labels.ClaimMonthlyExp, player.Language);
-            items.Add(new Option.Item(Option.Item.Type.Button, ("Text", claimLabel), ("Action", "ClaimMonthlyExp")));
-            
-            // 9: ExpMultiplier (Divine Insights) - as level 0 item
+            // ExpMultiplier (Divine Insights) - as level 0 item
             string expMultiplierLabel = Text.Agent.Instance.Get(Logic.Text.Labels.ExpMultiplier, player.Language);
             items.Add(new Option.Item($"{Utils.Text.Indent(0)}{expMultiplierLabel}"));
             
-            // 10-12: Character, Skill, Pet - as level 1 items
+            // Character, Skill, Pet - as level 1 items (only show if count > 0)
             string characterLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Character, player.Language);
             string skillLabel = Text.Agent.Instance.Get(Logic.Text.Labels.SkillLabel, player.Language);
             string petLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Pet, player.Language);
-            string characterUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLife.ToString()));
-            string skillUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForSkill.ToString()));
-            string petUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLive.ToString()));
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{characterLabel}: {characterUses}"));
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{skillLabel}: {skillUses}"));
-            items.Add(new Option.Item($"{Utils.Text.Indent(1)}{petLabel}: {petUses}"));
+            
+            if (player.BenefitCountForLife > 0)
+            {
+                string characterUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLife.ToString()));
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{characterLabel}: {characterUses}"));
+            }
+            if (player.BenefitCountForSkill > 0)
+            {
+                string skillUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForSkill.ToString()));
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{skillLabel}: {skillUses}"));
+            }
+            if (player.BenefitCountForLive > 0)
+            {
+                string petUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLive.ToString()));
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{petLabel}: {petUses}"));
+            }
             
             return items;
         }
         
         public static void MallClick(Player player, Ability target, int index)
         {
-            var cardType = Subscription.Agent.GetCardType(player);
-            
             // Index 1: Recharge button (index 0 is Title)
             if (index == 1)
             {
@@ -224,9 +273,46 @@ namespace Domain.Display
                 return;
             }
             
-            // Index 8: Monthly Exp claim button (only visible for card holders)
-            // Position: 0=Title, 1=Gem, 2=BasicCard, 3=BasicDays, 4=BasicExp, 5=PremiumCard, 6=PremiumDays, 7=PremiumExp, 8=ClaimButton
-            if (index == 8 && cardType != Subscription.CardType.None)
+            // Calculate claim button index dynamically based on card ownership
+            bool hasBasicCard = Subscription.Agent.HasBasicCard(player);
+            bool hasPremiumCard = Subscription.Agent.HasPremiumCard(player);
+            bool hasAnyCard = hasBasicCard || hasPremiumCard;
+            
+            if (!hasAnyCard) return; // No claim button for non-card holders
+            
+            // Calculate claim button position:
+            // Fixed: Title(0), Gem(1) = 2 items
+            // BasicCard section: name(1) + content items
+            // PremiumCard section: name(1) + content items
+            // ClaimButton(1) - only if has any card
+            int claimButtonIndex = 2; // Start after Title and Gem
+            
+            claimButtonIndex += 1; // BasicCard name
+            if (hasBasicCard)
+            {
+                claimButtonIndex += 2; // Days + Exp
+            }
+            else
+            {
+                // Count benefits from multilingual text
+                string basicBenefits = Text.Agent.Instance.Get(Logic.Text.Labels.BasicMonthlyCardBenefits, player.Language);
+                claimButtonIndex += basicBenefits.Split('|').Count(b => !string.IsNullOrEmpty(b));
+            }
+            
+            claimButtonIndex += 1; // PremiumCard name
+            if (hasPremiumCard)
+            {
+                claimButtonIndex += 2; // Days + Exp
+            }
+            else
+            {
+                // Count benefits from multilingual text
+                string premiumBenefits = Text.Agent.Instance.Get(Logic.Text.Labels.PremiumMonthlyCardBenefits, player.Language);
+                claimButtonIndex += premiumBenefits.Split('|').Count(b => !string.IsNullOrEmpty(b));
+            }
+            
+            // Check if clicked index matches the claim button
+            if (index == claimButtonIndex)
             {
                 // Message is sent inside ClaimMonthlyExp before exp is added (ensures correct order: claim -> level up)
                 Subscription.Agent.ClaimMonthlyExp(player);
