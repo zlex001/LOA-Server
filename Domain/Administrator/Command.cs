@@ -204,6 +204,14 @@ namespace Domain.Administrator
                     return;
                 }
 
+                if (command.type == "add_gem")
+                {
+                    var gmResult = GameMaster.AddGem(command.playerId, command.amount > 0 ? command.amount : 100);
+                    var result = new { success = gmResult.Success, message = gmResult.Message };
+                    await Net.Http.Instance.SendJson(response, result);
+                    return;
+                }
+
                 var defaultResult = new { success = true, message = $"已处理命令类型：{command.type}" };
                 await Net.Http.Instance.SendJson(response, defaultResult);
             }
@@ -219,6 +227,8 @@ namespace Domain.Administrator
             public string type { get; set; }
             public string snapshotTime { get; set; }
             public int plotId { get; set; }
+            public string playerId { get; set; }
+            public int amount { get; set; }
         }
     }
 }
