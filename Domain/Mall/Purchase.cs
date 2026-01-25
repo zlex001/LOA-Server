@@ -143,6 +143,9 @@ namespace Domain.Mall
                     player.TokenMonthPremiumLastTime = now.AddDays(daysToAdd);
                 }
             }
+            
+            // Start Mall refresh if player is viewing Mall panel (fixes: refresh not starting after first purchase)
+            Subscription.Agent.TryStartMallRefresh(player);
         }
         
         private static void DeliverExperience(Player player, Logic.Config.Mall mallConfig, int count)

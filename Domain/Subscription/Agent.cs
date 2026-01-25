@@ -72,6 +72,18 @@ namespace Domain.Subscription
             }
         }
 
+        /// <summary>
+        /// Try to start Mall refresh if player is viewing Mall panel and has monthly card.
+        /// Called after subscription purchase to ensure refresh starts immediately.
+        /// </summary>
+        public static void TryStartMallRefresh(Player player)
+        {
+            if (player?.Option?.Type != Option.Types.Mall) return;
+            if (GetCardType(player) == CardType.None) return;
+            
+            StartMallRefresh(player);
+        }
+
         private static void StartMallRefresh(Player player)
         {
             // Cancel existing task if any
