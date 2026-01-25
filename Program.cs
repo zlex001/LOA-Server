@@ -109,7 +109,7 @@ namespace WorldService
                 Utils.Debug.Log.Info("SERVER", "  Debug: F5=BehaviorTree F11=TCP Log");
                 Utils.Debug.Log.Info("SERVER", "  Export: F10=LifeAttributes CSV");
                 Utils.Debug.Log.Info("SERVER", "  Plot: F6=Theft F7=Blade F8=Sword F9=BeastTaming");
-                Utils.Debug.Log.Info("SERVER", "  Dev: G=AddGem(100)");
+                Utils.Debug.Log.Info("SERVER", "  Command: / to enter (e.g. /addgem 100)");
                 Utils.Debug.Log.Info("SERVER", "  System: Delete=Clear ESC=Exit");
                 Utils.Debug.Log.Info("SERVER", "========================================");
             }

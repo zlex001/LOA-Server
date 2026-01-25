@@ -1,6 +1,6 @@
-[功能] Add GameMaster system for development gem operations
+[优化] Replace G hotkey with text command mode for AddGem
 
-- Create GameMaster.cs with core GM logic (AddGem, TeleportAndFollow, PlayPlot, etc.)
-- Create Console.cs for keyboard input handling
-- Add add_gem command type to HTTP API (Command.cs)
-- Refactor Program.cs to delegate keyboard logic to Domain.Administrator.Console
+- Add command input mode: press '/' to enter, type command, Enter to execute
+- Remove G hotkey for AddGem (now use /addgem <amount> [playerId])
+- Add help command to show available commands
+- More secure: requires explicit input instead of single key press
