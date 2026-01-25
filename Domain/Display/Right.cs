@@ -725,6 +725,7 @@ namespace Domain.Display
             int totalPrice = mallConfig.Price * setting.SliderValue;
             string buyLabel = Text.Agent.Instance.Get(Logic.Text.Labels.BuyLabel, player.Language);
             string totalLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Total, player.Language);
+            string gemLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Gem, player.Language);
             
             var slider = new Option.Item
             {
@@ -738,7 +739,7 @@ namespace Domain.Display
             };
             
             results.Add(slider);
-            results.Add(new Option.Item(Option.Item.Type.Text, $"{totalLabel}: {totalPrice} RMB"));
+            results.Add(new Option.Item(Option.Item.Type.Text, $"{totalLabel}: {totalPrice} {gemLabel}"));
             results.Add(new Option.Item(Option.Item.Type.Confirm));
             
             return results;
