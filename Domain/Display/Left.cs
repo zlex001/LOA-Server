@@ -212,25 +212,36 @@ namespace Domain.Display
             string expMultiplierLabel = Text.Agent.Instance.Get(Logic.Text.Labels.ExpMultiplier, player.Language);
             items.Add(new Option.Item($"{Utils.Text.Indent(0)}{expMultiplierLabel}"));
             
-            // Character, Skill, Pet - as level 1 items (only show if count > 0)
-            string characterLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Character, player.Language);
-            string skillLabel = Text.Agent.Instance.Get(Logic.Text.Labels.SkillLabel, player.Language);
-            string petLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Pet, player.Language);
+            // Character, Skill, Pet - as level 1 items
+            bool hasAnyExpMultiplier = player.BenefitCountForLife > 0 || player.BenefitCountForSkill > 0 || player.BenefitCountForLive > 0;
             
-            if (player.BenefitCountForLife > 0)
+            if (hasAnyExpMultiplier)
             {
-                string characterUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLife.ToString()));
-                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{characterLabel}: {characterUses}"));
+                string characterLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Character, player.Language);
+                string skillLabel = Text.Agent.Instance.Get(Logic.Text.Labels.SkillLabel, player.Language);
+                string petLabel = Text.Agent.Instance.Get(Logic.Text.Labels.Pet, player.Language);
+                
+                if (player.BenefitCountForLife > 0)
+                {
+                    string characterUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLife.ToString()));
+                    items.Add(new Option.Item($"{Utils.Text.Indent(1)}{characterLabel}: {characterUses}"));
+                }
+                if (player.BenefitCountForSkill > 0)
+                {
+                    string skillUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForSkill.ToString()));
+                    items.Add(new Option.Item($"{Utils.Text.Indent(1)}{skillLabel}: {skillUses}"));
+                }
+                if (player.BenefitCountForLive > 0)
+                {
+                    string petUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLive.ToString()));
+                    items.Add(new Option.Item($"{Utils.Text.Indent(1)}{petLabel}: {petUses}"));
+                }
             }
-            if (player.BenefitCountForSkill > 0)
+            else
             {
-                string skillUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForSkill.ToString()));
-                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{skillLabel}: {skillUses}"));
-            }
-            if (player.BenefitCountForLive > 0)
-            {
-                string petUses = Text.Agent.Instance.GetDynamic(Logic.Text.Labels.Uses, player.Language, ("count", player.BenefitCountForLive.ToString()));
-                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{petLabel}: {petUses}"));
+                // No exp multipliers: show "None"
+                string noneLabel = Text.Agent.Instance.Get(Logic.Text.Labels.NotSubscribed, player.Language);
+                items.Add(new Option.Item($"{Utils.Text.Indent(1)}{noneLabel}"));
             }
             
             return items;

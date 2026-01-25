@@ -284,7 +284,7 @@ namespace Logic
             // 商城UI相关
             Gem,                       // 充值币
             CardStatus,                // 月卡状态
-            NotSubscribed,             // 未订阅
+            NotSubscribed,             // None - general "none" status
             BasicMonthlyCard,          // 基础月卡
             PremiumMonthlyCard,        // 高级月卡
             DaysRemaining,             // 剩余天数
