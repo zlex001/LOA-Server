@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +75,7 @@ namespace Logic.Design
                 // 序列化为JSON
                 return JsonConvert.SerializeObject(conditionTree);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

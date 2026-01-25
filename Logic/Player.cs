@@ -128,7 +128,7 @@ namespace Logic
             data.raw[Data.Description] = Database.GetRecord("Description");
             data.raw[Life.Data.Gender] = Enum.TryParse<Genders>(Database.GetText("Gender"), out var gender) ? gender : Genders.Female;
             Category = Enum.TryParse<Categories>(Database.GetText("Category"), out var category) ? category : Categories.Atlantean;
-            Array.ForEach(Part.Template.Get(Category), partType => Create<Part>(partType));
+            Array.ForEach(Part.Template.GetByCategory(Category), partType => Create<Part>(partType));
             data.raw[Life.Data.Age] = (double)Database.GetRecord("Age");
             data.raw[Life.Data.Exp] = Database.GetRecord("Exp");
             data.raw[Life.Data.Level] = Database.GetRecord("Level");

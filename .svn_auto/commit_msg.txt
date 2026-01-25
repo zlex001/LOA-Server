@@ -1,1 +1,6 @@
-[修复] 商城购买数量slider变化后总价不更新的问题（id=0被误判为ScreenUIAdaptation）
+[修复] 清理 Logic 层编译警告
+
+- CS0618: 新增 Part.Template.GetByCategory 方法供 Player 使用
+- CS0168: 移除 4 处未使用的异常变量 ex
+- CS8632: 移除 World.cs 中的 nullable 注释
+- 删除 Plot.cs 中无意义的 try-catch 块

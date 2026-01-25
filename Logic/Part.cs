@@ -182,17 +182,23 @@ namespace Logic
                         return result.ToArray();
                 }
 
-                // 如果配置为空，使用Category后备方案（兼容性）
+                // If config has no parts, fallback to category-based parts
                 Utils.Debug.Log.Warning("PART", $"Life {config.Id} has no parts config, falling back to category-based parts.");
-                return Get(Enum.Parse<Life.Categories>(config.category));
+                return GetByCategory(Enum.Parse<Life.Categories>(config.category));
             }
 
             /// <summary>
-            /// 从Category读取Parts（已废弃，仅作后备）
+            /// For dynamic entities without Config.Life (e.g., Player loaded from database)
             /// </summary>
-            [Obsolete("Use Get(Logic.Config.Life config) instead")]
-            public static Types[] Get(Life.Categories category)
+            public static Types[] GetByCategory(Life.Categories category)
                 => lifeMap.TryGetValue(category, out var result) ? result : defaultLifeParts;
+
+            /// <summary>
+            /// Obsolete: Use Get(Logic.Config.Life config) for NPC, or GetByCategory for Player
+            /// </summary>
+            [Obsolete("Use Get(Logic.Config.Life config) for NPC, or GetByCategory for Player")]
+            public static Types[] Get(Life.Categories category)
+                => GetByCategory(category);
 
             public static Types[] Get(Item.Types type)
                 => new[] { Types.Top, Types.Bottom, Types.Inside, Types.Outside };

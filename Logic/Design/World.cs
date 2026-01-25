@@ -1,4 +1,4 @@
-﻿using Basic;
+using Basic;
 using System.IO;
 using System.Collections.Generic;
 
@@ -291,7 +291,7 @@ namespace Logic.Design
                                 var a = neighbor.First(n => n.id == id);
                                 var b = neighbor.First(n => n.id == e);
 
-                                static int[]? NeighborPos((int x, int y) pos, List<(int x, int y)> set)
+                                static int[] NeighborPos((int x, int y) pos, List<(int x, int y)> set)
                                 {
                                     foreach (var (dx, dy) in Directions)
                                     {

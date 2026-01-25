@@ -31,9 +31,7 @@ namespace Logic.Design
 
         public static void Convert()
         {
-            try
-            {
-                List<Dictionary<string, object>> datas = new List<Dictionary<string, object>>();
+            List<Dictionary<string, object>> datas = new List<Dictionary<string, object>>();
                 var plots = Agent.Instance.Content.Gets<Plot>().ToList();
                 
                 foreach (Plot config in plots)
@@ -100,11 +98,6 @@ namespace Logic.Design
             string path = $"{Utils.Paths.Library}/Config/Plot.csv";
             Utils.FileManager.Instance.DeleteFile(path);
             Utils.Csv.SaveByRows(datas, path);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
         private static List<object> ConvertRewardToTuple(string raw)
         {
@@ -465,7 +458,7 @@ namespace Logic.Design
                 // 第3步：序列化为JSON
                 return Newtonsoft.Json.JsonConvert.SerializeObject(conditionTree);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

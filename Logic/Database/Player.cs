@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Linq;
 
 namespace Logic.Database
@@ -152,7 +152,7 @@ namespace Logic.Database
                 }
                 return payments;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new();
             }
