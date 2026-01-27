@@ -147,6 +147,9 @@ namespace Domain.Perception
             if (viewer.Map == null || targetMap == null) return false;
             if (viewer.Map == targetMap) return true;
 
+            // Copy isolation: only see maps in same Copy (or both not in any Copy)
+            if (viewer.Map.Copy != targetMap.Copy) return false;
+
             int distance = Move.Distance.Get(viewer.Map, targetMap);
             return distance <= viewer.ViewScale && distance != int.MaxValue;
         }

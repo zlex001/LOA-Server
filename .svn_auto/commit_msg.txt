@@ -1,4 +1,3 @@
-[修复] 玩家登出时Copy未被正确销毁导致NPC累积
+[修复] Copy副本视野隔离
 
-问题：CheckAndDestroy在player.Destroy之前调用，玩家还在Copy中导致Empty()返回false
-修复：先保存Copy引用，player.Destroy后再检查销毁
+在IsInViewRange中添加Copy检查，不同副本间完全隔离，玩家只能看到自己所在副本中的character
