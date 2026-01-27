@@ -1,4 +1,4 @@
-[修复] 补充新手引导所需配置数据
+[修复] Copy和Maze创建Map时参数类型错误
 
-- 语言.csv: 添加石碑名称及描述多语言翻译
-- 场景.csv: 添加遗迹场景配置
+- Copy.Init: 创建Database.Map对象作为参数传递给Map.Init
+- Maze.Init: 同样修复Map创建时的参数类型问题
