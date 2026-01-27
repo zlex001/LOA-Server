@@ -308,9 +308,9 @@ namespace Domain
 
         private void SendTutorialHint(Player player, Step step)
         {
-            var (targetType, targetId, targetPath, hint) = GetStepHint(step);
+            var (targetType, targetId, targetPath, hint) = GetStepHint(step, player);
             
-            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}");
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}, TargetPath={targetPath}");
             
             var protocol = new Net.Protocol.Tutorial(
                 (int)step,
@@ -323,18 +323,43 @@ namespace Domain
             Net.Tcp.Instance.Send(player, protocol);
         }
 
-        private (TargetType type, int id, string path, string hint) GetStepHint(Step step)
+        private (TargetType type, int id, string path, string hint) GetStepHint(Step step, Player player)
         {
             return step switch
             {
-                Step.WalkToSand => (TargetType.Map, _tutorialSandMapId, "", ""),
+                // For Map type: use targetPath with map name (client matches by name)
+                Step.WalkToSand => (TargetType.Map, 0, GetMapName(_tutorialSandMapId, player), ""),
+                Step.WalkToTower => (TargetType.Map, 0, GetMapName(_tutorialTowerMapId, player), ""),
+                // For other types: use targetId
                 Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "", ""),
                 Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "", ""),
                 Step.PickupItems => (TargetType.Item, 0, "", ""),  // Highlight dropped items
-                Step.WalkToTower => (TargetType.Map, _tutorialTowerMapId, "", ""),
                 Step.GiveToStele => (TargetType.Item, _steleItemId, "", ""),
                 _ => (TargetType.UI, 0, "", "")
             };
+        }
+
+        private string GetMapName(int mapId, Player player)
+        {
+            // Find map in player's current copy/scene
+            var currentMap = player.Map;
+            if (currentMap?.Copy != null)
+            {
+                var targetMap = currentMap.Copy.Content.Get<Logic.Map>(m => m.Config.Id == mapId);
+                if (targetMap != null)
+                {
+                    return Text.Name.Map(targetMap, player);
+                }
+            }
+            else if (currentMap?.Scene != null)
+            {
+                var targetMap = currentMap.Scene.Content.Get<Logic.Map>(m => m.Config.Id == mapId);
+                if (targetMap != null)
+                {
+                    return Text.Name.Map(targetMap, player);
+                }
+            }
+            return "";
         }
 
         private void PlayTutorialStory(Player player)

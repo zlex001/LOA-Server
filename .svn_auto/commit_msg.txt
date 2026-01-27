@@ -1,7 +1,4 @@
-[重构] 新手引导协议调整
+[修复] Tutorial协议Map类型改用targetPath传递地图名称
 
-根据客户端反馈：
-1. 移除 Cutscene/CutsceneComplete 协议
-2. 复用 Story 协议播放过场
-3. 新增 StoryComplete 上行协议（方案B）
-4. Tutorial.cs 改用 Story + StoryComplete 事件
+采用方案B：对于targetType=Map的引导，使用targetPath传递地图名称（如"沙地"），
+客户端通过名称匹配找到对应的Map格子。
