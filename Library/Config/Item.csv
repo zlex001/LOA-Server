@@ -84,3 +84,4 @@
 1000057,100092,100153,Armor,100,35,300,[],"[""Sew:Rough"",""EquipPart:Waist"",""Slot:Pouch*3""]"
 1000058,100093,100154,Armor,150,35,400,[],"[""Sew:Tough"",""EquipPart:Waist"",""Slot:Pouch*3""]"
 1000085,100683,100684,Armor,500,50,300,[],"[""EquipPart:Head"",""ViewScale:5""]"
+1000087,0,0,Miscellaneous,500000,0,1000000,[],"[""Capacity:50000"",""Carry:30000"",""Tutorial:Stele""]"
