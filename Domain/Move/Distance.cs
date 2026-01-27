@@ -61,9 +61,23 @@ namespace Domain.Move
         {
             if (start == null) return int.MaxValue;
             if (destination == null) return int.MaxValue;
-            if (start.Scene == null) return int.MaxValue;
-            if (destination.Scene == null) return int.MaxValue;
             if (start == destination) return 0;
+            
+            // Handle Copy maps - use shortest path within Copy
+            if (start.Copy != null && start.Copy == destination.Copy)
+            {
+                // Both maps in same Copy - use shortest path data
+                if (start.Database.shortest == null) return int.MaxValue;
+                if (!start.Database.shortest.TryGetValue(destination.Database.gid, out var paths)) return int.MaxValue;
+                return paths.Count;
+            }
+            
+            // Get scenes safely (Copy.Map.Parent is Copy, not Scene)
+            var startScene = start.Parent as Scene;
+            var destScene = destination.Parent as Scene;
+            
+            if (startScene == null) return int.MaxValue;
+            if (destScene == null) return int.MaxValue;
 
             string key = CacheKey(start.Database.gid, destination.Database.gid);
             if (_cache.TryGetValue(key, out int cached))
@@ -72,7 +86,7 @@ namespace Domain.Move
             }
 
             int distance;
-            if (start.Scene == destination.Scene)
+            if (startScene == destScene)
             {
                 if (start.Database.shortest == null)
                 {
@@ -89,18 +103,18 @@ namespace Domain.Move
             }
             else
             {
-                if (start.Scene.Database.shortest == null)
+                if (startScene.Database.shortest == null)
                 {
                     distance = int.MaxValue;
                 }
-                else if (!start.Scene.Database.shortest.TryGetValue(destination.Scene.Database.id, out var paths))
+                else if (!startScene.Database.shortest.TryGetValue(destScene.Database.id, out var paths))
                 {
                     distance = int.MaxValue;
                 }
                 else
                 {
                     int result = 0;
-                    Scene scene = start.Scene;
+                    Scene scene = startScene;
                     Map map = start;
 
                     foreach (var path in paths)

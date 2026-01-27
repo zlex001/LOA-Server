@@ -1,4 +1,6 @@
-[修复] Copy副本中地图查找逻辑错误
+[修复] Copy副本中距离计算失败导致玩家无法移动
 
-问题：Copy.Map的父节点是Copy而非Scene，导致Map.Scene属性失败
-修复：Teleportation方法优先在Copy.Content中查找目标地图
+问题：Distance.Get检查Map.Scene，对Copy.Map返回int.MaxValue
+修复：
+1. 新增Copy内地图距离计算（使用shortest路径数据）
+2. 使用安全的Parent as Scene替代Map.Scene
