@@ -36,9 +36,13 @@ namespace Domain.State
                     Develop.Experience.GiveBattleExp(hostile, Parent);
                     
                     // Check for tutorial lizard defeat
-                    if (hostile is Logic.Player player && Parent.Config?.cid == "蜥蜴")
+                    if (hostile is Logic.Player player)
                     {
-                        Tutorial.Instance.OnDefeatLizard(player);
+                        var lizardDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
+                        if (lizardDesign != null && Parent.Config?.Id == lizardDesign.id)
+                        {
+                            Tutorial.Instance.OnDefeatLizard(player);
+                        }
                     }
                 }
             }

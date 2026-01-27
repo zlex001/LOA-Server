@@ -86,9 +86,17 @@ namespace Domain.Authentication
         {
             if (player == null) return;
             
+            // Get tutorial map config ID from Design layer
+            var tutorialShoreDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-岸边");
+            if (tutorialShoreDesign == null)
+            {
+                Utils.Debug.Log.Warning("AUTH", "[Register] Tutorial map config not found, skipping tutorial");
+                return;
+            }
+            
             // Check if tutorial map exists
             var tutorialMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m => 
-                m.Config.cid == "遗迹-岸边" && m.Copy == null);
+                m.Config.Id == tutorialShoreDesign.id && m.Copy == null);
             
             if (tutorialMap == null)
             {
@@ -124,24 +132,27 @@ namespace Domain.Authentication
                 characters = new Dictionary<int, List<Logic.Config.Plot.Character>>()
             };
             
+            // Get Design layer configs for cid lookups
+            var sandDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-沙地");
+            var towerDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-通天塔");
+            var goldMineDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
+            var lizardDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
+            var steleDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "石碑");
+            
             // Add characters for tutorial maps
-            var sandMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m => m.Config.cid == "遗迹-沙地" && m.Copy == null);
-            var towerMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m => m.Config.cid == "遗迹-通天塔" && m.Copy == null);
+            var sandMap = sandDesign != null ? Logic.Agent.Instance.Content.Get<Logic.Map>(m => m.Config.Id == sandDesign.id && m.Copy == null) : null;
+            var towerMap = towerDesign != null ? Logic.Agent.Instance.Content.Get<Logic.Map>(m => m.Config.Id == towerDesign.id && m.Copy == null) : null;
             
             if (sandMap != null)
             {
-                // Get gold mine and lizard config IDs
-                var goldMineConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.cid == "金矿");
-                var lizardConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Life>(l => l.cid == "蜥蜴");
-                
                 var sandCharacters = new List<Logic.Config.Plot.Character>();
-                if (goldMineConfig != null)
+                if (goldMineDesign != null)
                 {
-                    sandCharacters.Add(new Logic.Config.Plot.Character { id = goldMineConfig.Id, count = 1 });
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = goldMineDesign.id, count = 1 });
                 }
-                if (lizardConfig != null)
+                if (lizardDesign != null)
                 {
-                    sandCharacters.Add(new Logic.Config.Plot.Character { id = lizardConfig.Id, count = 1, min = 1, max = 1 });
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = lizardDesign.id, count = 1, min = 1, max = 1 });
                 }
                 if (sandCharacters.Count > 0)
                 {
@@ -149,17 +160,12 @@ namespace Domain.Authentication
                 }
             }
             
-            if (towerMap != null)
+            if (towerMap != null && steleDesign != null)
             {
-                // Get stele config ID
-                var steleConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.cid == "石碑");
-                if (steleConfig != null)
+                copyConfig.characters[towerMap.Config.Id] = new List<Logic.Config.Plot.Character>
                 {
-                    copyConfig.characters[towerMap.Config.Id] = new List<Logic.Config.Plot.Character>
-                    {
-                        new Logic.Config.Plot.Character { id = steleConfig.Id, count = 1 }
-                    };
-                }
+                    new Logic.Config.Plot.Character { id = steleDesign.id, count = 1 }
+                };
             }
             
             // Create the copy

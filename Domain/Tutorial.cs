@@ -50,6 +50,15 @@ namespace Domain
         /// </summary>
         public const int TutorialCutsceneId = 1;
 
+        // Cached config IDs (resolved at runtime)
+        private int _tutorialSandMapId;
+        private int _tutorialTowerMapId;
+        private int _goldOreItemId;
+        private int _rawMeatItemId;
+        private int _goldMineItemId;
+        private int _lizardLifeId;
+        private int _steleItemId;
+
         #endregion
 
         #region State Storage
@@ -63,9 +72,56 @@ namespace Domain
 
         public void Init()
         {
-            // Register event listeners
-            Logic.Agent.Instance.monitor.Register(Logic.Life.Event.AfterMoved, OnPlayerMoved);
+            // Cache config IDs for runtime lookup
+            CacheConfigIds();
+            
+            // Register event listeners - use Map.Event.Arrived for player movement detection
+            Logic.Agent.Instance.Content.Add.Register(typeof(Logic.Player), OnAddPlayer);
             Logic.Agent.Instance.monitor.Register(Logic.Player.Event.CutsceneComplete, OnCutsceneComplete);
+        }
+
+        private void CacheConfigIds()
+        {
+            // Lookup Design layer configs for cid
+            var tutorialSand = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-沙地");
+            _tutorialSandMapId = tutorialSand?.id ?? 0;
+            
+            var tutorialTower = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-通天塔");
+            _tutorialTowerMapId = tutorialTower?.id ?? 0;
+            
+            var goldOre = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿石");
+            _goldOreItemId = goldOre?.id ?? 0;
+            
+            var rawMeat = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "生肉");
+            _rawMeatItemId = rawMeat?.id ?? 0;
+            
+            var goldMine = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
+            _goldMineItemId = goldMine?.id ?? 0;
+            
+            var lizard = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
+            _lizardLifeId = lizard?.id ?? 0;
+            
+            var stele = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "石碑");
+            _steleItemId = stele?.id ?? 0;
+        }
+
+        private void OnAddPlayer(params object[] args)
+        {
+            var player = args[1] as Player;
+            if (player == null) return;
+            
+            // Register for map changes
+            player.data.after.Register(Basic.Element.Data.Parent, OnPlayerParentChanged);
+        }
+
+        private void OnPlayerParentChanged(params object[] args)
+        {
+            // args[0] = old value, args[1] = new value, args[2] = player
+            if (args.Length < 3) return;
+            var player = args[2] as Player;
+            if (player == null) return;
+            
+            OnPlayerMoved(player);
         }
 
         #endregion
@@ -121,7 +177,7 @@ namespace Domain
             var destination = Logic.SpawnPoint.GetRandomInitialMap();
             if (destination != null)
             {
-                Move.Walk.Teleport(player, destination);
+                Move.Agent.Do(player, destination);
             }
 
             // Clean up state
@@ -139,8 +195,8 @@ namespace Domain
             if (step != Step.GiveToStele) return;
 
             // Check if stele has required items (gold ore and raw meat)
-            bool hasGoldOre = stele.Content.Has<Item>(i => i.Config.cid == "金矿石");
-            bool hasRawMeat = stele.Content.Has<Item>(i => i.Config.cid == "生肉");
+            bool hasGoldOre = stele.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+            bool hasRawMeat = stele.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
 
             if (hasGoldOre && hasRawMeat)
             {
@@ -153,12 +209,9 @@ namespace Domain
 
         #region Event Handlers
 
-        private void OnPlayerMoved(params object[] args)
+        private void OnPlayerMoved(Player player)
         {
-            if (args.Length < 1) return;
-
-            var life = args[0] as Life;
-            if (life is not Player player) return;
+            if (player == null) return;
 
             var step = GetCurrentStep(player);
             if (step == Step.None || step == Step.Completed) return;
@@ -169,7 +222,7 @@ namespace Domain
             switch (step)
             {
                 case Step.WalkToSand:
-                    if (currentMap.Config.cid == "遗迹-沙地")
+                    if (currentMap.Config.Id == _tutorialSandMapId)
                     {
                         AdvanceStep(player, Step.InteractGoldMine);
                     }
@@ -182,7 +235,7 @@ namespace Domain
                     break;
 
                 case Step.WalkToTower:
-                    if (currentMap.Config.cid == "遗迹-通天塔")
+                    if (currentMap.Config.Id == _tutorialTowerMapId)
                     {
                         AdvanceStep(player, Step.GiveToStele);
                     }
@@ -238,8 +291,8 @@ namespace Domain
             if (step == Step.PickupItems)
             {
                 // Check if player has both gold ore and raw meat
-                bool hasGoldOre = player.Content.Has<Item>(i => i.Config.cid == "金矿石");
-                bool hasRawMeat = player.Content.Has<Item>(i => i.Config.cid == "生肉");
+                bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+                bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
 
                 if (hasGoldOre && hasRawMeat)
                 {
@@ -277,26 +330,14 @@ namespace Domain
         {
             return step switch
             {
-                Step.WalkToSand => (TargetType.Map, Logic.Constant.TutorialSand, "", ""),
-                Step.InteractGoldMine => (TargetType.Item, GetGoldMineId(), "", ""),
-                Step.AttackLizard => (TargetType.Creature, GetLizardId(), "", ""),
+                Step.WalkToSand => (TargetType.Map, _tutorialSandMapId, "", ""),
+                Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "", ""),
+                Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "", ""),
                 Step.PickupItems => (TargetType.Item, 0, "", ""),  // Highlight dropped items
-                Step.WalkToTower => (TargetType.Map, Logic.Constant.TutorialTower, "", ""),
-                Step.GiveToStele => (TargetType.Item, Logic.Constant.Stele, "", ""),
+                Step.WalkToTower => (TargetType.Map, _tutorialTowerMapId, "", ""),
+                Step.GiveToStele => (TargetType.Item, _steleItemId, "", ""),
                 _ => (TargetType.UI, 0, "", "")
             };
-        }
-
-        private int GetGoldMineId()
-        {
-            var goldMine = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.cid == "金矿");
-            return goldMine?.Id ?? 0;
-        }
-
-        private int GetLizardId()
-        {
-            var lizard = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Life>(l => l.cid == "蜥蜴");
-            return lizard?.Id ?? 0;
         }
 
         private void PlayTutorialCutscene(Player player)
