@@ -287,14 +287,36 @@ namespace Domain.Move
         }
         public static Map Teleportation(Character character, int[] pos)
         {
-            if (character.Map.Scene.Content.Has<Map>(m => m.Copy == character.Map.Copy && Enumerable.SequenceEqual(m.Database.pos, pos)))
+            // If character is in a Copy, search within the Copy first
+            if (character.Map?.Copy != null)
             {
-                return character.Map.Scene.Content.Get<Map>(m => Enumerable.SequenceEqual(m.Database.pos, pos));
+                var copyMap = character.Map.Copy.Content.Get<Map>(m => 
+                    m.Database.pos != null && 
+                    pos != null && 
+                    m.Database.pos.AsSpan().SequenceEqual(pos));
+                if (copyMap != null)
+                {
+                    return copyMap;
+                }
             }
-            else
+            
+            // Search in Scene if character has a valid Scene
+            var scene = character.Map?.Parent as Scene;
+            if (scene != null)
             {
-                return Teleportation(pos);
+                var sceneMap = scene.Content.Get<Map>(m => 
+                    m.Copy == null && 
+                    m.Database.pos != null && 
+                    pos != null && 
+                    Enumerable.SequenceEqual(m.Database.pos, pos));
+                if (sceneMap != null)
+                {
+                    return sceneMap;
+                }
             }
+            
+            // Fallback to global search
+            return Teleportation(pos);
         }
     }
 }

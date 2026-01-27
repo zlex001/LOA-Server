@@ -1,6 +1,4 @@
-[优化] Tutorial协议Map类型改用targetPos坐标定位
+[修复] Copy副本中地图查找逻辑错误
 
-支持精确定位同名地图中的特定格子：
-- 新增 targetPos 字段 (int[])
-- 对于 targetType=Map，使用坐标匹配而非名称匹配
-- 解决多个同名地图无法区分的问题
+问题：Copy.Map的父节点是Copy而非Scene，导致Map.Scene属性失败
+修复：Teleportation方法优先在Copy.Content中查找目标地图
