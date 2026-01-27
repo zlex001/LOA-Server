@@ -12,6 +12,14 @@ namespace Domain.Click
             Logic.Player player = (Logic.Player)args[0];
             int[] pos = (int[])args[1];
             
+            // If player is in a Copy instance, always handle as map click (not scene click)
+            // Copy instances use relative coordinates that may conflict with world scene coordinates
+            if (player.Map?.Copy != null)
+            {
+                HandleMapClick(player, pos);
+                return;
+            }
+            
             if (IsSceneCoordinate(pos))
             {
                 HandleSceneClick(player, pos);
