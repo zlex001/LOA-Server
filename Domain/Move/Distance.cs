@@ -63,28 +63,27 @@ namespace Domain.Move
             if (destination == null) return int.MaxValue;
             if (start == destination) return 0;
             
-            Utils.Debug.Log.Info("DISTANCE", $"[Get] start.id={start.Config.Id}, dest.id={destination.Config.Id}");
-            Utils.Debug.Log.Info("DISTANCE", $"[Get] start.Copy={start.Copy != null}, dest.Copy={destination.Copy != null}, sameCopy={start.Copy == destination.Copy}");
-            
             // Handle Copy maps - use shortest path within Copy
             if (start.Copy != null && start.Copy == destination.Copy)
             {
-                Utils.Debug.Log.Info("DISTANCE", $"[Get] Both in same Copy, checking shortest path");
-                Utils.Debug.Log.Info("DISTANCE", $"[Get] start.Database.shortest={start.Database.shortest != null}, dest.gid={destination.Database.gid}");
-                
                 // Both maps in same Copy - use shortest path data
                 if (start.Database.shortest == null)
                 {
-                    Utils.Debug.Log.Info("DISTANCE", $"[Get] start.Database.shortest is NULL");
+                    Utils.Debug.Log.Warning("DISTANCE", $"FAIL: start({start.Config.Id}).shortest=null, dest={destination.Config.Id}");
                     return int.MaxValue;
                 }
                 if (!start.Database.shortest.TryGetValue(destination.Database.gid, out var paths))
                 {
-                    Utils.Debug.Log.Info("DISTANCE", $"[Get] No path to dest.gid={destination.Database.gid}, available keys: {string.Join(",", start.Database.shortest.Keys)}");
+                    Utils.Debug.Log.Warning("DISTANCE", $"FAIL: start({start.Config.Id}) no path to dest.gid={destination.Database.gid}, keys=[{string.Join(",", start.Database.shortest.Keys)}]");
                     return int.MaxValue;
                 }
-                Utils.Debug.Log.Info("DISTANCE", $"[Get] Found path, distance={paths.Count}");
                 return paths.Count;
+            }
+            
+            // Not same Copy - check why
+            if (start.Copy != null || destination.Copy != null)
+            {
+                Utils.Debug.Log.Warning("DISTANCE", $"FAIL: Copy mismatch - start.Copy={start.Copy != null}, dest.Copy={destination.Copy != null}, same={start.Copy == destination.Copy}");
             }
             
             // Get scenes safely (Copy.Map.Parent is Copy, not Scene)

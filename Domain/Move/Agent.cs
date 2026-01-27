@@ -287,30 +287,17 @@ namespace Domain.Move
         }
         public static Map Teleportation(Character character, int[] pos)
         {
-            Utils.Debug.Log.Info("MOVE", $"[Teleportation] pos=[{pos[0]},{pos[1]},{pos[2]}], inCopy={character.Map?.Copy != null}");
-            
             // If character is in a Copy, search within the Copy first
             if (character.Map?.Copy != null)
             {
-                var copy = character.Map.Copy;
-                var copyMaps = copy.Content.Gets<Map>();
-                Utils.Debug.Log.Info("MOVE", $"[Teleportation] Copy has {copyMaps.Count} maps");
-                
-                foreach (var m in copyMaps)
-                {
-                    Utils.Debug.Log.Info("MOVE", $"[Teleportation] CopyMap: id={m.Config.Id}, pos=[{m.Database.pos[0]},{m.Database.pos[1]},{m.Database.pos[2]}]");
-                }
-                
-                var copyMap = copy.Content.Get<Map>(m => 
+                var copyMap = character.Map.Copy.Content.Get<Map>(m => 
                     m.Database.pos != null && 
                     pos != null && 
                     m.Database.pos.AsSpan().SequenceEqual(pos));
                 if (copyMap != null)
                 {
-                    Utils.Debug.Log.Info("MOVE", $"[Teleportation] Found in Copy: id={copyMap.Config.Id}");
                     return copyMap;
                 }
-                Utils.Debug.Log.Info("MOVE", $"[Teleportation] Not found in Copy");
             }
             
             // Search in Scene if character has a valid Scene
@@ -324,13 +311,11 @@ namespace Domain.Move
                     Enumerable.SequenceEqual(m.Database.pos, pos));
                 if (sceneMap != null)
                 {
-                    Utils.Debug.Log.Info("MOVE", $"[Teleportation] Found in Scene: id={sceneMap.Config.Id}");
                     return sceneMap;
                 }
             }
             
             // Fallback to global search
-            Utils.Debug.Log.Info("MOVE", $"[Teleportation] Fallback to global search");
             return Teleportation(pos);
         }
     }
