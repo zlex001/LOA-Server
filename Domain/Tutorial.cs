@@ -308,38 +308,41 @@ namespace Domain
 
         private void SendTutorialHint(Player player, Step step)
         {
-            var (targetType, targetId, targetPath, hint) = GetStepHint(step, player);
+            var (targetType, targetId, targetPath, targetPos, hint) = GetStepHint(step, player);
             
-            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}, TargetPath={targetPath}");
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}, TargetPos={FormatPos(targetPos)}");
             
             var protocol = new Net.Protocol.Tutorial(
                 (int)step,
                 (int)targetType,
                 targetId,
                 targetPath,
+                targetPos,
                 hint
             );
 
             Net.Tcp.Instance.Send(player, protocol);
         }
 
-        private (TargetType type, int id, string path, string hint) GetStepHint(Step step, Player player)
+        private static string FormatPos(int[] pos) => pos != null ? $"[{string.Join(",", pos)}]" : "null";
+
+        private (TargetType type, int id, string path, int[] pos, string hint) GetStepHint(Step step, Player player)
         {
             return step switch
             {
-                // For Map type: use targetPath with map name (client matches by name)
-                Step.WalkToSand => (TargetType.Map, 0, GetMapName(_tutorialSandMapId, player), ""),
-                Step.WalkToTower => (TargetType.Map, 0, GetMapName(_tutorialTowerMapId, player), ""),
+                // For Map type: use targetPos with coordinates (client matches by pos)
+                Step.WalkToSand => (TargetType.Map, 0, "", GetMapPos(_tutorialSandMapId, player), ""),
+                Step.WalkToTower => (TargetType.Map, 0, "", GetMapPos(_tutorialTowerMapId, player), ""),
                 // For other types: use targetId
-                Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "", ""),
-                Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "", ""),
-                Step.PickupItems => (TargetType.Item, 0, "", ""),  // Highlight dropped items
-                Step.GiveToStele => (TargetType.Item, _steleItemId, "", ""),
-                _ => (TargetType.UI, 0, "", "")
+                Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "", null, ""),
+                Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "", null, ""),
+                Step.PickupItems => (TargetType.Item, 0, "", null, ""),  // Highlight dropped items
+                Step.GiveToStele => (TargetType.Item, _steleItemId, "", null, ""),
+                _ => (TargetType.UI, 0, "", null, "")
             };
         }
 
-        private string GetMapName(int mapId, Player player)
+        private int[] GetMapPos(int mapId, Player player)
         {
             // Find map in player's current copy/scene
             var currentMap = player.Map;
@@ -348,7 +351,7 @@ namespace Domain
                 var targetMap = currentMap.Copy.Content.Get<Logic.Map>(m => m.Config.Id == mapId);
                 if (targetMap != null)
                 {
-                    return Text.Name.Map(targetMap, player);
+                    return targetMap.Database.pos;
                 }
             }
             else if (currentMap?.Scene != null)
@@ -356,10 +359,10 @@ namespace Domain
                 var targetMap = currentMap.Scene.Content.Get<Logic.Map>(m => m.Config.Id == mapId);
                 if (targetMap != null)
                 {
-                    return Text.Name.Map(targetMap, player);
+                    return targetMap.Database.pos;
                 }
             }
-            return "";
+            return null;
         }
 
         private void PlayTutorialStory(Player player)

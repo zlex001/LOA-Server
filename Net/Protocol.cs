@@ -861,16 +861,18 @@ namespace Net.Protocol
     {
         public int step;
         public int targetType;     // 1=UI, 2=Map, 3=Creature, 4=Item
-        public int targetId;       // config ID (map/creature/item)
+        public int targetId;       // config ID (creature/item)
         public string targetPath;  // UI element path (when targetType == 1)
+        public int[] targetPos;    // map position [x,y,z] (when targetType == 2)
         public string hint;
 
-        public Tutorial(int step, int targetType, int targetId, string targetPath, string hint)
+        public Tutorial(int step, int targetType, int targetId, string targetPath, int[] targetPos, string hint)
         {
             this.step = step;
             this.targetType = targetType;
             this.targetId = targetId;
             this.targetPath = targetPath;
+            this.targetPos = targetPos;
             this.hint = hint;
         }
     }
