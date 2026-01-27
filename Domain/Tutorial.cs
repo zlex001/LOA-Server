@@ -26,11 +26,14 @@ namespace Domain
         {
             None = 0,
             WalkToSand = 1,          // Guide player to walk to sand map
-            InteractGoldMine = 2,    // Guide player to interact with gold mine
-            AttackLizard = 3,        // Guide player to attack lizard
-            PickupItems = 4,         // Guide player to pickup items
-            WalkToTower = 5,         // Guide player to walk to tower
-            GiveToStele = 6,         // Guide player to give items to stele
+            SeeGoldMine = 2,         // Player sees gold mine - guide to click and go
+            InteractGoldMine = 3,    // Player at gold mine - guide to interact
+            SeeLizard = 4,           // Player sees lizard - guide to click and go
+            AttackLizard = 5,        // Player at lizard - guide to attack
+            PickupItems = 6,         // Guide player to pickup items
+            SeeStele = 7,            // Player sees stele - guide to click and go
+            WalkToTower = 8,         // Guide player to walk to tower
+            GiveToStele = 9,         // Guide player to give items to stele
             Completed = 100          // Tutorial completed
         }
 
@@ -73,6 +76,9 @@ namespace Domain
             // Register event listeners - use Map.Event.Arrived for player movement detection
             Logic.Agent.Instance.Content.Add.Register(typeof(Logic.Player), OnAddPlayer);
             Logic.Agent.Instance.monitor.Register(Logic.Player.Event.StoryComplete, OnStoryComplete);
+            
+            // Register for first-seen events from Perception
+            Perception.Agent.Instance.FirstSeen += OnFirstSeen;
         }
 
         private void CacheConfigIds()
@@ -117,6 +123,37 @@ namespace Domain
             if (player == null) return;
             
             OnPlayerMoved(player);
+        }
+        
+        private void OnFirstSeen(Player player, Character character)
+        {
+            if (player == null || character == null) return;
+            
+            var step = GetCurrentStep(player);
+            if (step == Step.None || step == Step.Completed) return;
+            
+            int configId = character.Config?.Id ?? 0;
+            
+            // Check if player sees gold mine during WalkToSand step
+            if (step == Step.WalkToSand && configId == _goldMineItemId)
+            {
+                AdvanceStep(player, Step.SeeGoldMine);
+                return;
+            }
+            
+            // Check if player sees lizard during InteractGoldMine step
+            if (step == Step.InteractGoldMine && configId == _lizardLifeId)
+            {
+                AdvanceStep(player, Step.SeeLizard);
+                return;
+            }
+            
+            // Check if player sees stele during PickupItems step
+            if (step == Step.PickupItems && configId == _steleItemId)
+            {
+                AdvanceStep(player, Step.SeeStele);
+                return;
+            }
         }
 
         #endregion
@@ -217,16 +254,44 @@ namespace Domain
             switch (step)
             {
                 case Step.WalkToSand:
+                    // If player walks to sand without seeing gold mine first, skip to SeeGoldMine
                     if (currentMap.Config.Id == _tutorialSandMapId)
+                    {
+                        AdvanceStep(player, Step.SeeGoldMine);
+                    }
+                    break;
+                    
+                case Step.SeeGoldMine:
+                    // Player arrived at gold mine location - guide to interact
+                    if (IsAtCharacterLocation(player, _goldMineItemId))
                     {
                         AdvanceStep(player, Step.InteractGoldMine);
                     }
                     break;
 
                 case Step.InteractGoldMine:
+                    // Handled by OnInteractGoldMine
+                    break;
+                    
+                case Step.SeeLizard:
+                    // Player arrived at lizard location - guide to attack
+                    if (IsAtCharacterLocation(player, _lizardLifeId))
+                    {
+                        AdvanceStep(player, Step.AttackLizard);
+                    }
+                    break;
+
                 case Step.AttackLizard:
                 case Step.PickupItems:
-                    // These are handled by interaction/combat/pickup events
+                    // These are handled by combat/pickup events
+                    break;
+                    
+                case Step.SeeStele:
+                    // Player arrived at stele location - guide to give
+                    if (IsAtCharacterLocation(player, _steleItemId))
+                    {
+                        AdvanceStep(player, Step.GiveToStele);
+                    }
                     break;
 
                 case Step.WalkToTower:
@@ -236,6 +301,27 @@ namespace Domain
                     }
                     break;
             }
+        }
+        
+        private bool IsAtCharacterLocation(Player player, int configId)
+        {
+            if (player.Map == null) return false;
+            
+            // Check if there's a character with this config ID in the player's current map
+            var copy = player.Map.Copy;
+            if (copy != null)
+            {
+                foreach (var map in copy.Content.Gets<Logic.Copy.Map>())
+                {
+                    if (map != player.Map) continue;
+                    
+                    // Check items
+                    if (map.Content.Has<Item>(i => i.Config?.Id == configId)) return true;
+                    // Check lives
+                    if (map.Content.Has<Life>(l => l.Config?.Id == configId)) return true;
+                }
+            }
+            return false;
         }
 
         private void OnStoryComplete(params object[] args)
@@ -261,7 +347,17 @@ namespace Domain
             var step = GetCurrentStep(player);
             if (step == Step.InteractGoldMine)
             {
-                AdvanceStep(player, Step.AttackLizard);
+                // After interacting with gold mine, check if lizard is already visible
+                // If so, go to SeeLizard, otherwise wait for FirstSeen event
+                if (CanSeeCharacter(player, _lizardLifeId))
+                {
+                    AdvanceStep(player, Step.SeeLizard);
+                }
+                else
+                {
+                    // Stay at InteractGoldMine until FirstSeen triggers SeeLizard
+                    // This handles the case where lizard comes into view later
+                }
             }
         }
 
@@ -291,9 +387,23 @@ namespace Domain
 
                 if (hasGoldOre && hasRawMeat)
                 {
-                    AdvanceStep(player, Step.WalkToTower);
+                    // Check if stele is already visible
+                    if (CanSeeCharacter(player, _steleItemId))
+                    {
+                        AdvanceStep(player, Step.SeeStele);
+                    }
+                    else
+                    {
+                        AdvanceStep(player, Step.WalkToTower);
+                    }
                 }
             }
+        }
+        
+        private bool CanSeeCharacter(Player player, int configId)
+        {
+            var visibleCharacters = Perception.Agent.Instance.GetVisibleCharacters(player);
+            return visibleCharacters.Any(c => c.Config?.Id == configId);
         }
 
         #endregion
@@ -333,11 +443,18 @@ namespace Domain
                 // For Map type: use targetPos with coordinates (client matches by pos)
                 Step.WalkToSand => (TargetType.Map, 0, "", GetMapPos(_tutorialSandMapId, player), ""),
                 Step.WalkToTower => (TargetType.Map, 0, "", GetMapPos(_tutorialTowerMapId, player), ""),
-                // For other types: use targetId
-                Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "", null, ""),
-                Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "", null, ""),
-                Step.PickupItems => (TargetType.Item, 0, "", null, ""),  // Highlight dropped items
-                Step.GiveToStele => (TargetType.Item, _steleItemId, "", null, ""),
+                
+                // See steps: highlight the character in list, guide player to click and use "Go" button
+                Step.SeeGoldMine => (TargetType.Item, _goldMineItemId, "characters/goto", null, "tutorial_goto"),
+                Step.SeeLizard => (TargetType.Creature, _lizardLifeId, "characters/goto", null, "tutorial_goto"),
+                Step.SeeStele => (TargetType.Item, _steleItemId, "characters/goto", null, "tutorial_goto"),
+                
+                // Interact steps: player is at location, guide specific interaction
+                Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "actions/interact", null, "tutorial_interact"),
+                Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "actions/attack", null, "tutorial_attack"),
+                Step.GiveToStele => (TargetType.Item, _steleItemId, "actions/give", null, "tutorial_give"),
+                
+                Step.PickupItems => (TargetType.Item, 0, "actions/pickup", null, "tutorial_pickup"),
                 _ => (TargetType.UI, 0, "", null, "")
             };
         }

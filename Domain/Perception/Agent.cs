@@ -12,6 +12,15 @@ namespace Domain.Perception
 
         // View cache: Visible characters for each Life (lazy calculation + cache)
         private readonly Dictionary<Life, ViewCache> _viewCache = new();
+        
+        // Track which character types (Config.Id) each player has seen
+        private readonly Dictionary<int, HashSet<int>> _seenConfigIds = new();
+        
+        /// <summary>
+        /// Event fired when a player first sees a character type (by Config.Id)
+        /// Args: (Player player, Character character)
+        /// </summary>
+        public event Action<Player, Character> FirstSeen;
 
         public void Init()
         {
@@ -184,6 +193,12 @@ namespace Domain.Perception
             // Recalculate
             var visible = CalculateVisibleCharacters(viewer);
 
+            // Check for first-seen characters (only for players)
+            if (viewer is Player player)
+            {
+                CheckFirstSeen(player, visible);
+            }
+
             // Update cache
             _viewCache[viewer] = new ViewCache
             {
@@ -194,6 +209,38 @@ namespace Domain.Perception
             };
 
             return SortCharacters(viewer, visible);
+        }
+        
+        private void CheckFirstSeen(Player player, HashSet<Character> visible)
+        {
+            int playerId = player.GetHashCode();
+            if (!_seenConfigIds.TryGetValue(playerId, out var seenIds))
+            {
+                seenIds = new HashSet<int>();
+                _seenConfigIds[playerId] = seenIds;
+            }
+            
+            foreach (var character in visible)
+            {
+                if (character == player) continue;
+                
+                int configId = character.Config?.Id ?? 0;
+                if (configId == 0) continue;
+                
+                if (!seenIds.Contains(configId))
+                {
+                    seenIds.Add(configId);
+                    FirstSeen?.Invoke(player, character);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Clear seen history for a player (e.g., when entering tutorial copy)
+        /// </summary>
+        public void ClearSeenHistory(Player player)
+        {
+            _seenConfigIds.Remove(player.GetHashCode());
         }
 
         /// <summary>

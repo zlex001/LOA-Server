@@ -1,3 +1,6 @@
-[修复] Copy副本视野隔离
+[功能] 新手引导添加"看见-前往"流程
 
-在IsInViewRange中添加Copy检查，不同副本间完全隔离，玩家只能看到自己所在副本中的character
+1. Perception添加FirstSeen事件，玩家首次看见某类character时触发
+2. Tutorial流程改为：看见目标→引导前往→到达后→引导交互
+3. 新增Step：SeeGoldMine、SeeLizard、SeeStele
+4. GetStepHint返回targetPath指示客户端高亮UI元素（characters/goto等）
