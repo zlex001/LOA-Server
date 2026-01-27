@@ -67,23 +67,9 @@ namespace Domain.Move
             if (start.Copy != null && start.Copy == destination.Copy)
             {
                 // Both maps in same Copy - use shortest path data
-                if (start.Database.shortest == null)
-                {
-                    Utils.Debug.Log.Warning("DISTANCE", $"FAIL: start({start.Config.Id}).shortest=null, dest={destination.Config.Id}");
-                    return int.MaxValue;
-                }
-                if (!start.Database.shortest.TryGetValue(destination.Database.gid, out var paths))
-                {
-                    Utils.Debug.Log.Warning("DISTANCE", $"FAIL: start({start.Config.Id}) no path to dest.gid={destination.Database.gid}, keys=[{string.Join(",", start.Database.shortest.Keys)}]");
-                    return int.MaxValue;
-                }
+                if (start.Database.shortest == null) return int.MaxValue;
+                if (!start.Database.shortest.TryGetValue(destination.Database.gid, out var paths)) return int.MaxValue;
                 return paths.Count;
-            }
-            
-            // Not same Copy - check why
-            if (start.Copy != null || destination.Copy != null)
-            {
-                Utils.Debug.Log.Warning("DISTANCE", $"FAIL: Copy mismatch - start.Copy={start.Copy != null}, dest.Copy={destination.Copy != null}, same={start.Copy == destination.Copy}");
             }
             
             // Get scenes safely (Copy.Map.Parent is Copy, not Scene)

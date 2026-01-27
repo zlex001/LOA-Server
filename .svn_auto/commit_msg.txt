@@ -1,1 +1,4 @@
-[调试] 精简日志，只在距离计算失败时输出关键错误信息
+[修复] Copy副本地图gid为0导致距离计算失败
+
+问题：Copy.Init创建地图时gid传0，shortest路径数据使用原始gid
+修复：保留原始地图的gid (map.Database.gid)

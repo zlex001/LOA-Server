@@ -20,7 +20,7 @@ namespace Logic
 
             foreach (var map in start.Scene.Content.Gets<Logic.Map>(m => Utils.Mathematics.EuclideanDistance(start.Database.pos, m.Database.pos) <= config.scope && m.Copy == null))
             {
-                var database = new Logic.Database.Map(map.Config.Id, 0, map.Database.pos, null);
+                var database = new Logic.Database.Map(map.Config.Id, map.Database.gid, map.Database.pos, null);
                 var m = map.Scene.Create<Map>(database);
                 m.Database.shortest = map.Database.shortest;
                 m.Copy = this;
