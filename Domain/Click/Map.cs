@@ -83,14 +83,21 @@ namespace Domain.Click
 
         private static void HandleMapClick(Player player, int[] pos)
         {
+            Utils.Debug.Log.Info("CLICK", $"[HandleMapClick] pos=[{pos[0]},{pos[1]},{pos[2]}], playerMap={player.Map?.Config.Id}, inCopy={player.Map?.Copy != null}");
+            
             Logic.Map destination = Move.Agent.Teleportation(player, pos);
             if (destination == null)
             {
-                Utils.Debug.Log.Warning("CLICK", $"Map not found at position [{pos[0]}, {pos[1]}, {pos[2]}]");
+                Utils.Debug.Log.Warning("CLICK", $"[HandleMapClick] Map not found at position [{pos[0]}, {pos[1]}, {pos[2]}]");
                 return;
             }
             
-            if (Story.Copy.WillExit(player, destination))
+            Utils.Debug.Log.Info("CLICK", $"[HandleMapClick] destination found: id={destination.Config.Id}, destCopy={destination.Copy != null}");
+            
+            bool willExitCopy = Story.Copy.WillExit(player, destination);
+            Utils.Debug.Log.Info("CLICK", $"[HandleMapClick] WillExit={willExitCopy}");
+            
+            if (willExitCopy)
             {
                 Story.Copy.Exit(player, player.Map.Copy, destination);
             }
@@ -100,7 +107,8 @@ namespace Domain.Click
             }
             else
             {
-               Do(player, destination);
+                Utils.Debug.Log.Info("CLICK", $"[HandleMapClick] Calling Do()");
+                Do(player, destination);
             }
         }
 
@@ -127,8 +135,11 @@ namespace Domain.Click
 
         private static void Do(Player player, Logic.Map destination) 
         {
+            Utils.Debug.Log.Info("CLICK", $"[Do] start, playerMap={player.Map?.Config.Id}, dest={destination?.Config.Id}");
+            
             if (player.State.Is(Logic.Life.States.Unconscious))
             {
+                Utils.Debug.Log.Info("CLICK", $"[Do] Player is unconscious, aborting");
                 string tip = Domain.Text.Agent.Instance.Get(Logic.Text.Labels.CannotWalkWhileUnconscious, player.Language);
                 Net.Tcp.Instance.Send(player, new Net.Protocol.FlyTip(tip));
                 return;
@@ -136,12 +147,17 @@ namespace Domain.Click
 
             player.ClickTarget = destination;
 
-            if (Move.Distance.Get(player.Map, destination)> player.WalkScale)
+            int distance = Move.Distance.Get(player.Map, destination);
+            Utils.Debug.Log.Info("CLICK", $"[Do] distance={distance}, walkScale={player.WalkScale}");
+            
+            if (distance > player.WalkScale)
             {
+                Utils.Debug.Log.Info("CLICK", $"[Do] Using pathfinding behavior tree");
                 BehaviorTree.Agent.SetBehaviorTree(player, Logic.Constant.OneTimePathfinding);
             }
             else
             {
+                Utils.Debug.Log.Info("CLICK", $"[Do] Calling Move.Walk.Do()");
                 Move.Walk.Do(player, destination);
             }
         }
