@@ -315,6 +315,8 @@ namespace Domain
         {
             var (targetType, targetId, targetPath, hint) = GetStepHint(step);
             
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}");
+            
             var protocol = new Net.Protocol.Tutorial(
                 (int)step,
                 (int)targetType,

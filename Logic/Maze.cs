@@ -83,8 +83,7 @@ namespace Logic
                     var tile = kv.Key;
                     int roomId = kv.Value;
                     int[] pos = new[] { tile.Item1, tile.Item2, 0 };
-                    var database = new Logic.Database.Map(roomId, 0, pos, null);
-                    var map = Create<Map>(database);
+                    var map = Create<Map>(roomId, pos);
 
                     if (tile.Item1 == ex && tile.Item2 == ey) 
                     {
