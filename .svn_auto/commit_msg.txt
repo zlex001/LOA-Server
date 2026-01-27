@@ -1,6 +1,4 @@
-[修复] 新手引导系统编译错误
+[修复] 添加通天塔多语言配置
 
-- 使用 Design 层 cid 查找替代不存在的 Config.cid
-- 使用 Config.Id 替代运行时 cid 比较
-- 使用 Move.Agent.Do 替代不存在的 Walk.Teleport
-- 使用 Player 父级变化事件监听替代不存在的 AfterMoved
+- 在语言.csv中添加通天塔(Tower of Babel)的多语言翻译
+- 修复地图转换时找不到多语言条目的错误
