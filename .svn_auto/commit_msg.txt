@@ -1,4 +1,3 @@
-[修复] Copy副本地图gid为0导致距离计算失败
+[修复] Copy副本中每种character只放置一次，避免重复生成
 
-问题：Copy.Init创建地图时gid传0，shortest路径数据使用原始gid
-修复：保留原始地图的gid (map.Database.gid)
+通过HashSet追踪已放置的character id，确保金矿、蜥蜴等在整个Copy中只出现一次

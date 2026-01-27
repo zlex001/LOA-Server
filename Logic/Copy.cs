@@ -17,6 +17,9 @@ namespace Logic
         {
             var start = (Logic.Map)args[0];
             var config = (Config.Plot.Copy)args[1];
+            
+            // Track placed character ids to ensure each is placed only once in the whole Copy
+            var placedCharacterIds = new HashSet<int>();
 
             foreach (var map in start.Scene.Content.Gets<Logic.Map>(m => Utils.Mathematics.EuclideanDistance(start.Database.pos, m.Database.pos) <= config.scope && m.Copy == null))
             {
@@ -28,6 +31,9 @@ namespace Logic
                 {
                     foreach (var character in characterList)
                     {
+                        // Skip if this character type has already been placed
+                        if (placedCharacterIds.Contains(character.id)) continue;
+                        
                         var characterConfig = Logic.Config.Agent.Instance.Content.Get<Config.Ability>(c => c.Id == character.id);
                         if (characterConfig != null)
                         {
@@ -48,6 +54,8 @@ namespace Logic
                                         GenerateNestedCharactersForContainer(container, character.nested);
                                 }
                             }
+                            // Mark this character type as placed
+                            placedCharacterIds.Add(character.id);
                         }
                     }
                 }
