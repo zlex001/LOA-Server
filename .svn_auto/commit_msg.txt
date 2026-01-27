@@ -1,3 +1,4 @@
-[优化] Copy副本character随机放置
+[修复] 玩家登出时Copy未被正确销毁导致NPC累积
 
-改为两遍处理：先创建所有地图并按类型分组，再从候选地图中随机选择放置位置
+问题：CheckAndDestroy在player.Destroy之前调用，玩家还在Copy中导致Empty()返回false
+修复：先保存Copy引用，player.Destroy后再检查销毁

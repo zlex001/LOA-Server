@@ -140,15 +140,9 @@ namespace Domain.Authentication
                 }
             });
 
-            // 清理副本/迷宫
-            if (Domain.Story.Copy.IsIn(player))
-            {
-                Domain.Story.Copy.CheckAndDestroy(player.Map.Copy);
-            }
-            else if (Domain.Story.Maze.IsIn(player))
-            {
-                Domain.Story.Maze.CheckAndDestroy((Logic.Maze)player.Map.Parent);
-            }
+            // Save copy/maze reference before removing player
+            var playerCopy = player.Map?.Copy;
+            var playerMaze = Domain.Story.Maze.IsIn(player) ? player.Map.Parent as Logic.Maze : null;
 
             if (player.Leader != null)
             {
@@ -163,6 +157,16 @@ namespace Domain.Authentication
             // - 子对象（Part/Skill/Item等）的内存由GC自动回收
             // - 下次登录时会从Database重新加载这些对象
             player.Destroy();
+            
+            // Cleanup copy/maze AFTER player is removed
+            if (playerCopy != null)
+            {
+                Domain.Story.Copy.CheckAndDestroy(playerCopy);
+            }
+            else if (playerMaze != null)
+            {
+                Domain.Story.Maze.CheckAndDestroy(playerMaze);
+            }
         }
 
         private static void CleanupCompanions(Logic.Player player)
