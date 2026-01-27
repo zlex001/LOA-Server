@@ -18,49 +18,69 @@ namespace Logic
             var start = (Logic.Map)args[0];
             var config = (Config.Plot.Copy)args[1];
             
-            // Track placed character ids to ensure each is placed only once in the whole Copy
-            var placedCharacterIds = new HashSet<int>();
-
+            // First pass: create all maps and group by Config.Id
+            var mapsByConfigId = new Dictionary<int, List<Map>>();
+            
             foreach (var map in start.Scene.Content.Gets<Logic.Map>(m => Utils.Mathematics.EuclideanDistance(start.Database.pos, m.Database.pos) <= config.scope && m.Copy == null))
             {
                 var database = new Logic.Database.Map(map.Config.Id, map.Database.gid, map.Database.pos, null);
                 var m = map.Scene.Create<Map>(database);
                 m.Database.shortest = map.Database.shortest;
                 m.Copy = this;
-                if (config.characters.TryGetValue(map.Config.Id, out var characterList))
+                Add(m);
+                
+                // Group by Config.Id for random character placement
+                if (!mapsByConfigId.TryGetValue(map.Config.Id, out var list))
                 {
-                    foreach (var character in characterList)
+                    list = new List<Map>();
+                    mapsByConfigId[map.Config.Id] = list;
+                }
+                list.Add(m);
+            }
+            
+            // Second pass: place characters randomly on matching maps
+            var placedCharacterIds = new HashSet<int>();
+            
+            foreach (var kvp in config.characters)
+            {
+                int mapConfigId = kvp.Key;
+                var characterList = kvp.Value;
+                
+                if (!mapsByConfigId.TryGetValue(mapConfigId, out var candidateMaps) || candidateMaps.Count == 0)
+                    continue;
+                
+                foreach (var character in characterList)
+                {
+                    // Skip if this character type has already been placed
+                    if (placedCharacterIds.Contains(character.id)) continue;
+                    
+                    var characterConfig = Logic.Config.Agent.Instance.Content.Get<Config.Ability>(c => c.Id == character.id);
+                    if (characterConfig == null) continue;
+                    
+                    // Randomly select a map from candidates
+                    var targetMap = candidateMaps[random.Next(candidateMaps.Count)];
+                    
+                    for (int i = 0; i < character.count; i++)
                     {
-                        // Skip if this character type has already been placed
-                        if (placedCharacterIds.Contains(character.id)) continue;
-                        
-                        var characterConfig = Logic.Config.Agent.Instance.Content.Get<Config.Ability>(c => c.Id == character.id);
-                        if (characterConfig != null)
+                        if (characterConfig is Config.Life lifeCfg)
                         {
-                            for (int i = 0; i < character.count; i++)
-                            {
-                                if (characterConfig is Config.Life lifeCfg)
-                                {
-                                    int? level = (character.min.HasValue && character.max.HasValue) ? random.Next(character.min.Value, character.max.Value + 1) : null;
-                                    var npc = m.Create<Life>(lifeCfg, level);
-                                    npc.Birthplace = m;
-                                }
-                                else if (characterConfig is Config.Item itemCfg)
-                                {
-                                    var container = m.Load<Item>(itemCfg);
-                                    if (character.loot != null && character.loot.Count > 0)
-                                        GenerateLootForContainer(container, character.loot);
-                                    if (character.nested != null && character.nested.Count > 0)
-                                        GenerateNestedCharactersForContainer(container, character.nested);
-                                }
-                            }
-                            // Mark this character type as placed
-                            placedCharacterIds.Add(character.id);
+                            int? level = (character.min.HasValue && character.max.HasValue) ? random.Next(character.min.Value, character.max.Value + 1) : null;
+                            var npc = targetMap.Create<Life>(lifeCfg, level);
+                            npc.Birthplace = targetMap;
+                        }
+                        else if (characterConfig is Config.Item itemCfg)
+                        {
+                            var container = targetMap.Load<Item>(itemCfg);
+                            if (character.loot != null && character.loot.Count > 0)
+                                GenerateLootForContainer(container, character.loot);
+                            if (character.nested != null && character.nested.Count > 0)
+                                GenerateNestedCharactersForContainer(container, character.nested);
                         }
                     }
+                    placedCharacterIds.Add(character.id);
                 }
-                Add(m);
             }
+            
             Start = Content.Get<Copy.Map>(m => Enumerable.SequenceEqual(m.Database.pos, start.Database.pos));
         }
         public override void Release()
