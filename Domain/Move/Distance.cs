@@ -63,12 +63,27 @@ namespace Domain.Move
             if (destination == null) return int.MaxValue;
             if (start == destination) return 0;
             
+            Utils.Debug.Log.Info("DISTANCE", $"[Get] start.id={start.Config.Id}, dest.id={destination.Config.Id}");
+            Utils.Debug.Log.Info("DISTANCE", $"[Get] start.Copy={start.Copy != null}, dest.Copy={destination.Copy != null}, sameCopy={start.Copy == destination.Copy}");
+            
             // Handle Copy maps - use shortest path within Copy
             if (start.Copy != null && start.Copy == destination.Copy)
             {
+                Utils.Debug.Log.Info("DISTANCE", $"[Get] Both in same Copy, checking shortest path");
+                Utils.Debug.Log.Info("DISTANCE", $"[Get] start.Database.shortest={start.Database.shortest != null}, dest.gid={destination.Database.gid}");
+                
                 // Both maps in same Copy - use shortest path data
-                if (start.Database.shortest == null) return int.MaxValue;
-                if (!start.Database.shortest.TryGetValue(destination.Database.gid, out var paths)) return int.MaxValue;
+                if (start.Database.shortest == null)
+                {
+                    Utils.Debug.Log.Info("DISTANCE", $"[Get] start.Database.shortest is NULL");
+                    return int.MaxValue;
+                }
+                if (!start.Database.shortest.TryGetValue(destination.Database.gid, out var paths))
+                {
+                    Utils.Debug.Log.Info("DISTANCE", $"[Get] No path to dest.gid={destination.Database.gid}, available keys: {string.Join(",", start.Database.shortest.Keys)}");
+                    return int.MaxValue;
+                }
+                Utils.Debug.Log.Info("DISTANCE", $"[Get] Found path, distance={paths.Count}");
                 return paths.Count;
             }
             

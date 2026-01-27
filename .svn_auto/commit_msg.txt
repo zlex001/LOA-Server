@@ -1,3 +1,1 @@
-[调试] 新手教程Copy副本点击移动问题添加详细日志
-
-在Click/Map和Move/Agent中添加调试日志追踪问题
+[调试] Distance.Get添加详细日志追踪Copy内距离计算问题
