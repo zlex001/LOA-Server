@@ -34,6 +34,12 @@ namespace Domain.State
                 foreach (var hostile in hostiles)
                 {
                     Develop.Experience.GiveBattleExp(hostile, Parent);
+                    
+                    // Check for tutorial lizard defeat
+                    if (hostile is Logic.Player player && Parent.Config?.cid == "蜥蜴")
+                    {
+                        Tutorial.Instance.OnDefeatLizard(player);
+                    }
                 }
             }
         }

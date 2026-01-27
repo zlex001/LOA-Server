@@ -859,10 +859,50 @@ namespace Net.Protocol
     }
     public class Tutorial : Base
     {
+        public int step;
+        public int targetType;     // 1=UI, 2=Map, 3=Creature, 4=Item
+        public int targetId;       // config ID (map/creature/item)
+        public string targetPath;  // UI element path (when targetType == 1)
+        public string hint;
+
+        public Tutorial(int step, int targetType, int targetId, string targetPath, string hint)
+        {
+            this.step = step;
+            this.targetType = targetType;
+            this.targetId = targetId;
+            this.targetPath = targetPath;
+            this.hint = hint;
+        }
+    }
+
+    public class Cutscene : Base
+    {
         public int id;
-        public Tutorial(int id)
+        public string[] texts;
+        public int charInterval;   // ms per character, default 30
+        public int textInterval;   // ms between texts, default 2000
+        public string bgm;         // optional background music
+        public string sfx;         // optional sound effect
+
+        public Cutscene(int id, string[] texts, int charInterval = 30, int textInterval = 2000, string bgm = "", string sfx = "")
         {
             this.id = id;
+            this.texts = texts;
+            this.charInterval = charInterval;
+            this.textInterval = textInterval;
+            this.bgm = bgm;
+            this.sfx = sfx;
+        }
+    }
+
+    public class CutsceneComplete : Base
+    {
+        public int id;
+        public bool skipped;
+
+        public override void Processed(Client client)
+        {
+            client.Player?.monitor.Fire(Logic.Player.Event.CutsceneComplete, client.Player, id, skipped);
         }
     }
 

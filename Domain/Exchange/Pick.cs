@@ -189,6 +189,12 @@ namespace Domain.Exchange
                     Broadcast.Instance.Local(sub, [Domain.Text.Agent.Instance.Id(Logic.Text.Labels.Pick)], ("sub", sub), ("target", obj), ("count", count.ToString()), ("obj", obj.Parent));
                     Receive.Do(sub, obj, count);
                     obj.monitor.Fire(Item.Event.Picked, sub);
+                    
+                    // Check for tutorial pickup progress
+                    if (sub is Player player)
+                    {
+                        Tutorial.Instance.OnPickupItem(player, obj);
+                    }
                 }
             }
         }

@@ -77,6 +77,94 @@ namespace Domain.Authentication
             string device = client.data.Get<string>(Client.Data.Device);
             string id = client.data.Get<string>(Client.Data.AccountId);
             Login.CompleteLogin(client, device, id);
+            
+            // Start tutorial for new players
+            StartTutorial(client.Player);
+        }
+        
+        private static void StartTutorial(Logic.Player player)
+        {
+            if (player == null) return;
+            
+            // Check if tutorial map exists
+            var tutorialMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m => 
+                m.Config.cid == "遗迹-岸边" && m.Copy == null);
+            
+            if (tutorialMap == null)
+            {
+                Utils.Debug.Log.Warning("AUTH", "[Register] Tutorial map not found, skipping tutorial");
+                return;
+            }
+            
+            // Create tutorial copy for this player
+            var copy = CreateTutorialCopy(tutorialMap);
+            if (copy == null)
+            {
+                Utils.Debug.Log.Warning("AUTH", "[Register] Failed to create tutorial copy");
+                return;
+            }
+            
+            // Move player to tutorial start
+            copy.Start.AddAsParent(player);
+            
+            // Start tutorial guidance
+            Tutorial.Instance.Start(player);
+            
+            Utils.Debug.Log.Info("AUTH", $"[Register] Tutorial started for player {player.Database.text["Name"]}");
+        }
+        
+        private static Logic.Copy CreateTutorialCopy(Logic.Map startMap)
+        {
+            if (startMap?.Scene == null) return null;
+            
+            // Create a simple copy config for tutorial
+            var copyConfig = new Logic.Config.Plot.Copy
+            {
+                scope = 5,  // Include all tutorial maps within range
+                characters = new Dictionary<int, List<Logic.Config.Plot.Character>>()
+            };
+            
+            // Add characters for tutorial maps
+            var sandMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m => m.Config.cid == "遗迹-沙地" && m.Copy == null);
+            var towerMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m => m.Config.cid == "遗迹-通天塔" && m.Copy == null);
+            
+            if (sandMap != null)
+            {
+                // Get gold mine and lizard config IDs
+                var goldMineConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.cid == "金矿");
+                var lizardConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Life>(l => l.cid == "蜥蜴");
+                
+                var sandCharacters = new List<Logic.Config.Plot.Character>();
+                if (goldMineConfig != null)
+                {
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = goldMineConfig.Id, count = 1 });
+                }
+                if (lizardConfig != null)
+                {
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = lizardConfig.Id, count = 1, min = 1, max = 1 });
+                }
+                if (sandCharacters.Count > 0)
+                {
+                    copyConfig.characters[sandMap.Config.Id] = sandCharacters;
+                }
+            }
+            
+            if (towerMap != null)
+            {
+                // Get stele config ID
+                var steleConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.cid == "石碑");
+                if (steleConfig != null)
+                {
+                    copyConfig.characters[towerMap.Config.Id] = new List<Logic.Config.Plot.Character>
+                    {
+                        new Logic.Config.Plot.Character { id = steleConfig.Id, count = 1 }
+                    };
+                }
+            }
+            
+            // Create the copy
+            var copy = Logic.Agent.Instance.Create<Logic.Copy>(startMap, copyConfig);
+            return copy;
         }
         
         private static void SyncPlayerDataToDatabase(Logic.Player player)

@@ -45,6 +45,41 @@ namespace Logic.Design
             }
             sb.AppendLine();
 
+            // Tutorial Map Constants
+            sb.AppendLine("// Tutorial相关常量 - 新手引导地图");
+            var tutorialShore = Agent.Instance.Content.Get<Map>(m => m.cid == "遗迹-岸边");
+            if (tutorialShore != null)
+            {
+                sb.AppendLine($"public const int TutorialShore = {tutorialShore.id};           // 遗迹-岸边（新手出生点）");
+            }
+            else
+            {
+                sb.AppendLine("// 警告：未找到'遗迹-岸边'的配置");
+                sb.AppendLine("// public const int TutorialShore = 0;");
+            }
+            var tutorialSand = Agent.Instance.Content.Get<Map>(m => m.cid == "遗迹-沙地");
+            if (tutorialSand != null)
+            {
+                sb.AppendLine($"public const int TutorialSand = {tutorialSand.id};            // 遗迹-沙地（金矿和蜥蜴）");
+            }
+            else
+            {
+                sb.AppendLine("// 警告：未找到'遗迹-沙地'的配置");
+                sb.AppendLine("// public const int TutorialSand = 0;");
+            }
+            var tutorialTower = Agent.Instance.Content.Get<Map>(m => m.cid == "遗迹-通天塔");
+            if (tutorialTower != null)
+            {
+                sb.AppendLine($"public const int TutorialTower = {tutorialTower.id};          // 遗迹-通天塔（石碑）");
+            }
+            else
+            {
+                sb.AppendLine("// 警告：未找到'遗迹-通天塔'的配置");
+                sb.AppendLine("// public const int TutorialTower = 0;");
+            }
+            sb.AppendLine("public static readonly int[] TutorialSpawnPoint = new int[] { 0, 0, 0 };  // 新手出生坐标");
+            sb.AppendLine();
+
             sb.AppendLine("// Item相关常量");
             var tokenItem = Agent.Instance.Content.Get<Item>(i => i.cid == "等价币");
             if (tokenItem != null)
@@ -177,6 +212,17 @@ namespace Logic.Design
             {
                 sb.AppendLine("// 警告：未找到'木箱'的道具配置");
                 sb.AppendLine("// public const int MiscellaneousContainer = 0;");
+            }
+            
+            var stele = Agent.Instance.Content.Get<Item>(i => i.cid == "石碑");
+            if (stele != null)
+            {
+                sb.AppendLine($"public const int Stele = {stele.id};                          // 石碑（新手引导交互物）");
+            }
+            else
+            {
+                sb.AppendLine("// 警告：未找到'石碑'的道具配置");
+                sb.AppendLine("// public const int Stele = 0;");
             }
             sb.AppendLine();
 

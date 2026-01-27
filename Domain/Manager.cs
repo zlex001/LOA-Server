@@ -79,6 +79,7 @@ namespace Domain
             Subscription.Agent.Init();
             PVP.Offline.Instance.Init();
             Chat.Instance.Init();
+            Tutorial.Instance.Init();
 
             Logic.Agent.Instance.data.after.Register(Logic.Agent.Data.Open, OnLogicManagerOpenChanged);
             
