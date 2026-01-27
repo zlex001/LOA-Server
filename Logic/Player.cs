@@ -326,7 +326,7 @@ namespace Logic
             ApplePurchase,
             AlipayPurchase,
             CardPurchase,
-            CutsceneComplete,
+            StoryComplete,
         }
         public enum Record
         {

@@ -875,34 +875,14 @@ namespace Net.Protocol
         }
     }
 
-    public class Cutscene : Base
+    /// <summary>
+    /// Upstream protocol: Client sends when Story UI is closed
+    /// </summary>
+    public class StoryComplete : Base
     {
-        public int id;
-        public string[] texts;
-        public int charInterval;   // ms per character, default 30
-        public int textInterval;   // ms between texts, default 2000
-        public string bgm;         // optional background music
-        public string sfx;         // optional sound effect
-
-        public Cutscene(int id, string[] texts, int charInterval = 30, int textInterval = 2000, string bgm = "", string sfx = "")
-        {
-            this.id = id;
-            this.texts = texts;
-            this.charInterval = charInterval;
-            this.textInterval = textInterval;
-            this.bgm = bgm;
-            this.sfx = sfx;
-        }
-    }
-
-    public class CutsceneComplete : Base
-    {
-        public int id;
-        public bool skipped;
-
         public override void Processed(Client client)
         {
-            client.Player?.monitor.Fire(Logic.Player.Event.CutsceneComplete, client.Player, id, skipped);
+            client.Player?.monitor.Fire(Logic.Player.Event.StoryComplete, client.Player);
         }
     }
 

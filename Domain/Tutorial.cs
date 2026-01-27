@@ -45,11 +45,6 @@ namespace Domain
             Item = 4
         }
 
-        /// <summary>
-        /// Cutscene IDs
-        /// </summary>
-        public const int TutorialCutsceneId = 1;
-
         // Cached config IDs (resolved at runtime)
         private int _tutorialSandMapId;
         private int _tutorialTowerMapId;
@@ -77,7 +72,7 @@ namespace Domain
             
             // Register event listeners - use Map.Event.Arrived for player movement detection
             Logic.Agent.Instance.Content.Add.Register(typeof(Logic.Player), OnAddPlayer);
-            Logic.Agent.Instance.monitor.Register(Logic.Player.Event.CutsceneComplete, OnCutsceneComplete);
+            Logic.Agent.Instance.monitor.Register(Logic.Player.Event.StoryComplete, OnStoryComplete);
         }
 
         private void CacheConfigIds()
@@ -200,8 +195,8 @@ namespace Domain
 
             if (hasGoldOre && hasRawMeat)
             {
-                // Play cutscene
-                PlayTutorialCutscene(player);
+                // Play story
+                PlayTutorialStory(player);
             }
         }
 
@@ -243,16 +238,16 @@ namespace Domain
             }
         }
 
-        private void OnCutsceneComplete(params object[] args)
+        private void OnStoryComplete(params object[] args)
         {
-            if (args.Length < 3) return;
+            if (args.Length < 1) return;
 
             var player = args[0] as Player;
-            var cutsceneId = (int)args[1];
-            var skipped = (bool)args[2];
-
             if (player == null) return;
-            if (cutsceneId != TutorialCutsceneId) return;
+
+            // Check if player is in GiveToStele step (story was triggered from tutorial)
+            var step = GetCurrentStep(player);
+            if (step != Step.GiveToStele) return;
 
             // Complete tutorial
             Complete(player);
@@ -342,25 +337,19 @@ namespace Domain
             };
         }
 
-        private void PlayTutorialCutscene(Player player)
+        private void PlayTutorialStory(Player player)
         {
-            var texts = new string[]
+            var dialogues = new List<Net.Protocol.Story.Line>
             {
-                "The ancient stele begins to glow...",
-                "A voice echoes from the depths of time...",
-                "\"Traveler, your journey has just begun.\"",
-                "\"The world awaits your exploration.\"",
-                "\"Go forth, and write your own legend.\""
+                new Net.Protocol.Story.Line { character = "", words = "The ancient stele begins to glow..." },
+                new Net.Protocol.Story.Line { character = "", words = "A voice echoes from the depths of time..." },
+                new Net.Protocol.Story.Line { character = "", words = "\"Traveler, your journey has just begun.\"" },
+                new Net.Protocol.Story.Line { character = "", words = "\"The world awaits your exploration.\"" },
+                new Net.Protocol.Story.Line { character = "", words = "\"Go forth, and write your own legend.\"" }
             };
 
-            var cutscene = new Net.Protocol.Cutscene(
-                TutorialCutsceneId,
-                texts,
-                charInterval: 30,
-                textInterval: 2000
-            );
-
-            Net.Tcp.Instance.Send(player, cutscene);
+            var story = new Net.Protocol.Story(dialogues);
+            Net.Tcp.Instance.Send(player, story);
         }
 
         #endregion

@@ -1,5 +1,7 @@
-[修复] 新手遗迹地图显示与交互问题
+[重构] 新手引导协议调整
 
-1. 场景坐标.csv: 更新过时的场景名称引用
-2. Click/Map.cs: Copy副本中跳过场景坐标检查避免误判
-3. 语言.csv: 修复ID冲突(100690同时用于通天塔和代金币描述)
+根据客户端反馈：
+1. 移除 Cutscene/CutsceneComplete 协议
+2. 复用 Story 协议播放过场
+3. 新增 StoryComplete 上行协议（方案B）
+4. Tutorial.cs 改用 Story + StoryComplete 事件
