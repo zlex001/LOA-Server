@@ -148,6 +148,12 @@ namespace Domain.Cast
             item.Durability -= damage;
             
             ProcessDropOnAttack(sub, item);
+            
+            // Check for tutorial gold mine interaction
+            if (sub is Player player)
+            {
+                CheckTutorialGoldMineInteraction(player, item);
+            }
 
             if (item.Durability <= 0)
             {
@@ -273,6 +279,18 @@ namespace Domain.Cast
             foreach (var content in contents)
             {
                 Exchange.Receive.Do(targetMap, content, content.Count);
+            }
+        }
+        
+        private static void CheckTutorialGoldMineInteraction(Player player, Item item)
+        {
+            // Check if this is the tutorial gold mine by looking up the config
+            var goldMineDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
+            if (goldMineDesign == null) return;
+            
+            if (item.Config?.Id == goldMineDesign.id)
+            {
+                Tutorial.Instance.OnInteractGoldMine(player);
             }
         }
     }

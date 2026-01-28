@@ -134,9 +134,12 @@ namespace Domain
             
             int configId = Perception.Agent.GetCharacterConfigId(character);
             
+            Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Player sees character configId={configId}, currentStep={step}, goldMineId={_goldMineItemId}, lizardId={_lizardLifeId}, steleId={_steleItemId}");
+            
             // Check if player sees gold mine during WalkToSand step
             if (step == Step.WalkToSand && configId == _goldMineItemId)
             {
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Matched: gold mine at WalkToSand, advancing to SeeGoldMine");
                 AdvanceStep(player, Step.SeeGoldMine);
                 return;
             }
@@ -144,6 +147,7 @@ namespace Domain
             // Check if player sees lizard during InteractGoldMine step
             if (step == Step.InteractGoldMine && configId == _lizardLifeId)
             {
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Matched: lizard at InteractGoldMine, advancing to SeeLizard");
                 AdvanceStep(player, Step.SeeLizard);
                 return;
             }
@@ -151,6 +155,7 @@ namespace Domain
             // Check if player sees stele during PickupItems step
             if (step == Step.PickupItems && configId == _steleItemId)
             {
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Matched: stele at PickupItems, advancing to SeeStele");
                 AdvanceStep(player, Step.SeeStele);
                 return;
             }
@@ -167,8 +172,13 @@ namespace Domain
         {
             if (player == null) return;
 
+            Utils.Debug.Log.Info("TUTORIAL", $"[Start] Starting tutorial for player, goldMineId={_goldMineItemId}, lizardId={_lizardLifeId}, steleId={_steleItemId}");
+            
             playerStates[player.GetHashCode()] = Step.WalkToSand;
             SendTutorialHint(player, Step.WalkToSand);
+            
+            // After starting, check if gold mine is already visible
+            CheckVisibilityAfterAdvance(player, Step.WalkToSand);
         }
 
         /// <summary>
@@ -414,6 +424,60 @@ namespace Domain
         {
             playerStates[player.GetHashCode()] = nextStep;
             SendTutorialHint(player, nextStep);
+            
+            // After advancing, check if the next target is already visible
+            // This handles the case where FirstSeen already fired before we entered this step
+            CheckVisibilityAfterAdvance(player, nextStep);
+        }
+        
+        /// <summary>
+        /// After advancing to a new step, check if the target for next step is already visible.
+        /// This fixes timing issues where FirstSeen fired before we were ready for it.
+        /// </summary>
+        private void CheckVisibilityAfterAdvance(Player player, Step currentStep)
+        {
+            switch (currentStep)
+            {
+                case Step.WalkToSand:
+                    // If gold mine is already visible, advance to SeeGoldMine
+                    if (CanSeeCharacter(player, _goldMineItemId))
+                    {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Gold mine already visible at WalkToSand, advancing to SeeGoldMine");
+                        AdvanceStep(player, Step.SeeGoldMine);
+                    }
+                    break;
+                    
+                case Step.InteractGoldMine:
+                    // If lizard is already visible, advance to SeeLizard
+                    if (CanSeeCharacter(player, _lizardLifeId))
+                    {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Lizard already visible at InteractGoldMine, advancing to SeeLizard");
+                        AdvanceStep(player, Step.SeeLizard);
+                    }
+                    break;
+                    
+                case Step.PickupItems:
+                    // Check if player already has required items
+                    bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+                    bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
+                    
+                    if (hasGoldOre && hasRawMeat)
+                    {
+                        // If stele is already visible, advance to SeeStele
+                        if (CanSeeCharacter(player, _steleItemId))
+                        {
+                            Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Stele already visible at PickupItems, advancing to SeeStele");
+                            AdvanceStep(player, Step.SeeStele);
+                        }
+                        else
+                        {
+                            // Items collected but stele not visible, guide to tower
+                            Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Items collected but stele not visible, advancing to WalkToTower");
+                            AdvanceStep(player, Step.WalkToTower);
+                        }
+                    }
+                    break;
+            }
         }
 
         private void SendTutorialHint(Player player, Step step)

@@ -1,3 +1,7 @@
-[修复] Character.Config编译错误
+[修复] 新手引导 FirstSeen 时序问题及金矿交互回调
 
-Character基类没有Config属性，添加GetCharacterConfigId辅助方法处理Life和Item子类
+- 修复 FirstSeen 事件在错误步骤触发导致后续步骤无法响应的问题
+- 添加 CheckVisibilityAfterAdvance 在步骤推进后主动检查目标可见性
+- 添加 OnInteractGoldMine 调用，当玩家攻击金矿时触发
+- 更新新手体验文档，增加视野与前往操作的引导说明
+- 添加 TUTORIAL 调试日志便于问题排查
