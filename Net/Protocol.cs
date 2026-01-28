@@ -362,12 +362,14 @@ namespace Net.Protocol
             public string name;
             public double progress;
             public int hash;
+            public int configId;
             
-            public CharacterData(string name, double progress, int hash)
+            public CharacterData(string name, double progress, int hash, int configId = 0)
             {
                 this.name = name;
                 this.progress = progress;
                 this.hash = hash;
+                this.configId = configId;
             }
         }
         

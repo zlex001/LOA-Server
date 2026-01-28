@@ -1,6 +1,5 @@
-[功能] Tutorial hint 多语言支持
+[功能] Characters 协议添加 configId 字段
 
-- 配置表 Multilingual.csv 添加 cid 列
-- Logic.Text 添加 CidToId 字典支持运行时 cid 查找
-- Domain.Text.Agent 添加 GetByCid 方法
-- Tutorial.SendTutorialHint 翻译 hint cid 为本地化文本
+- CharacterData 添加 configId 字段用于 Tutorial 目标匹配
+- Display/Agent.cs 传入 life.Config.Id 和 item.Config.Id
+- Move/Agent.cs 同步更新

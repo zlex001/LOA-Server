@@ -689,15 +689,19 @@ namespace Domain.Display
                 string name;
                 double progress;
 
+                int configId = 0;
+                
                 if (c is Logic.Life life)
                 {
                     name = Domain.Text.Decorate.Life(life, player);
                     progress = (!life.State.Is(Logic.Life.States.Unconscious) && life.Relation.Where(kvp => kvp.Value < 0).OrderBy(kvp => kvp.Value).Select(kvp => kvp.Key).Any(t => t is Life l && !l.State.Is(Logic.Life.States.Unconscious) && l.Map == life.Map) ? life.Action : 0);
+                    configId = life.Config?.Id ?? 0;
                 }
                 else if (c is Logic.Item item)
                 {
                     name = Domain.Text.Decorate.Item(item, player);
                     progress = 0;
+                    configId = item.Config?.Id ?? 0;
                 }
                 else
                 {
@@ -705,7 +709,7 @@ namespace Domain.Display
                     progress = 0;
                 }
 
-                content.Add(new Net.Protocol.Characters.CharacterData(name, progress, c.GetHashCode()));
+                content.Add(new Net.Protocol.Characters.CharacterData(name, progress, c.GetHashCode(), configId));
             }
             
             return content;

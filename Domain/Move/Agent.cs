@@ -260,19 +260,23 @@ namespace Domain.Move
             foreach (var c in container.Content.Gets<Logic.Character>())
             {
                 string name;
+                int configId = 0;
+                
                 if (c is Logic.Life life)
                 {
                     name = Domain.Text.Decorate.Life(life, player);
+                    configId = life.Config?.Id ?? 0;
                 }
                 else if (c is Logic.Item item)
                 {
                     name = Domain.Text.Decorate.Item(item, player);
+                    configId = item.Config?.Id ?? 0;
                 }
                 else
                 {
                     name = c.GetType().Name;
                 }
-                content.Add(new Net.Protocol.Characters.CharacterData(name, 0, c.GetHashCode()));
+                content.Add(new Net.Protocol.Characters.CharacterData(name, 0, c.GetHashCode(), configId));
             }
             return content;
         }
