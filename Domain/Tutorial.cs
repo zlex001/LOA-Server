@@ -132,7 +132,7 @@ namespace Domain
             var step = GetCurrentStep(player);
             if (step == Step.None || step == Step.Completed) return;
             
-            int configId = character.Config?.Id ?? 0;
+            int configId = Perception.Agent.GetCharacterConfigId(character);
             
             // Check if player sees gold mine during WalkToSand step
             if (step == Step.WalkToSand && configId == _goldMineItemId)
@@ -403,7 +403,7 @@ namespace Domain
         private bool CanSeeCharacter(Player player, int configId)
         {
             var visibleCharacters = Perception.Agent.Instance.GetVisibleCharacters(player);
-            return visibleCharacters.Any(c => c.Config?.Id == configId);
+            return visibleCharacters.Any(c => Perception.Agent.GetCharacterConfigId(c) == configId);
         }
 
         #endregion

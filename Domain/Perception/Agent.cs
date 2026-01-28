@@ -224,7 +224,7 @@ namespace Domain.Perception
             {
                 if (character == player) continue;
                 
-                int configId = character.Config?.Id ?? 0;
+                int configId = GetCharacterConfigId(character);
                 if (configId == 0) continue;
                 
                 if (!seenIds.Contains(configId))
@@ -233,6 +233,16 @@ namespace Domain.Perception
                     FirstSeen?.Invoke(player, character);
                 }
             }
+        }
+        
+        /// <summary>
+        /// Get Config.Id from a Character (Life or Item)
+        /// </summary>
+        public static int GetCharacterConfigId(Character character)
+        {
+            if (character is Life life) return life.Config?.Id ?? 0;
+            if (character is Item item) return item.Config?.Id ?? 0;
+            return 0;
         }
         
         /// <summary>
