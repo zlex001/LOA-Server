@@ -39,6 +39,7 @@ namespace Logic
             }
             
             // Second pass: place characters randomly on matching maps
+            // All characters for a given mapConfigId go on the SAME randomly selected map
             var placedCharacterIds = new HashSet<int>();
             
             foreach (var kvp in config.characters)
@@ -49,6 +50,9 @@ namespace Logic
                 if (!mapsByConfigId.TryGetValue(mapConfigId, out var candidateMaps) || candidateMaps.Count == 0)
                     continue;
                 
+                // Select ONE map for all characters with this mapConfigId
+                var targetMap = candidateMaps[random.Next(candidateMaps.Count)];
+                
                 foreach (var character in characterList)
                 {
                     // Skip if this character type has already been placed
@@ -56,9 +60,6 @@ namespace Logic
                     
                     var characterConfig = Logic.Config.Agent.Instance.Content.Get<Config.Ability>(c => c.Id == character.id);
                     if (characterConfig == null) continue;
-                    
-                    // Randomly select a map from candidates
-                    var targetMap = candidateMaps[random.Next(candidateMaps.Count)];
                     
                     for (int i = 0; i < character.count; i++)
                     {

@@ -1,7 +1,5 @@
-[修复] 新手引导 FirstSeen 时序问题及金矿交互回调
+[修复] 新手引导角色放置和语言翻译问题
 
-- 修复 FirstSeen 事件在错误步骤触发导致后续步骤无法响应的问题
-- 添加 CheckVisibilityAfterAdvance 在步骤推进后主动检查目标可见性
-- 添加 OnInteractGoldMine 调用，当玩家攻击金矿时触发
-- 更新新手体验文档，增加视野与前往操作的引导说明
-- 添加 TUTORIAL 调试日志便于问题排查
+- 修复 Copy 创建时同一 mapConfigId 下的角色被分散放置到不同地图格子的问题
+- 金矿和蜥蜴现在会放置在同一个沙地格子上，确保引导流程正确
+- 添加 tutorial_goto/interact/attack/give/pickup 的多语言翻译
