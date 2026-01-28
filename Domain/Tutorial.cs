@@ -63,6 +63,9 @@ namespace Domain
 
         // Player tutorial state storage (player hash -> current step)
         private Dictionary<int, Step> playerStates = new Dictionary<int, Step>();
+        
+        // Track target visibility state (player hash -> is target visible)
+        private Dictionary<int, bool> _targetVisibleState = new Dictionary<int, bool>();
 
         #endregion
 
@@ -260,6 +263,9 @@ namespace Domain
 
             var currentMap = player.Map;
             if (currentMap == null) return;
+            
+            // Check if target is still visible for "See" steps, clear hint if not
+            CheckTargetVisibility(player, step);
 
             switch (step)
             {
@@ -310,6 +316,44 @@ namespace Domain
                         AdvanceStep(player, Step.GiveToStele);
                     }
                     break;
+            }
+        }
+        
+        /// <summary>
+        /// Check if the target for the current step is still visible.
+        /// If target is no longer visible, clear the hint.
+        /// If target becomes visible again, re-send the hint.
+        /// </summary>
+        private void CheckTargetVisibility(Player player, Step step)
+        {
+            int targetConfigId = step switch
+            {
+                Step.SeeGoldMine => _goldMineItemId,
+                Step.SeeLizard => _lizardLifeId,
+                Step.SeeStele => _steleItemId,
+                _ => 0
+            };
+            
+            if (targetConfigId == 0) return;
+            
+            bool isVisible = CanSeeCharacter(player, targetConfigId);
+            
+            // Track visibility state per player
+            int playerHash = player.GetHashCode();
+            bool wasVisible = _targetVisibleState.TryGetValue(playerHash, out var prevVisible) && prevVisible;
+            _targetVisibleState[playerHash] = isVisible;
+            
+            if (wasVisible && !isVisible)
+            {
+                // Target just became invisible, clear hint
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Target {targetConfigId} no longer visible, clearing hint");
+                ClearHint(player);
+            }
+            else if (!wasVisible && isVisible)
+            {
+                // Target just became visible again, re-send hint
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Target {targetConfigId} visible again, re-sending hint");
+                SendTutorialHint(player, step);
             }
         }
         
@@ -501,6 +545,53 @@ namespace Domain
             );
 
             Net.Tcp.Instance.Send(player, protocol);
+        }
+        
+        /// <summary>
+        /// Clear the current tutorial hint on client side.
+        /// Sends a Tutorial protocol with step=0 to hide the visual guide.
+        /// </summary>
+        private void ClearHint(Player player)
+        {
+            Utils.Debug.Log.Info("TUTORIAL", $"[ClearHint] Clearing tutorial hint for player");
+            
+            var protocol = new Net.Protocol.Tutorial(
+                0,  // step=0 means clear/hide
+                0,
+                0,
+                "",
+                null,
+                ""
+            );
+            
+            Net.Tcp.Instance.Send(player, protocol);
+        }
+        
+        /// <summary>
+        /// Called when player clicks "GoTo" button on a character.
+        /// Clears the current hint and waits for player to arrive.
+        /// </summary>
+        public void OnPlayerGoTo(Player player, Logic.Character target)
+        {
+            if (!playerStates.TryGetValue(player.GetHashCode(), out var step))
+                return;
+            
+            // Only handle if we're in a "See" step waiting for GoTo action
+            int targetConfigId = Perception.Agent.GetCharacterConfigId(target);
+            
+            bool shouldClear = step switch
+            {
+                Step.SeeGoldMine => targetConfigId == _goldMineItemId,
+                Step.SeeLizard => targetConfigId == _lizardLifeId,
+                Step.SeeStele => targetConfigId == _steleItemId,
+                _ => false
+            };
+            
+            if (shouldClear)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to target configId={targetConfigId}, clearing hint");
+                ClearHint(player);
+            }
         }
 
         private static string FormatPos(int[] pos) => pos != null ? $"[{string.Join(",", pos)}]" : "null";
