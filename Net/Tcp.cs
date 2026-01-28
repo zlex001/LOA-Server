@@ -352,7 +352,7 @@ namespace Net
                     int clientCount;
                     lock (_clientSocketsLock) { clientCount = _clientSockets.Count; }
                     int queueSize = _incomingQueue.Count;
-                    Utils.Debug.Log.Info("NET", $"[TCP Stats] Clients={clientCount}, QueueSize={queueSize}, TotalProcessed={_totalMessagesProcessed}");
+                    // Utils.Debug.Log.Info("NET", $"[TCP Stats] Clients={clientCount}, QueueSize={queueSize}, TotalProcessed={_totalMessagesProcessed}");
                     _lastStatTime = now;
                 }
             }
@@ -557,7 +557,7 @@ namespace Net
                 }
                 
                 var json = System.Text.Encoding.UTF8.GetString(bytes, offset, count);
-                Utils.Debug.Log.Info("NET", $"[Decode] Deserializing {name}, JSON: {json}");
+                // Utils.Debug.Log.Info("NET", $"[Decode] Deserializing {name}, JSON: {json}");
                 
                 var result = (Protocol.Base)JsonConvert.DeserializeObject(json, type);
                 if (result == null)
@@ -566,7 +566,7 @@ namespace Net
                     return new Protocol.Base();
                 }
                 
-                Utils.Debug.Log.Info("NET", $"[Decode] Success: {name} -> {result.GetType().Name}");
+                // Utils.Debug.Log.Info("NET", $"[Decode] Success: {name} -> {result.GetType().Name}");
                 return result;
             }
             catch (Exception ex)
@@ -600,9 +600,9 @@ namespace Net
             Array.Copy(nameBytes, 0, sendBytes, 4, nameBytes.Length);
             Array.Copy(bodyBytes, 0, sendBytes, 4 + nameBytes.Length, bodyBytes.Length);
 
-            // Log the JSON being sent
-            string jsonContent = System.Text.Encoding.UTF8.GetString(bodyBytes);
-            Utils.Debug.Log.Info("NET", $"[SEND] Protocol={protocol.GetType().Name} to {client.Name}, JSON={jsonContent}");
+            // Log the JSON being sent (disabled for cleaner logs)
+            // string jsonContent = System.Text.Encoding.UTF8.GetString(bodyBytes);
+            // Utils.Debug.Log.Info("NET", $"[SEND] Protocol={protocol.GetType().Name} to {client.Name}, JSON={jsonContent}");
 
             try
             {

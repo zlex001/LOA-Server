@@ -99,9 +99,9 @@ namespace Net
             try
             {
                 Protocol.Base operation = (Protocol.Base)args[0];
-                Utils.Debug.Log.Info("NET", $"[OnReceive] Processing {operation.GetType().Name} for {Name}");
+                // Utils.Debug.Log.Info("NET", $"[OnReceive] Processing {operation.GetType().Name} for {Name}");
                 operation.Processed(this);
-                Utils.Debug.Log.Info("NET", $"[OnReceive] Completed {operation.GetType().Name} for {Name}");
+                // Utils.Debug.Log.Info("NET", $"[OnReceive] Completed {operation.GetType().Name} for {Name}");
             }
             catch (Exception ex)
             {
@@ -122,7 +122,7 @@ namespace Net
         private void OnSend(params object[] args)
         {
             byte[] sendBytes = (byte[])args[0];
-            Utils.Debug.Log.Info("NET", $"[OnSend] Sending {sendBytes.Length} bytes to {Name}");
+            // Utils.Debug.Log.Info("NET", $"[OnSend] Sending {sendBytes.Length} bytes to {Name}");
             Socket.BeginSend(sendBytes, 0, sendBytes.Length, 0, null, null);
         }
 

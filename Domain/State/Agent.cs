@@ -45,7 +45,7 @@ namespace Domain.State
                 if (_btExecutionsTotal > 0)
                 {
                     double skipRate = _btExecutionsSkipped * 100.0 / (_btExecutionsTotal + _btExecutionsSkipped);
-                    Utils.Debug.Log.Info("BT", $"[BT Stats] Executed={_btExecutionsTotal}, Skipped={_btExecutionsSkipped}, SkipRate={skipRate:F1}%");
+                    // Utils.Debug.Log.Info("BT", $"[BT Stats] Executed={_btExecutionsTotal}, Skipped={_btExecutionsSkipped}, SkipRate={skipRate:F1}%");
                 }
                 _btExecutionsTotal = 0;
                 _btExecutionsSkipped = 0;

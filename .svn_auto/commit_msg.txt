@@ -1,6 +1,1 @@
-[功能] Tutorial 引导清除和可见性追踪
-
-- 添加 ClearHint 方法：发送 step=0 清除客户端引导
-- 添加 OnPlayerGoTo：玩家点击前往时清除当前引导
-- 添加 CheckTargetVisibility：目标离开视野时清除引导，重新可见时恢复
-- Excute.GoTo 调用 Tutorial.OnPlayerGoTo 通知引导系统
+[优化] 屏蔽高频调试日志以便于引导功能开发调试
