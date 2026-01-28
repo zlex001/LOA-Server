@@ -328,6 +328,8 @@ namespace Logic
         public Dictionary<int, Dictionary<Languages, string>> Multilingual { get; set; } = new Dictionary<int, Dictionary<Languages, string>>();
 
         public Dictionary<Labels, int[]> Label { get; private set; } = new Dictionary<Labels, int[]>();
+        
+        public Dictionary<string, int> CidToId { get; private set; } = new Dictionary<string, int>();
 
         public override void Init(params object[] args)
         {
@@ -337,8 +339,16 @@ namespace Logic
             foreach (var dict in dicts)
             {
                 int id = Convert.ToInt32(dict["id"]);
+                string cid = Convert.ToString(dict["cid"]);
                 string label = Convert.ToString(dict["label"]);
                 Multilingual[id] = Enum.GetValues(typeof(Languages)).Cast<Languages>().ToDictionary(lang => lang, lang => Convert.ToString(dict[lang.ToString()]));
+                
+                // Build cid -> id mapping
+                if (!string.IsNullOrEmpty(cid))
+                {
+                    CidToId[cid] = id;
+                }
+                
                 if (!string.IsNullOrEmpty(label))
                 {
                     Labels key = (Labels)Enum.Parse(typeof(Labels), label);

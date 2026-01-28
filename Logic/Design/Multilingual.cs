@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Basic;
 
@@ -52,6 +52,7 @@ namespace Logic.Design
                 Dictionary<string, object> data = new Dictionary<string, object>
                 {
                     {"id", multilingual.id},
+                    {"cid", multilingual.cid},
                     {"label", multilingual.label},
                     {"ChineseSimplified", multilingual.chineseSimplified},
                     {"ChineseTraditional", multilingual.chineseTraditional},

@@ -1,5 +1,6 @@
-[修复] 语言表 tutorial 条目的 label 列导致启动崩溃
+[功能] Tutorial hint 多语言支持
 
-- 将 tutorial_goto/interact/attack/give/pickup 的 label 列清空
-- 这些条目不需要通过 Labels 枚举查找，只通过 cid 查找
-- 修复重复行问题
+- 配置表 Multilingual.csv 添加 cid 列
+- Logic.Text 添加 CidToId 字典支持运行时 cid 查找
+- Domain.Text.Agent 添加 GetByCid 方法
+- Tutorial.SendTutorialHint 翻译 hint cid 为本地化文本

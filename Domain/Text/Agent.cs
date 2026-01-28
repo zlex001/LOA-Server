@@ -127,5 +127,29 @@ namespace Domain.Text
             }
             return text;
         }
+        
+        /// <summary>
+        /// Get translation by cid (content id string)
+        /// </summary>
+        public string GetByCid(string cid, Logic.Text.Languages lang)
+        {
+            if (string.IsNullOrEmpty(cid))
+                return string.Empty;
+                
+            if (Logic.Text.Instance.CidToId.TryGetValue(cid, out int id))
+            {
+                return Get(id, lang);
+            }
+            
+            return string.Empty;
+        }
+        
+        /// <summary>
+        /// Get translation by cid for a player
+        /// </summary>
+        public string GetByCid(string cid, Player player)
+        {
+            return GetByCid(cid, player.Language);
+        }
     }
 }

@@ -482,9 +482,14 @@ namespace Domain
 
         private void SendTutorialHint(Player player, Step step)
         {
-            var (targetType, targetId, targetPath, targetPos, hint) = GetStepHint(step, player);
+            var (targetType, targetId, targetPath, targetPos, hintCid) = GetStepHint(step, player);
             
-            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}, TargetPos={FormatPos(targetPos)}");
+            // Translate hint cid to localized text
+            string hintText = string.IsNullOrEmpty(hintCid) 
+                ? "" 
+                : Domain.Text.Agent.Instance.GetByCid(hintCid, player);
+            
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}, TargetPos={FormatPos(targetPos)}, Hint={hintText}");
             
             var protocol = new Net.Protocol.Tutorial(
                 (int)step,
@@ -492,7 +497,7 @@ namespace Domain
                 targetId,
                 targetPath,
                 targetPos,
-                hint
+                hintText
             );
 
             Net.Tcp.Instance.Send(player, protocol);
