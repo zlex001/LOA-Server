@@ -1,7 +1,7 @@
-[修复] Tutorial引导系统事件注册可靠性
+[修复] Tutorial引导系统步骤推进后引导被误清除
 
-- 新增_registeredPlayers集合追踪已注册事件的玩家
-- 提取RegisterPlayerMapListener方法统一事件注册逻辑
-- 在Tutorial.Start中确保事件监听器被注册
-- 添加详细日志追踪OnPlayerMoved触发和步骤推进
-- Complete时清理_registeredPlayers避免内存泄漏
+- 添加_justAdvancedToSeeStep保护标志
+- AdvanceStep推进到See步骤时设置保护标志
+- CheckTargetVisibility检测到保护标志时跳过可见性检查
+- 防止Perception缓存未更新时误判目标不可见而清除引导
+- Complete时清理保护标志避免内存泄漏

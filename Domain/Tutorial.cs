@@ -72,6 +72,9 @@ namespace Domain
         
         // Track which players have map change listeners registered
         private HashSet<int> _registeredPlayers = new HashSet<int>();
+        
+        // Track if step just advanced (protect from immediate CheckTargetVisibility clearing)
+        private Dictionary<int, bool> _justAdvancedToSeeStep = new Dictionary<int, bool>();
 
         #endregion
 
@@ -252,6 +255,7 @@ namespace Domain
             _targetVisibleState.Remove(playerHash);
             _playerTravelingToTarget.Remove(playerHash);
             _registeredPlayers.Remove(playerHash);
+            _justAdvancedToSeeStep.Remove(playerHash);
         }
 
         /// <summary>
@@ -374,10 +378,20 @@ namespace Domain
             
             if (targetConfigId == 0) return;
             
+            int playerHash = player.GetHashCode();
+            
+            // Check if step just advanced - if so, skip this check and clear the flag
+            // This protects against false "no longer visible" when Perception cache hasn't updated yet
+            if (_justAdvancedToSeeStep.TryGetValue(playerHash, out var justAdvanced) && justAdvanced)
+            {
+                _justAdvancedToSeeStep[playerHash] = false;
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Skipping check - step just advanced, protection active");
+                return;
+            }
+            
             bool isVisible = CanSeeCharacter(player, targetConfigId);
             
             // Track visibility state per player
-            int playerHash = player.GetHashCode();
             bool wasVisible = _targetVisibleState.TryGetValue(playerHash, out var prevVisible) && prevVisible;
             _targetVisibleState[playerHash] = isVisible;
             
@@ -519,10 +533,13 @@ namespace Domain
             // Clear traveling state when advancing to a new step
             _playerTravelingToTarget[playerHash] = false;
             
-            // Initialize visibility state for "See" steps to prevent false re-send
+            // For "See" steps, set protection flag to prevent immediate clearing by CheckTargetVisibility
+            // This is needed because Perception cache may not be updated yet when OnPlayerMoved triggers
             if (nextStep == Step.SeeGoldMine || nextStep == Step.SeeLizard || nextStep == Step.SeeStele)
             {
                 _targetVisibleState[playerHash] = true;
+                _justAdvancedToSeeStep[playerHash] = true;
+                Utils.Debug.Log.Info("TUTORIAL", $"[AdvanceStep] Set protection flag for See step: {nextStep}");
             }
             
             SendTutorialHint(player, nextStep);
