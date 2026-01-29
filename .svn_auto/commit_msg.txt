@@ -1,7 +1,7 @@
-[修复] Tutorial引导系统显性引导消失问题
+[修复] Tutorial引导系统事件注册可靠性
 
-- 修复OnPlayerParentChanged事件参数解析错误，使用闭包正确捕获player引用
-- 添加_playerTravelingToTarget状态追踪，防止玩家前往途中重复发送引导
-- AdvanceStep中初始化_targetVisibleState避免误判可见性变化
-- CheckTargetVisibility增加旅行状态检查，旅行中不重新发送引导
-- Complete方法清理所有状态字典避免内存泄漏
+- 新增_registeredPlayers集合追踪已注册事件的玩家
+- 提取RegisterPlayerMapListener方法统一事件注册逻辑
+- 在Tutorial.Start中确保事件监听器被注册
+- 添加详细日志追踪OnPlayerMoved触发和步骤推进
+- Complete时清理_registeredPlayers避免内存泄漏

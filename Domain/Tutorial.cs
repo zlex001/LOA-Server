@@ -69,6 +69,9 @@ namespace Domain
         
         // Track if player is currently going to a target (hint should stay hidden during travel)
         private Dictionary<int, bool> _playerTravelingToTarget = new Dictionary<int, bool>();
+        
+        // Track which players have map change listeners registered
+        private HashSet<int> _registeredPlayers = new HashSet<int>();
 
         #endregion
 
@@ -117,10 +120,28 @@ namespace Domain
             var player = args[1] as Player;
             if (player == null) return;
             
+            RegisterPlayerMapListener(player);
+        }
+        
+        /// <summary>
+        /// Register map change listener for a player (ensures only registered once)
+        /// </summary>
+        private void RegisterPlayerMapListener(Player player)
+        {
+            int playerHash = player.GetHashCode();
+            if (_registeredPlayers.Contains(playerHash))
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[RegisterPlayerMapListener] Player already registered, skipping");
+                return;
+            }
+            
+            _registeredPlayers.Add(playerHash);
+            Utils.Debug.Log.Info("TUTORIAL", $"[RegisterPlayerMapListener] Registering map change listener for player");
+            
             // Register for map changes using closure to capture player reference
-            // Store.after.Fire passes: (newValue, element) - element may be null
             player.data.after.Register(Basic.Element.Data.Parent, (object[] parentArgs) =>
             {
+                Utils.Debug.Log.Info("TUTORIAL", $"[ParentChanged] Player map changed, calling OnPlayerMoved");
                 OnPlayerMoved(player);
             });
         }
@@ -173,6 +194,9 @@ namespace Domain
             if (player == null) return;
 
             Utils.Debug.Log.Info("TUTORIAL", $"[Start] Starting tutorial for player, goldMineId={_goldMineItemId}, lizardId={_lizardLifeId}, steleId={_steleItemId}");
+            
+            // Ensure map change listener is registered for this player
+            RegisterPlayerMapListener(player);
             
             playerStates[player.GetHashCode()] = Step.WalkToSand;
             SendTutorialHint(player, Step.WalkToSand);
@@ -227,6 +251,7 @@ namespace Domain
             playerStates.Remove(playerHash);
             _targetVisibleState.Remove(playerHash);
             _playerTravelingToTarget.Remove(playerHash);
+            _registeredPlayers.Remove(playerHash);
         }
 
         /// <summary>
@@ -264,6 +289,8 @@ namespace Domain
             var currentMap = player.Map;
             if (currentMap == null) return;
             
+            Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Step={step}, MapConfigId={currentMap.Config?.Id}");
+            
             // Check if target is still visible for "See" steps, clear hint if not
             CheckTargetVisibility(player, step);
 
@@ -273,14 +300,18 @@ namespace Domain
                     // If player walks to sand without seeing gold mine first, skip to SeeGoldMine
                     if (currentMap.Config.Id == _tutorialSandMapId)
                     {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at sand map, advancing to SeeGoldMine");
                         AdvanceStep(player, Step.SeeGoldMine);
                     }
                     break;
                     
                 case Step.SeeGoldMine:
                     // Player arrived at gold mine location - guide to interact
-                    if (IsAtCharacterLocation(player, _goldMineItemId))
+                    bool atGoldMine = IsAtCharacterLocation(player, _goldMineItemId);
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] SeeGoldMine: atGoldMine={atGoldMine}");
+                    if (atGoldMine)
                     {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at gold mine, advancing to InteractGoldMine");
                         AdvanceStep(player, Step.InteractGoldMine);
                     }
                     break;
@@ -291,8 +322,11 @@ namespace Domain
                     
                 case Step.SeeLizard:
                     // Player arrived at lizard location - guide to attack
-                    if (IsAtCharacterLocation(player, _lizardLifeId))
+                    bool atLizard = IsAtCharacterLocation(player, _lizardLifeId);
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] SeeLizard: atLizard={atLizard}");
+                    if (atLizard)
                     {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at lizard, advancing to AttackLizard");
                         AdvanceStep(player, Step.AttackLizard);
                     }
                     break;
@@ -304,8 +338,11 @@ namespace Domain
                     
                 case Step.SeeStele:
                     // Player arrived at stele location - guide to give
-                    if (IsAtCharacterLocation(player, _steleItemId))
+                    bool atStele = IsAtCharacterLocation(player, _steleItemId);
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] SeeStele: atStele={atStele}");
+                    if (atStele)
                     {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at stele, advancing to GiveToStele");
                         AdvanceStep(player, Step.GiveToStele);
                     }
                     break;
@@ -313,6 +350,7 @@ namespace Domain
                 case Step.WalkToTower:
                     if (currentMap.Config.Id == _tutorialTowerMapId)
                     {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at tower, advancing to GiveToStele");
                         AdvanceStep(player, Step.GiveToStele);
                     }
                     break;
