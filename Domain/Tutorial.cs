@@ -66,6 +66,9 @@ namespace Domain
         
         // Track target visibility state (player hash -> is target visible)
         private Dictionary<int, bool> _targetVisibleState = new Dictionary<int, bool>();
+        
+        // Track if player is currently going to a target (hint should stay hidden during travel)
+        private Dictionary<int, bool> _playerTravelingToTarget = new Dictionary<int, bool>();
 
         #endregion
 
@@ -114,18 +117,12 @@ namespace Domain
             var player = args[1] as Player;
             if (player == null) return;
             
-            // Register for map changes
-            player.data.after.Register(Basic.Element.Data.Parent, OnPlayerParentChanged);
-        }
-
-        private void OnPlayerParentChanged(params object[] args)
-        {
-            // args[0] = old value, args[1] = new value, args[2] = player
-            if (args.Length < 3) return;
-            var player = args[2] as Player;
-            if (player == null) return;
-            
-            OnPlayerMoved(player);
+            // Register for map changes using closure to capture player reference
+            // Store.after.Fire passes: (newValue, element) - element may be null
+            player.data.after.Register(Basic.Element.Data.Parent, (object[] parentArgs) =>
+            {
+                OnPlayerMoved(player);
+            });
         }
         
         private void OnFirstSeen(Player player, Character character)
@@ -209,7 +206,8 @@ namespace Domain
         {
             if (player == null) return;
 
-            playerStates[player.GetHashCode()] = Step.Completed;
+            int playerHash = player.GetHashCode();
+            playerStates[playerHash] = Step.Completed;
 
             // Exit copy if in one
             if (player.Map?.Copy != null)
@@ -225,8 +223,10 @@ namespace Domain
                 Move.Agent.Do(player, destination);
             }
 
-            // Clean up state
-            playerStates.Remove(player.GetHashCode());
+            // Clean up all state dictionaries
+            playerStates.Remove(playerHash);
+            _targetVisibleState.Remove(playerHash);
+            _playerTravelingToTarget.Remove(playerHash);
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace Domain
         /// <summary>
         /// Check if the target for the current step is still visible.
         /// If target is no longer visible, clear the hint.
-        /// If target becomes visible again, re-send the hint.
+        /// If target becomes visible again, re-send the hint (unless player is traveling to target).
         /// </summary>
         private void CheckTargetVisibility(Player player, Step step)
         {
@@ -343,15 +343,24 @@ namespace Domain
             bool wasVisible = _targetVisibleState.TryGetValue(playerHash, out var prevVisible) && prevVisible;
             _targetVisibleState[playerHash] = isVisible;
             
+            // Check if player is currently traveling to the target
+            bool isTraveling = _playerTravelingToTarget.TryGetValue(playerHash, out var traveling) && traveling;
+            
             if (wasVisible && !isVisible)
             {
                 // Target just became invisible, clear hint
                 Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Target {targetConfigId} no longer visible, clearing hint");
                 ClearHint(player);
+                
+                // If player was traveling but target disappeared, stop traveling state
+                if (isTraveling)
+                {
+                    _playerTravelingToTarget[playerHash] = false;
+                }
             }
-            else if (!wasVisible && isVisible)
+            else if (!wasVisible && isVisible && !isTraveling)
             {
-                // Target just became visible again, re-send hint
+                // Target just became visible again, re-send hint (only if not traveling)
                 Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Target {targetConfigId} visible again, re-sending hint");
                 SendTutorialHint(player, step);
             }
@@ -466,7 +475,18 @@ namespace Domain
 
         private void AdvanceStep(Player player, Step nextStep)
         {
-            playerStates[player.GetHashCode()] = nextStep;
+            int playerHash = player.GetHashCode();
+            playerStates[playerHash] = nextStep;
+            
+            // Clear traveling state when advancing to a new step
+            _playerTravelingToTarget[playerHash] = false;
+            
+            // Initialize visibility state for "See" steps to prevent false re-send
+            if (nextStep == Step.SeeGoldMine || nextStep == Step.SeeLizard || nextStep == Step.SeeStele)
+            {
+                _targetVisibleState[playerHash] = true;
+            }
+            
             SendTutorialHint(player, nextStep);
             
             // After advancing, check if the next target is already visible
@@ -569,7 +589,7 @@ namespace Domain
         
         /// <summary>
         /// Called when player clicks "GoTo" button on a character.
-        /// Clears the current hint and waits for player to arrive.
+        /// Clears the current hint and marks player as traveling.
         /// </summary>
         public void OnPlayerGoTo(Player player, Logic.Character target)
         {
@@ -589,8 +609,12 @@ namespace Domain
             
             if (shouldClear)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to target configId={targetConfigId}, clearing hint");
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to target configId={targetConfigId}, clearing hint and marking as traveling");
                 ClearHint(player);
+                
+                // Mark player as traveling - prevents CheckTargetVisibility from re-sending hint
+                int playerHash = player.GetHashCode();
+                _playerTravelingToTarget[playerHash] = true;
             }
         }
 

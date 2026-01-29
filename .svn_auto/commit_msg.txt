@@ -1,1 +1,7 @@
-[优化] 屏蔽高频调试日志以便于引导功能开发调试
+[修复] Tutorial引导系统显性引导消失问题
+
+- 修复OnPlayerParentChanged事件参数解析错误，使用闭包正确捕获player引用
+- 添加_playerTravelingToTarget状态追踪，防止玩家前往途中重复发送引导
+- AdvanceStep中初始化_targetVisibleState避免误判可见性变化
+- CheckTargetVisibility增加旅行状态检查，旅行中不重新发送引导
+- Complete方法清理所有状态字典避免内存泄漏
