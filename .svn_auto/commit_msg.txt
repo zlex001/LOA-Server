@@ -1,7 +1,5 @@
-[重构] 教程系统支持并行任务，金矿和蜥蜴可按遇到顺序完成
+[文档] 更新新手体验设计文档，添加教程流程图
 
-- 重构 Step 为 Phase + ExploreTask 结构，支持探索阶段内并行任务
-- 新增 SelectNearestExploreTarget 逻辑，优先引导玩家到最近的目标
-- 添加教程进度持久化到 Database.Player.record
-- 移除 OnAddPlayer 中的冗余监听器注册
-- 保留 Legacy API 兼容性
+- 添加 Mermaid 流程图展示完整教程流程
+- 补充阶段说明表格（Phase/ExploreTask/ExploreAction）
+- 添加数据持久化和断线处理说明
