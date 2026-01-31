@@ -1,7 +1,7 @@
-[修复] Tutorial引导系统步骤推进后引导被误清除
+[重构] 教程系统支持并行任务，金矿和蜥蜴可按遇到顺序完成
 
-- 添加_justAdvancedToSeeStep保护标志
-- AdvanceStep推进到See步骤时设置保护标志
-- CheckTargetVisibility检测到保护标志时跳过可见性检查
-- 防止Perception缓存未更新时误判目标不可见而清除引导
-- Complete时清理保护标志避免内存泄漏
+- 重构 Step 为 Phase + ExploreTask 结构，支持探索阶段内并行任务
+- 新增 SelectNearestExploreTarget 逻辑，优先引导玩家到最近的目标
+- 添加教程进度持久化到 Database.Player.record
+- 移除 OnAddPlayer 中的冗余监听器注册
+- 保留 Legacy API 兼容性

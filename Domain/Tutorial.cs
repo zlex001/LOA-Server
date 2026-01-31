@@ -1,4 +1,5 @@
 using Logic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,8 @@ namespace Domain
 {
     /// <summary>
     /// Tutorial system for new player guidance.
-    /// Manages tutorial steps and triggers appropriate hints.
+    /// Manages tutorial phases and triggers appropriate hints.
+    /// Supports parallel tasks within the Explore phase.
     /// </summary>
     public class Tutorial
     {
@@ -20,21 +22,38 @@ namespace Domain
         #region Constants
 
         /// <summary>
-        /// Tutorial step identifiers
+        /// Tutorial phase identifiers (linear progression)
         /// </summary>
-        public enum Step
+        public enum Phase
         {
             None = 0,
-            WalkToSand = 1,          // Guide player to walk to sand map
-            SeeGoldMine = 2,         // Player sees gold mine - guide to click and go
-            InteractGoldMine = 3,    // Player at gold mine - guide to interact
-            SeeLizard = 4,           // Player sees lizard - guide to click and go
-            AttackLizard = 5,        // Player at lizard - guide to attack
-            PickupItems = 6,         // Guide player to pickup items
-            SeeStele = 7,            // Player sees stele - guide to click and go
-            WalkToTower = 8,         // Guide player to walk to tower
-            GiveToStele = 9,         // Guide player to give items to stele
-            Completed = 100          // Tutorial completed
+            WalkToSand = 1,      // Guide player to walk to sand map
+            Explore = 2,         // Parallel: interact with gold mine AND defeat lizard (order flexible)
+            Collect = 3,         // Collect dropped items (gold ore + raw meat)
+            Offering = 4,        // Find stele and give items
+            Completed = 100      // Tutorial completed
+        }
+
+        /// <summary>
+        /// Explore phase sub-tasks (can be completed in any order)
+        /// </summary>
+        [Flags]
+        public enum ExploreTask
+        {
+            None = 0,
+            GoldMine = 1 << 0,   // Interact with gold mine
+            Lizard = 1 << 1,     // Defeat lizard
+            All = GoldMine | Lizard
+        }
+
+        /// <summary>
+        /// Current action within explore task
+        /// </summary>
+        public enum ExploreAction
+        {
+            None = 0,
+            SeeTarget = 1,       // Player sees target, guide to go
+            AtTarget = 2,        // Player at target, guide to interact/attack
         }
 
         /// <summary>
@@ -47,6 +66,10 @@ namespace Domain
             Creature = 3,
             Item = 4
         }
+
+        // Database record keys for persistence
+        private const string RecordPhase = "TutorialPhase";
+        private const string RecordExploreCompleted = "TutorialExplore";
 
         // Cached config IDs (resolved at runtime)
         private int _tutorialSandMapId;
@@ -61,20 +84,24 @@ namespace Domain
 
         #region State Storage
 
-        // Player tutorial state storage (player hash -> current step)
-        private Dictionary<int, Step> playerStates = new Dictionary<int, Step>();
-        
-        // Track target visibility state (player hash -> is target visible)
-        private Dictionary<int, bool> _targetVisibleState = new Dictionary<int, bool>();
-        
-        // Track if player is currently going to a target (hint should stay hidden during travel)
-        private Dictionary<int, bool> _playerTravelingToTarget = new Dictionary<int, bool>();
-        
+        /// <summary>
+        /// Player tutorial state
+        /// </summary>
+        private class PlayerState
+        {
+            public Phase Phase { get; set; } = Phase.None;
+            public ExploreTask ExploreCompleted { get; set; } = ExploreTask.None;
+            public ExploreTask CurrentExploreTarget { get; set; } = ExploreTask.None;
+            public ExploreAction CurrentAction { get; set; } = ExploreAction.None;
+            public bool IsTraveling { get; set; } = false;
+            public bool JustAdvanced { get; set; } = false;
+        }
+
+        // Player states (player hash -> state)
+        private Dictionary<int, PlayerState> _playerStates = new Dictionary<int, PlayerState>();
+
         // Track which players have map change listeners registered
         private HashSet<int> _registeredPlayers = new HashSet<int>();
-        
-        // Track if step just advanced (protect from immediate CheckTargetVisibility clearing)
-        private Dictionary<int, bool> _justAdvancedToSeeStep = new Dictionary<int, bool>();
 
         #endregion
 
@@ -84,11 +111,10 @@ namespace Domain
         {
             // Cache config IDs for runtime lookup
             CacheConfigIds();
-            
-            // Register event listeners - use Map.Event.Arrived for player movement detection
-            Logic.Agent.Instance.Content.Add.Register(typeof(Logic.Player), OnAddPlayer);
+
+            // Register event listeners
             Logic.Agent.Instance.monitor.Register(Logic.Player.Event.StoryComplete, OnStoryComplete);
-            
+
             // Register for first-seen events from Perception
             Perception.Agent.Instance.FirstSeen += OnFirstSeen;
         }
@@ -98,34 +124,26 @@ namespace Domain
             // Lookup Design layer configs for cid
             var tutorialSand = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-沙地");
             _tutorialSandMapId = tutorialSand?.id ?? 0;
-            
+
             var tutorialTower = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-通天塔");
             _tutorialTowerMapId = tutorialTower?.id ?? 0;
-            
+
             var goldOre = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿石");
             _goldOreItemId = goldOre?.id ?? 0;
-            
+
             var rawMeat = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "生肉");
             _rawMeatItemId = rawMeat?.id ?? 0;
-            
+
             var goldMine = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
             _goldMineItemId = goldMine?.id ?? 0;
-            
+
             var lizard = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
             _lizardLifeId = lizard?.id ?? 0;
-            
+
             var stele = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "石碑");
             _steleItemId = stele?.id ?? 0;
         }
 
-        private void OnAddPlayer(params object[] args)
-        {
-            var player = args[1] as Player;
-            if (player == null) return;
-            
-            RegisterPlayerMapListener(player);
-        }
-        
         /// <summary>
         /// Register map change listener for a player (ensures only registered once)
         /// </summary>
@@ -134,55 +152,17 @@ namespace Domain
             int playerHash = player.GetHashCode();
             if (_registeredPlayers.Contains(playerHash))
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[RegisterPlayerMapListener] Player already registered, skipping");
                 return;
             }
-            
+
             _registeredPlayers.Add(playerHash);
             Utils.Debug.Log.Info("TUTORIAL", $"[RegisterPlayerMapListener] Registering map change listener for player");
-            
+
             // Register for map changes using closure to capture player reference
             player.data.after.Register(Basic.Element.Data.Parent, (object[] parentArgs) =>
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[ParentChanged] Player map changed, calling OnPlayerMoved");
                 OnPlayerMoved(player);
             });
-        }
-        
-        private void OnFirstSeen(Player player, Character character)
-        {
-            if (player == null || character == null) return;
-            
-            var step = GetCurrentStep(player);
-            if (step == Step.None || step == Step.Completed) return;
-            
-            int configId = Perception.Agent.GetCharacterConfigId(character);
-            
-            Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Player sees character configId={configId}, currentStep={step}, goldMineId={_goldMineItemId}, lizardId={_lizardLifeId}, steleId={_steleItemId}");
-            
-            // Check if player sees gold mine during WalkToSand step
-            if (step == Step.WalkToSand && configId == _goldMineItemId)
-            {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Matched: gold mine at WalkToSand, advancing to SeeGoldMine");
-                AdvanceStep(player, Step.SeeGoldMine);
-                return;
-            }
-            
-            // Check if player sees lizard during InteractGoldMine step
-            if (step == Step.InteractGoldMine && configId == _lizardLifeId)
-            {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Matched: lizard at InteractGoldMine, advancing to SeeLizard");
-                AdvanceStep(player, Step.SeeLizard);
-                return;
-            }
-            
-            // Check if player sees stele during PickupItems step
-            if (step == Step.PickupItems && configId == _steleItemId)
-            {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Matched: stele at PickupItems, advancing to SeeStele");
-                AdvanceStep(player, Step.SeeStele);
-                return;
-            }
         }
 
         #endregion
@@ -196,25 +176,30 @@ namespace Domain
         {
             if (player == null) return;
 
-            Utils.Debug.Log.Info("TUTORIAL", $"[Start] Starting tutorial for player, goldMineId={_goldMineItemId}, lizardId={_lizardLifeId}, steleId={_steleItemId}");
-            
-            // Ensure map change listener is registered for this player
+            Utils.Debug.Log.Info("TUTORIAL", $"[Start] Starting tutorial for player");
+
+            // Register map change listener
             RegisterPlayerMapListener(player);
-            
-            playerStates[player.GetHashCode()] = Step.WalkToSand;
-            SendTutorialHint(player, Step.WalkToSand);
-            
-            // After starting, check if gold mine is already visible
-            CheckVisibilityAfterAdvance(player, Step.WalkToSand);
+
+            // Initialize state
+            var state = GetOrCreateState(player);
+            state.Phase = Phase.WalkToSand;
+
+            // Save and send hint
+            SaveProgress(player, state);
+            SendPhaseHint(player, state);
+
+            // Check if already at sand or can see targets
+            CheckInitialVisibility(player, state);
         }
 
         /// <summary>
-        /// Get current tutorial step for player
+        /// Get current tutorial phase for player
         /// </summary>
-        public Step GetCurrentStep(Player player)
+        public Phase GetCurrentPhase(Player player)
         {
-            if (player == null) return Step.None;
-            return playerStates.TryGetValue(player.GetHashCode(), out var step) ? step : Step.None;
+            if (player == null) return Phase.None;
+            return _playerStates.TryGetValue(player.GetHashCode(), out var state) ? state.Phase : Phase.None;
         }
 
         /// <summary>
@@ -222,8 +207,17 @@ namespace Domain
         /// </summary>
         public bool IsInTutorial(Player player)
         {
-            var step = GetCurrentStep(player);
-            return step != Step.None && step != Step.Completed;
+            var phase = GetCurrentPhase(player);
+            return phase != Phase.None && phase != Phase.Completed;
+        }
+
+        /// <summary>
+        /// Load tutorial progress from database (for data analysis, not restoration)
+        /// </summary>
+        public Phase LoadProgress(Player player)
+        {
+            int phaseValue = player.Database.GetRecord(RecordPhase);
+            return Enum.IsDefined(typeof(Phase), phaseValue) ? (Phase)phaseValue : Phase.None;
         }
 
         /// <summary>
@@ -234,7 +228,13 @@ namespace Domain
             if (player == null) return;
 
             int playerHash = player.GetHashCode();
-            playerStates[playerHash] = Step.Completed;
+
+            // Update state
+            var state = GetOrCreateState(player);
+            state.Phase = Phase.Completed;
+            SaveProgress(player, state);
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[Complete] Tutorial completed for player");
 
             // Exit copy if in one
             if (player.Map?.Copy != null)
@@ -250,32 +250,120 @@ namespace Domain
                 Move.Agent.Do(player, destination);
             }
 
-            // Clean up all state dictionaries
-            playerStates.Remove(playerHash);
-            _targetVisibleState.Remove(playerHash);
-            _playerTravelingToTarget.Remove(playerHash);
+            // Clean up memory state (keep database record for analytics)
+            _playerStates.Remove(playerHash);
             _registeredPlayers.Remove(playerHash);
-            _justAdvancedToSeeStep.Remove(playerHash);
         }
 
         /// <summary>
-        /// Called when player interacts with an item (for give action detection)
+        /// Called when player interacts with gold mine
+        /// </summary>
+        public void OnInteractGoldMine(Player player)
+        {
+            var state = GetState(player);
+            if (state == null || state.Phase != Phase.Explore) return;
+            if (state.CurrentExploreTarget != ExploreTask.GoldMine) return;
+            if (state.CurrentAction != ExploreAction.AtTarget) return;
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[OnInteractGoldMine] Gold mine interaction completed");
+
+            // Mark gold mine as completed
+            state.ExploreCompleted |= ExploreTask.GoldMine;
+            state.CurrentExploreTarget = ExploreTask.None;
+            state.CurrentAction = ExploreAction.None;
+
+            CheckExploreCompletion(player, state);
+        }
+
+        /// <summary>
+        /// Called when player defeats lizard
+        /// </summary>
+        public void OnDefeatLizard(Player player)
+        {
+            var state = GetState(player);
+            if (state == null || state.Phase != Phase.Explore) return;
+            if (state.CurrentExploreTarget != ExploreTask.Lizard) return;
+            if (state.CurrentAction != ExploreAction.AtTarget) return;
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[OnDefeatLizard] Lizard defeated");
+
+            // Mark lizard as completed
+            state.ExploreCompleted |= ExploreTask.Lizard;
+            state.CurrentExploreTarget = ExploreTask.None;
+            state.CurrentAction = ExploreAction.None;
+
+            CheckExploreCompletion(player, state);
+        }
+
+        /// <summary>
+        /// Called when player picks up items
+        /// </summary>
+        public void OnPickupItem(Player player, Item item)
+        {
+            var state = GetState(player);
+            if (state == null || state.Phase != Phase.Collect) return;
+
+            // Check if player has both gold ore and raw meat
+            bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+            bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
+
+            if (hasGoldOre && hasRawMeat)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnPickupItem] All items collected, advancing to Offering");
+                AdvancePhase(player, state, Phase.Offering);
+            }
+        }
+
+        /// <summary>
+        /// Called when player gives items to stele
         /// </summary>
         public void OnGiveToStele(Player player, Item stele, Item givenItem)
         {
             if (player == null || stele == null) return;
 
-            var step = GetCurrentStep(player);
-            if (step != Step.GiveToStele) return;
+            var state = GetState(player);
+            if (state == null || state.Phase != Phase.Offering) return;
 
-            // Check if stele has required items (gold ore and raw meat)
+            // Check if stele has required items
             bool hasGoldOre = stele.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
             bool hasRawMeat = stele.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
 
             if (hasGoldOre && hasRawMeat)
             {
-                // Play story
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnGiveToStele] Items given, playing story");
                 PlayTutorialStory(player);
+            }
+        }
+
+        /// <summary>
+        /// Called when player clicks "GoTo" button on a character.
+        /// </summary>
+        public void OnPlayerGoTo(Player player, Logic.Character target)
+        {
+            var state = GetState(player);
+            if (state == null) return;
+
+            int targetConfigId = Perception.Agent.GetCharacterConfigId(target);
+
+            // Check if this is the current explore target
+            if (state.Phase == Phase.Explore && state.CurrentAction == ExploreAction.SeeTarget)
+            {
+                bool isCurrentTarget =
+                    (state.CurrentExploreTarget == ExploreTask.GoldMine && targetConfigId == _goldMineItemId) ||
+                    (state.CurrentExploreTarget == ExploreTask.Lizard && targetConfigId == _lizardLifeId);
+
+                if (isCurrentTarget)
+                {
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to explore target");
+                    state.IsTraveling = true;
+                    ClearHint(player);
+                }
+            }
+            else if (state.Phase == Phase.Offering && targetConfigId == _steleItemId)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to stele");
+                state.IsTraveling = true;
+                ClearHint(player);
             }
         }
 
@@ -283,160 +371,143 @@ namespace Domain
 
         #region Event Handlers
 
+        private void OnFirstSeen(Player player, Character character)
+        {
+            if (player == null || character == null) return;
+
+            var state = GetState(player);
+            if (state == null || state.Phase == Phase.None || state.Phase == Phase.Completed) return;
+
+            int configId = Perception.Agent.GetCharacterConfigId(character);
+
+            switch (state.Phase)
+            {
+                case Phase.WalkToSand:
+                    // Seeing gold mine or lizard means we should enter Explore phase
+                    if (configId == _goldMineItemId || configId == _lizardLifeId)
+                    {
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Saw explore target at WalkToSand, advancing to Explore");
+                        AdvancePhase(player, state, Phase.Explore);
+                    }
+                    break;
+
+                case Phase.Explore:
+                    // If we don't have a current target, find the nearest visible one
+                    if (state.CurrentExploreTarget == ExploreTask.None)
+                    {
+                        SelectNearestExploreTarget(player, state);
+                    }
+                    break;
+
+                case Phase.Collect:
+                    // If we see the stele, we can skip to Offering
+                    if (configId == _steleItemId)
+                    {
+                        bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+                        bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
+                        if (hasGoldOre && hasRawMeat)
+                        {
+                            Utils.Debug.Log.Info("TUTORIAL", $"[OnFirstSeen] Saw stele with items, advancing to Offering");
+                            AdvancePhase(player, state, Phase.Offering);
+                        }
+                    }
+                    break;
+            }
+        }
+
         private void OnPlayerMoved(Player player)
         {
             if (player == null) return;
 
-            var step = GetCurrentStep(player);
-            if (step == Step.None || step == Step.Completed) return;
+            var state = GetState(player);
+            if (state == null || state.Phase == Phase.None || state.Phase == Phase.Completed) return;
 
             var currentMap = player.Map;
             if (currentMap == null) return;
-            
-            Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Step={step}, MapConfigId={currentMap.Config?.Id}");
-            
-            // Check if target is still visible for "See" steps, clear hint if not
-            CheckTargetVisibility(player, step);
 
-            switch (step)
+            switch (state.Phase)
             {
-                case Step.WalkToSand:
-                    // If player walks to sand without seeing gold mine first, skip to SeeGoldMine
+                case Phase.WalkToSand:
                     if (currentMap.Config.Id == _tutorialSandMapId)
                     {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at sand map, advancing to SeeGoldMine");
-                        AdvanceStep(player, Step.SeeGoldMine);
-                    }
-                    break;
-                    
-                case Step.SeeGoldMine:
-                    // Player arrived at gold mine location - guide to interact
-                    bool atGoldMine = IsAtCharacterLocation(player, _goldMineItemId);
-                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] SeeGoldMine: atGoldMine={atGoldMine}");
-                    if (atGoldMine)
-                    {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at gold mine, advancing to InteractGoldMine");
-                        AdvanceStep(player, Step.InteractGoldMine);
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at sand map, advancing to Explore");
+                        AdvancePhase(player, state, Phase.Explore);
                     }
                     break;
 
-                case Step.InteractGoldMine:
-                    // Handled by OnInteractGoldMine
-                    break;
-                    
-                case Step.SeeLizard:
-                    // Player arrived at lizard location - guide to attack
-                    bool atLizard = IsAtCharacterLocation(player, _lizardLifeId);
-                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] SeeLizard: atLizard={atLizard}");
-                    if (atLizard)
-                    {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at lizard, advancing to AttackLizard");
-                        AdvanceStep(player, Step.AttackLizard);
-                    }
+                case Phase.Explore:
+                    HandleExploreMoved(player, state);
                     break;
 
-                case Step.AttackLizard:
-                case Step.PickupItems:
-                    // These are handled by combat/pickup events
-                    break;
-                    
-                case Step.SeeStele:
-                    // Player arrived at stele location - guide to give
-                    bool atStele = IsAtCharacterLocation(player, _steleItemId);
-                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] SeeStele: atStele={atStele}");
-                    if (atStele)
-                    {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at stele, advancing to GiveToStele");
-                        AdvanceStep(player, Step.GiveToStele);
-                    }
-                    break;
-
-                case Step.WalkToTower:
-                    if (currentMap.Config.Id == _tutorialTowerMapId)
-                    {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at tower, advancing to GiveToStele");
-                        AdvanceStep(player, Step.GiveToStele);
-                    }
+                case Phase.Offering:
+                    HandleOfferingMoved(player, state);
                     break;
             }
         }
-        
-        /// <summary>
-        /// Check if the target for the current step is still visible.
-        /// If target is no longer visible, clear the hint.
-        /// If target becomes visible again, re-send the hint (unless player is traveling to target).
-        /// </summary>
-        private void CheckTargetVisibility(Player player, Step step)
+
+        private void HandleExploreMoved(Player player, PlayerState state)
         {
-            int targetConfigId = step switch
+            if (state.CurrentExploreTarget == ExploreTask.None)
             {
-                Step.SeeGoldMine => _goldMineItemId,
-                Step.SeeLizard => _lizardLifeId,
-                Step.SeeStele => _steleItemId,
-                _ => 0
-            };
-            
-            if (targetConfigId == 0) return;
-            
-            int playerHash = player.GetHashCode();
-            
-            // Check if step just advanced - if so, skip this check and clear the flag
-            // This protects against false "no longer visible" when Perception cache hasn't updated yet
-            if (_justAdvancedToSeeStep.TryGetValue(playerHash, out var justAdvanced) && justAdvanced)
-            {
-                _justAdvancedToSeeStep[playerHash] = false;
-                Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Skipping check - step just advanced, protection active");
+                // No target selected, try to find one
+                SelectNearestExploreTarget(player, state);
                 return;
             }
-            
-            bool isVisible = CanSeeCharacter(player, targetConfigId);
-            
-            // Track visibility state per player
-            bool wasVisible = _targetVisibleState.TryGetValue(playerHash, out var prevVisible) && prevVisible;
-            _targetVisibleState[playerHash] = isVisible;
-            
-            // Check if player is currently traveling to the target
-            bool isTraveling = _playerTravelingToTarget.TryGetValue(playerHash, out var traveling) && traveling;
-            
-            if (wasVisible && !isVisible)
+
+            // Check if player arrived at current target
+            int targetConfigId = state.CurrentExploreTarget == ExploreTask.GoldMine ? _goldMineItemId : _lizardLifeId;
+
+            if (state.CurrentAction == ExploreAction.SeeTarget)
             {
-                // Target just became invisible, clear hint
-                Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Target {targetConfigId} no longer visible, clearing hint");
-                ClearHint(player);
-                
-                // If player was traveling but target disappeared, stop traveling state
-                if (isTraveling)
+                // Check if arrived at target location
+                if (IsAtCharacterLocation(player, targetConfigId))
                 {
-                    _playerTravelingToTarget[playerHash] = false;
+                    Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Arrived at {state.CurrentExploreTarget}");
+                    state.CurrentAction = ExploreAction.AtTarget;
+                    state.IsTraveling = false;
+                    SendExploreHint(player, state);
+                }
+                else if (!state.IsTraveling)
+                {
+                    // Check visibility
+                    bool isVisible = CanSeeCharacter(player, targetConfigId);
+                    if (!isVisible && !state.JustAdvanced)
+                    {
+                        // Target no longer visible, clear hint and try to find another
+                        ClearHint(player);
+                        state.CurrentExploreTarget = ExploreTask.None;
+                        state.CurrentAction = ExploreAction.None;
+                        SelectNearestExploreTarget(player, state);
+                    }
                 }
             }
-            else if (!wasVisible && isVisible && !isTraveling)
-            {
-                // Target just became visible again, re-send hint (only if not traveling)
-                Utils.Debug.Log.Info("TUTORIAL", $"[CheckTargetVisibility] Target {targetConfigId} visible again, re-sending hint");
-                SendTutorialHint(player, step);
-            }
+
+            state.JustAdvanced = false;
         }
-        
-        private bool IsAtCharacterLocation(Player player, int configId)
+
+        private void HandleOfferingMoved(Player player, PlayerState state)
         {
-            if (player.Map == null) return false;
-            
-            // Check if there's a character with this config ID in the player's current map
-            var copy = player.Map.Copy;
-            if (copy != null)
+            // Check if player arrived at stele
+            if (IsAtCharacterLocation(player, _steleItemId))
             {
-                foreach (var map in copy.Content.Gets<Logic.Copy.Map>())
+                Utils.Debug.Log.Info("TUTORIAL", $"[HandleOfferingMoved] Arrived at stele");
+                state.IsTraveling = false;
+                SendOfferingHint(player, true);
+            }
+            else if (!state.IsTraveling)
+            {
+                // Check if stele is visible
+                bool isVisible = CanSeeCharacter(player, _steleItemId);
+                if (isVisible)
                 {
-                    if (map != player.Map) continue;
-                    
-                    // Check items
-                    if (map.Content.Has<Item>(i => i.Config?.Id == configId)) return true;
-                    // Check lives
-                    if (map.Content.Has<Life>(l => l.Config?.Id == configId)) return true;
+                    SendOfferingHint(player, false);
+                }
+                else
+                {
+                    // Guide to tower map
+                    SendWalkToTowerHint(player);
                 }
             }
-            return false;
         }
 
         private void OnStoryComplete(params object[] args)
@@ -446,75 +517,221 @@ namespace Domain
             var player = args[0] as Player;
             if (player == null) return;
 
-            // Check if player is in GiveToStele step (story was triggered from tutorial)
-            var step = GetCurrentStep(player);
-            if (step != Step.GiveToStele) return;
+            var state = GetState(player);
+            if (state == null || state.Phase != Phase.Offering) return;
 
-            // Complete tutorial
             Complete(player);
         }
 
-        /// <summary>
-        /// Called when player interacts with gold mine
-        /// </summary>
-        public void OnInteractGoldMine(Player player)
+        #endregion
+
+        #region Private Methods
+
+        private PlayerState GetState(Player player)
         {
-            var step = GetCurrentStep(player);
-            if (step == Step.InteractGoldMine)
-            {
-                // After interacting with gold mine, check if lizard is already visible
-                // If so, go to SeeLizard, otherwise wait for FirstSeen event
-                if (CanSeeCharacter(player, _lizardLifeId))
-                {
-                    AdvanceStep(player, Step.SeeLizard);
-                }
-                else
-                {
-                    // Stay at InteractGoldMine until FirstSeen triggers SeeLizard
-                    // This handles the case where lizard comes into view later
-                }
-            }
+            if (player == null) return null;
+            return _playerStates.TryGetValue(player.GetHashCode(), out var state) ? state : null;
         }
 
-        /// <summary>
-        /// Called when player defeats lizard
-        /// </summary>
-        public void OnDefeatLizard(Player player)
+        private PlayerState GetOrCreateState(Player player)
         {
-            var step = GetCurrentStep(player);
-            if (step == Step.AttackLizard)
+            int hash = player.GetHashCode();
+            if (!_playerStates.TryGetValue(hash, out var state))
             {
-                AdvanceStep(player, Step.PickupItems);
+                state = new PlayerState();
+                _playerStates[hash] = state;
             }
+            return state;
         }
 
-        /// <summary>
-        /// Called when player picks up items
-        /// </summary>
-        public void OnPickupItem(Player player, Item item)
+        private void SaveProgress(Player player, PlayerState state)
         {
-            var step = GetCurrentStep(player);
-            if (step == Step.PickupItems)
-            {
-                // Check if player has both gold ore and raw meat
-                bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
-                bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
+            player.Database.record[RecordPhase] = (int)state.Phase;
+            player.Database.record[RecordExploreCompleted] = (int)state.ExploreCompleted;
+            Utils.Debug.Log.Info("TUTORIAL", $"[SaveProgress] Phase={state.Phase}, ExploreCompleted={state.ExploreCompleted}");
+        }
 
-                if (hasGoldOre && hasRawMeat)
-                {
-                    // Check if stele is already visible
-                    if (CanSeeCharacter(player, _steleItemId))
+        private void AdvancePhase(Player player, PlayerState state, Phase newPhase)
+        {
+            Utils.Debug.Log.Info("TUTORIAL", $"[AdvancePhase] {state.Phase} -> {newPhase}");
+
+            state.Phase = newPhase;
+            state.IsTraveling = false;
+            state.JustAdvanced = true;
+
+            SaveProgress(player, state);
+
+            switch (newPhase)
+            {
+                case Phase.Explore:
+                    state.ExploreCompleted = ExploreTask.None;
+                    state.CurrentExploreTarget = ExploreTask.None;
+                    state.CurrentAction = ExploreAction.None;
+                    SelectNearestExploreTarget(player, state);
+                    break;
+
+                case Phase.Collect:
+                    SendCollectHint(player);
+                    // Check if items already collected
+                    CheckCollectCompletion(player, state);
+                    break;
+
+                case Phase.Offering:
+                    // Check if at stele or can see stele
+                    if (IsAtCharacterLocation(player, _steleItemId))
                     {
-                        AdvanceStep(player, Step.SeeStele);
+                        SendOfferingHint(player, true);
+                    }
+                    else if (CanSeeCharacter(player, _steleItemId))
+                    {
+                        SendOfferingHint(player, false);
                     }
                     else
                     {
-                        AdvanceStep(player, Step.WalkToTower);
+                        SendWalkToTowerHint(player);
                     }
-                }
+                    break;
             }
         }
-        
+
+        private void CheckExploreCompletion(Player player, PlayerState state)
+        {
+            SaveProgress(player, state);
+
+            if (state.ExploreCompleted == ExploreTask.All)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckExploreCompletion] All explore tasks completed, advancing to Collect");
+                AdvancePhase(player, state, Phase.Collect);
+            }
+            else
+            {
+                // Find next target
+                SelectNearestExploreTarget(player, state);
+            }
+        }
+
+        private void CheckCollectCompletion(Player player, PlayerState state)
+        {
+            bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+            bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
+
+            if (hasGoldOre && hasRawMeat)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckCollectCompletion] Items already collected, advancing to Offering");
+                AdvancePhase(player, state, Phase.Offering);
+            }
+        }
+
+        private void CheckInitialVisibility(Player player, PlayerState state)
+        {
+            // Check if player can already see gold mine or lizard
+            bool canSeeGoldMine = CanSeeCharacter(player, _goldMineItemId);
+            bool canSeeLizard = CanSeeCharacter(player, _lizardLifeId);
+
+            if (canSeeGoldMine || canSeeLizard)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckInitialVisibility] Can already see targets, advancing to Explore");
+                AdvancePhase(player, state, Phase.Explore);
+            }
+        }
+
+        /// <summary>
+        /// Select the nearest visible explore target that hasn't been completed
+        /// </summary>
+        private void SelectNearestExploreTarget(Player player, PlayerState state)
+        {
+            var remainingTasks = ExploreTask.All & ~state.ExploreCompleted;
+            if (remainingTasks == ExploreTask.None)
+            {
+                // All tasks completed, should not happen here
+                return;
+            }
+
+            // Get visible characters
+            var visibleCharacters = Perception.Agent.Instance.GetVisibleCharacters(player);
+
+            // Find candidates
+            var candidates = new List<(ExploreTask task, Character character)>();
+
+            if (remainingTasks.HasFlag(ExploreTask.GoldMine))
+            {
+                var goldMine = visibleCharacters.FirstOrDefault(c => Perception.Agent.GetCharacterConfigId(c) == _goldMineItemId);
+                if (goldMine != null)
+                {
+                    candidates.Add((ExploreTask.GoldMine, goldMine));
+                }
+            }
+
+            if (remainingTasks.HasFlag(ExploreTask.Lizard))
+            {
+                var lizard = visibleCharacters.FirstOrDefault(c => Perception.Agent.GetCharacterConfigId(c) == _lizardLifeId);
+                if (lizard != null)
+                {
+                    candidates.Add((ExploreTask.Lizard, lizard));
+                }
+            }
+
+            if (candidates.Count == 0)
+            {
+                // No visible targets, send generic explore hint
+                Utils.Debug.Log.Info("TUTORIAL", $"[SelectNearestExploreTarget] No visible targets");
+                state.CurrentExploreTarget = ExploreTask.None;
+                state.CurrentAction = ExploreAction.None;
+                SendExploreWaitHint(player);
+                return;
+            }
+
+            // Select nearest (or first if only one)
+            ExploreTask selectedTask;
+            if (candidates.Count == 1)
+            {
+                selectedTask = candidates[0].task;
+            }
+            else
+            {
+                // Both visible - select based on distance
+                // Since we don't have position info easily, we'll use a simple heuristic:
+                // Check which one is in the same map as the player
+                var playerMap = player.Map;
+                var goldMineInMap = playerMap?.Content.Has<Item>(i => i.Config?.Id == _goldMineItemId) ?? false;
+                var lizardInMap = playerMap?.Content.Has<Life>(l => l.Config?.Id == _lizardLifeId) ?? false;
+
+                if (goldMineInMap && !lizardInMap)
+                {
+                    selectedTask = ExploreTask.GoldMine;
+                }
+                else if (lizardInMap && !goldMineInMap)
+                {
+                    selectedTask = ExploreTask.Lizard;
+                }
+                else
+                {
+                    // Both or neither in same map, default to gold mine (safer for new players)
+                    selectedTask = ExploreTask.GoldMine;
+                }
+            }
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[SelectNearestExploreTarget] Selected {selectedTask}");
+
+            state.CurrentExploreTarget = selectedTask;
+            state.CurrentAction = ExploreAction.SeeTarget;
+            state.JustAdvanced = true;
+
+            SendExploreHint(player, state);
+        }
+
+        private bool IsAtCharacterLocation(Player player, int configId)
+        {
+            if (player.Map == null) return false;
+
+            // Check items in current map
+            if (player.Map.Content.Has<Item>(i => i.Config?.Id == configId)) return true;
+            // Check lives in current map
+            if (player.Map.Content.Has<Life>(l => l.Config?.Id == configId)) return true;
+
+            return false;
+        }
+
         private bool CanSeeCharacter(Player player, int configId)
         {
             var visibleCharacters = Perception.Agent.Instance.GetVisibleCharacters(player);
@@ -523,184 +740,150 @@ namespace Domain
 
         #endregion
 
-        #region Private Methods
+        #region Hint Methods
 
-        private void AdvanceStep(Player player, Step nextStep)
+        private void SendPhaseHint(Player player, PlayerState state)
         {
-            int playerHash = player.GetHashCode();
-            playerStates[playerHash] = nextStep;
-            
-            // Clear traveling state when advancing to a new step
-            _playerTravelingToTarget[playerHash] = false;
-            
-            // For "See" steps, set protection flag to prevent immediate clearing by CheckTargetVisibility
-            // This is needed because Perception cache may not be updated yet when OnPlayerMoved triggers
-            if (nextStep == Step.SeeGoldMine || nextStep == Step.SeeLizard || nextStep == Step.SeeStele)
+            switch (state.Phase)
             {
-                _targetVisibleState[playerHash] = true;
-                _justAdvancedToSeeStep[playerHash] = true;
-                Utils.Debug.Log.Info("TUTORIAL", $"[AdvanceStep] Set protection flag for See step: {nextStep}");
-            }
-            
-            SendTutorialHint(player, nextStep);
-            
-            // After advancing, check if the next target is already visible
-            // This handles the case where FirstSeen already fired before we entered this step
-            CheckVisibilityAfterAdvance(player, nextStep);
-        }
-        
-        /// <summary>
-        /// After advancing to a new step, check if the target for next step is already visible.
-        /// This fixes timing issues where FirstSeen fired before we were ready for it.
-        /// </summary>
-        private void CheckVisibilityAfterAdvance(Player player, Step currentStep)
-        {
-            switch (currentStep)
-            {
-                case Step.WalkToSand:
-                    // If gold mine is already visible, advance to SeeGoldMine
-                    if (CanSeeCharacter(player, _goldMineItemId))
-                    {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Gold mine already visible at WalkToSand, advancing to SeeGoldMine");
-                        AdvanceStep(player, Step.SeeGoldMine);
-                    }
+                case Phase.WalkToSand:
+                    SendWalkToSandHint(player);
                     break;
-                    
-                case Step.InteractGoldMine:
-                    // If lizard is already visible, advance to SeeLizard
-                    if (CanSeeCharacter(player, _lizardLifeId))
-                    {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Lizard already visible at InteractGoldMine, advancing to SeeLizard");
-                        AdvanceStep(player, Step.SeeLizard);
-                    }
+                case Phase.Explore:
+                    SendExploreHint(player, state);
                     break;
-                    
-                case Step.PickupItems:
-                    // Check if player already has required items
-                    bool hasGoldOre = player.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
-                    bool hasRawMeat = player.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
-                    
-                    if (hasGoldOre && hasRawMeat)
-                    {
-                        // If stele is already visible, advance to SeeStele
-                        if (CanSeeCharacter(player, _steleItemId))
-                        {
-                            Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Stele already visible at PickupItems, advancing to SeeStele");
-                            AdvanceStep(player, Step.SeeStele);
-                        }
-                        else
-                        {
-                            // Items collected but stele not visible, guide to tower
-                            Utils.Debug.Log.Info("TUTORIAL", $"[CheckVisibility] Items collected but stele not visible, advancing to WalkToTower");
-                            AdvanceStep(player, Step.WalkToTower);
-                        }
-                    }
+                case Phase.Collect:
+                    SendCollectHint(player);
+                    break;
+                case Phase.Offering:
+                    SendOfferingHint(player, false);
                     break;
             }
         }
 
-        private void SendTutorialHint(Player player, Step step)
+        private void SendWalkToSandHint(Player player)
         {
-            var (targetType, targetId, targetPath, targetPos, hintCid) = GetStepHint(step, player);
-            
-            // Translate hint cid to localized text
-            string hintText = string.IsNullOrEmpty(hintCid) 
-                ? "" 
-                : Domain.Text.Agent.Instance.GetByCid(hintCid, player);
-            
-            Utils.Debug.Log.Info("TUTORIAL", $"[SendTutorialHint] Step={step}, TargetType={targetType}, TargetId={targetId}, TargetPos={FormatPos(targetPos)}, Hint={hintText}");
-            
+            var pos = GetMapPos(_tutorialSandMapId, player);
             var protocol = new Net.Protocol.Tutorial(
-                (int)step,
-                (int)targetType,
-                targetId,
-                targetPath,
-                targetPos,
-                hintText
+                (int)Phase.WalkToSand,
+                (int)TargetType.Map,
+                0,
+                "",
+                pos,
+                ""
             );
-
             Net.Tcp.Instance.Send(player, protocol);
         }
-        
-        /// <summary>
-        /// Clear the current tutorial hint on client side.
-        /// Sends a Tutorial protocol with step=0 to hide the visual guide.
-        /// </summary>
-        private void ClearHint(Player player)
+
+        private void SendExploreHint(Player player, PlayerState state)
         {
-            Utils.Debug.Log.Info("TUTORIAL", $"[ClearHint] Clearing tutorial hint for player");
-            
+            if (state.CurrentExploreTarget == ExploreTask.None)
+            {
+                SendExploreWaitHint(player);
+                return;
+            }
+
+            int targetId;
+            TargetType targetType;
+            string path;
+            string hintCid;
+
+            if (state.CurrentExploreTarget == ExploreTask.GoldMine)
+            {
+                targetId = _goldMineItemId;
+                targetType = TargetType.Item;
+                path = state.CurrentAction == ExploreAction.SeeTarget ? "characters/goto" : "actions/interact";
+                hintCid = state.CurrentAction == ExploreAction.SeeTarget ? "tutorial_goto" : "tutorial_interact";
+            }
+            else
+            {
+                targetId = _lizardLifeId;
+                targetType = TargetType.Creature;
+                path = state.CurrentAction == ExploreAction.SeeTarget ? "characters/goto" : "actions/attack";
+                hintCid = state.CurrentAction == ExploreAction.SeeTarget ? "tutorial_goto" : "tutorial_attack";
+            }
+
+            string hintText = Domain.Text.Agent.Instance.GetByCid(hintCid, player);
+
             var protocol = new Net.Protocol.Tutorial(
-                0,  // step=0 means clear/hide
-                0,
+                (int)Phase.Explore,
+                (int)targetType,
+                targetId,
+                path,
+                null,
+                hintText
+            );
+            Net.Tcp.Instance.Send(player, protocol);
+        }
+
+        private void SendExploreWaitHint(Player player)
+        {
+            // Generic hint to explore the area
+            var protocol = new Net.Protocol.Tutorial(
+                (int)Phase.Explore,
+                (int)TargetType.UI,
                 0,
                 "",
                 null,
                 ""
             );
-            
             Net.Tcp.Instance.Send(player, protocol);
         }
-        
-        /// <summary>
-        /// Called when player clicks "GoTo" button on a character.
-        /// Clears the current hint and marks player as traveling.
-        /// </summary>
-        public void OnPlayerGoTo(Player player, Logic.Character target)
+
+        private void SendCollectHint(Player player)
         {
-            if (!playerStates.TryGetValue(player.GetHashCode(), out var step))
-                return;
-            
-            // Only handle if we're in a "See" step waiting for GoTo action
-            int targetConfigId = Perception.Agent.GetCharacterConfigId(target);
-            
-            bool shouldClear = step switch
-            {
-                Step.SeeGoldMine => targetConfigId == _goldMineItemId,
-                Step.SeeLizard => targetConfigId == _lizardLifeId,
-                Step.SeeStele => targetConfigId == _steleItemId,
-                _ => false
-            };
-            
-            if (shouldClear)
-            {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to target configId={targetConfigId}, clearing hint and marking as traveling");
-                ClearHint(player);
-                
-                // Mark player as traveling - prevents CheckTargetVisibility from re-sending hint
-                int playerHash = player.GetHashCode();
-                _playerTravelingToTarget[playerHash] = true;
-            }
+            string hintText = Domain.Text.Agent.Instance.GetByCid("tutorial_pickup", player);
+
+            var protocol = new Net.Protocol.Tutorial(
+                (int)Phase.Collect,
+                (int)TargetType.Item,
+                0,
+                "actions/pickup",
+                null,
+                hintText
+            );
+            Net.Tcp.Instance.Send(player, protocol);
         }
 
-        private static string FormatPos(int[] pos) => pos != null ? $"[{string.Join(",", pos)}]" : "null";
-
-        private (TargetType type, int id, string path, int[] pos, string hint) GetStepHint(Step step, Player player)
+        private void SendOfferingHint(Player player, bool atStele)
         {
-            return step switch
-            {
-                // For Map type: use targetPos with coordinates (client matches by pos)
-                Step.WalkToSand => (TargetType.Map, 0, "", GetMapPos(_tutorialSandMapId, player), ""),
-                Step.WalkToTower => (TargetType.Map, 0, "", GetMapPos(_tutorialTowerMapId, player), ""),
-                
-                // See steps: highlight the character in list, guide player to click and use "Go" button
-                Step.SeeGoldMine => (TargetType.Item, _goldMineItemId, "characters/goto", null, "tutorial_goto"),
-                Step.SeeLizard => (TargetType.Creature, _lizardLifeId, "characters/goto", null, "tutorial_goto"),
-                Step.SeeStele => (TargetType.Item, _steleItemId, "characters/goto", null, "tutorial_goto"),
-                
-                // Interact steps: player is at location, guide specific interaction
-                Step.InteractGoldMine => (TargetType.Item, _goldMineItemId, "actions/interact", null, "tutorial_interact"),
-                Step.AttackLizard => (TargetType.Creature, _lizardLifeId, "actions/attack", null, "tutorial_attack"),
-                Step.GiveToStele => (TargetType.Item, _steleItemId, "actions/give", null, "tutorial_give"),
-                
-                Step.PickupItems => (TargetType.Item, 0, "actions/pickup", null, "tutorial_pickup"),
-                _ => (TargetType.UI, 0, "", null, "")
-            };
+            string path = atStele ? "actions/give" : "characters/goto";
+            string hintCid = atStele ? "tutorial_give" : "tutorial_goto";
+            string hintText = Domain.Text.Agent.Instance.GetByCid(hintCid, player);
+
+            var protocol = new Net.Protocol.Tutorial(
+                (int)Phase.Offering,
+                (int)TargetType.Item,
+                _steleItemId,
+                path,
+                null,
+                hintText
+            );
+            Net.Tcp.Instance.Send(player, protocol);
+        }
+
+        private void SendWalkToTowerHint(Player player)
+        {
+            var pos = GetMapPos(_tutorialTowerMapId, player);
+            var protocol = new Net.Protocol.Tutorial(
+                (int)Phase.Offering,
+                (int)TargetType.Map,
+                0,
+                "",
+                pos,
+                ""
+            );
+            Net.Tcp.Instance.Send(player, protocol);
+        }
+
+        private void ClearHint(Player player)
+        {
+            var protocol = new Net.Protocol.Tutorial(0, 0, 0, "", null, "");
+            Net.Tcp.Instance.Send(player, protocol);
         }
 
         private int[] GetMapPos(int mapId, Player player)
         {
-            // Find map in player's current copy/scene
             var currentMap = player.Map;
             if (currentMap?.Copy != null)
             {
@@ -734,6 +917,75 @@ namespace Domain
 
             var story = new Net.Protocol.Story(dialogues);
             Net.Tcp.Instance.Send(player, story);
+        }
+
+        #endregion
+
+        #region Legacy API Compatibility
+
+        /// <summary>
+        /// Legacy Step enum for backward compatibility
+        /// Maps to new Phase + ExploreTask system
+        /// </summary>
+        public enum Step
+        {
+            None = 0,
+            WalkToSand = 1,
+            SeeGoldMine = 2,
+            InteractGoldMine = 3,
+            SeeLizard = 4,
+            AttackLizard = 5,
+            PickupItems = 6,
+            SeeStele = 7,
+            WalkToTower = 8,
+            GiveToStele = 9,
+            Completed = 100
+        }
+
+        /// <summary>
+        /// Get current step (legacy API, maps from new system)
+        /// </summary>
+        public Step GetCurrentStep(Player player)
+        {
+            var state = GetState(player);
+            if (state == null) return Step.None;
+
+            return state.Phase switch
+            {
+                Phase.None => Step.None,
+                Phase.WalkToSand => Step.WalkToSand,
+                Phase.Explore => GetExploreStep(state),
+                Phase.Collect => Step.PickupItems,
+                Phase.Offering => GetOfferingStep(player, state),
+                Phase.Completed => Step.Completed,
+                _ => Step.None
+            };
+        }
+
+        private Step GetExploreStep(PlayerState state)
+        {
+            if (state.CurrentExploreTarget == ExploreTask.GoldMine)
+            {
+                return state.CurrentAction == ExploreAction.AtTarget ? Step.InteractGoldMine : Step.SeeGoldMine;
+            }
+            else if (state.CurrentExploreTarget == ExploreTask.Lizard)
+            {
+                return state.CurrentAction == ExploreAction.AtTarget ? Step.AttackLizard : Step.SeeLizard;
+            }
+            return Step.SeeGoldMine; // Default
+        }
+
+        private Step GetOfferingStep(Player player, PlayerState state)
+        {
+            if (IsAtCharacterLocation(player, _steleItemId))
+            {
+                return Step.GiveToStele;
+            }
+            else if (CanSeeCharacter(player, _steleItemId))
+            {
+                return Step.SeeStele;
+            }
+            return Step.WalkToTower;
         }
 
         #endregion
