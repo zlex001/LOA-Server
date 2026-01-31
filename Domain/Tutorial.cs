@@ -906,13 +906,14 @@ namespace Domain
 
         private void PlayTutorialStory(Player player)
         {
+            var textAgent = Domain.Text.Agent.Instance;
             var dialogues = new List<Net.Protocol.Story.Line>
             {
-                new Net.Protocol.Story.Line { character = "", words = "The ancient stele begins to glow..." },
-                new Net.Protocol.Story.Line { character = "", words = "A voice echoes from the depths of time..." },
-                new Net.Protocol.Story.Line { character = "", words = "\"Traveler, your journey has just begun.\"" },
-                new Net.Protocol.Story.Line { character = "", words = "\"The world awaits your exploration.\"" },
-                new Net.Protocol.Story.Line { character = "", words = "\"Go forth, and write your own legend.\"" }
+                new Net.Protocol.Story.Line { character = "", words = textAgent.GetByCid("tutorial_story_1", player) },
+                new Net.Protocol.Story.Line { character = "", words = textAgent.GetByCid("tutorial_story_2", player) },
+                new Net.Protocol.Story.Line { character = "", words = textAgent.GetByCid("tutorial_story_3", player) },
+                new Net.Protocol.Story.Line { character = "", words = textAgent.GetByCid("tutorial_story_4", player) },
+                new Net.Protocol.Story.Line { character = "", words = textAgent.GetByCid("tutorial_story_5", player) }
             };
 
             var story = new Net.Protocol.Story(dialogues);
