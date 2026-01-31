@@ -1,5 +1,1 @@
-[文档] 整合新手体验内容至引导系统文档
-
-- 将新手体验.md内容整合至System/引导系统.md
-- 新增 Area、Guidance、Content、Conversion 模块
-- 删除 Documents/新手体验.md（内容已合并）
+[文档] 统一教程系统术语规范：Tutorial=教程(系统层级)，Guidance=引导(动作层级)
