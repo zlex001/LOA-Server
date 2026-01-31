@@ -23,7 +23,7 @@ alwaysApply: true
 
 1) 章节标题使用中文，必要时附英文术语：
 - 格式：`## 中文名称（EnglishTerm）`
-- 示例：`# 引导系统（Tutorial）`、`## 阶段（Phase）`
+- 示例：`# 教程系统（Tutorial）`、`## 阶段（Phase）`
 
 2) 术语定义与引用：
 - 术语在首次出现时使用"中文（English）"格式定义
