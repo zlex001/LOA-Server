@@ -1,1 +1,1 @@
-[修复] 修正Option.cs中Player.Database.id属性大小写错误
+[修复] 移除已废弃的Merchandise表验证逻辑
