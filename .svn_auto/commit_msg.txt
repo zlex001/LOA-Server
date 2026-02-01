@@ -1,21 +1,6 @@
-[修复] Perception视野缓存未检查地图变化 + 空option面板重复发送
+[优化] 控制台日志添加时间戳
 
-问题1：视野缓存未更新
-- GetVisibleCharacters只检查IsDirty，未检查地图变化
-- 玩家移动后仍返回旧地图的视野缓存
-- 走到距离1时应该看到目标，但缓存导致看不到
-
-问题2：空option面板重复弹出
-- Refresh在player.Option==null时发送空协议
-- OptionBackward删除option后触发Refresh
-- 数据变化等事件也触发Refresh
-- 导致重复发送空协议，客户端反复弹空面板
-
-修复方案：
-1. Perception缓存增加地图变化检查
-2. OnPlayerRemoveOption删除option时发送一次关闭信号
-3. Refresh在option==null时直接return，避免重复发送
+在开发模式下，控制台输出的日志现在会显示时间戳（HH:mm:ss.fff格式），方便调试和定位问题时序。
 
 修改文件：
-- Domain/Perception/Agent.cs - 视野缓存地图检查
-- Domain/Display/Agent.cs - option关闭信号优化
+- Utils/Debug/Log.cs - 控制台输出添加时间戳

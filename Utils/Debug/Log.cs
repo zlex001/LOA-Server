@@ -177,7 +177,8 @@ namespace Utils.Debug
 
             if (level == Level.Fatal || IsDevelopment)
             {
-                var prefix = level == Level.Fatal ? "[FATAL] " : $"[{level}] [{category}] ";
+                var timestamp = entry.Time.ToLocalTime().ToString("HH:mm:ss.fff");
+                var prefix = level == Level.Fatal ? $"[{timestamp}] [FATAL] " : $"[{timestamp}] [{level}] [{category}] ";
                 System.Console.WriteLine(prefix + message);
             }
 
