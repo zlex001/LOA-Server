@@ -191,15 +191,8 @@ namespace Domain
             SaveProgress(player, state);
             SendPhaseHint(player, state);
 
-            // Delay initial visibility check to allow Perception system to index new characters
-            // in the tutorial copy. Without this delay, characters just spawned may not be visible yet.
-            Domain.Time.Agent.Instance.Scheduler.Once(100, (_) =>
-            {
-                if (player != null && player.Map != null)
-                {
-                    CheckInitialVisibility(player, state);
-                }
-            });
+            // Check if already at sand or can see targets
+            CheckInitialVisibility(player, state);
         }
 
         /// <summary>

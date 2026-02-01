@@ -184,8 +184,9 @@ namespace Domain.Perception
                 return new List<Character>();
             }
 
-            // Check if cache is valid
-            if (_viewCache.TryGetValue(viewer, out var cache) && !cache.IsDirty)
+            // Check if cache is valid - must check map change too!
+            // If viewer moved to a different map, cache is invalid even if not marked dirty
+            if (_viewCache.TryGetValue(viewer, out var cache) && !cache.IsDirty && cache.CachedAtMap == viewer.Map)
             {
                 return SortCharacters(viewer, cache.Characters);
             }

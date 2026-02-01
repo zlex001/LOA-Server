@@ -1,18 +1,23 @@
-[修复] 教程系统视野时序问题和空option面板
+[修复] Perception视野缓存未检查地图变化导致视野不更新
 
-问题本质：
-- 角色创建后Perception系统索引需要时间，导致初始视野检查失败
-- 点击角色时未验证有效性，可能触发空option面板导致卡死
+根本原因：
+- Perception.GetVisibleCharacters只检查IsDirty标志
+- 未检查玩家是否换了地图
+- 导致玩家移动后仍返回旧地图的视野缓存
+- 所以走到金矿旁边还是看不到，直到同地图时才更新
+
+表现：
+- 初始地图看不到金矿/蜥蜴（正常，距离>1）
+- 走到距离1时应该看到，但还是看不到（缓存bug）
+- 走到同地图（距离0）才突然看到（某事件触发缓存更新）
 
 修复方案：
-1. 延迟100ms检查初始视野，等待Perception完成索引
-2. 添加点击角色验证，防止操作无效对象
-3. 添加option面板安全检查，避免空列表发送到客户端
-4. 保持Copy随机放置角色的原有机制
+- GetVisibleCharacters增加地图变化检查
+- cache.CachedAtMap == viewer.Map
+- 回滚之前不必要的100ms延迟修复
 
 修改文件：
-- Domain/Tutorial.cs - 延迟视野检查
-- Domain/Click/Character.cs - 点击验证
-- Domain/Display/Left.cs - option安全检查
-- Domain/Authentication/Register.cs - 使用Copy随机机制
-- Documents/BugFix-Tutorial-Visibility-2026-02-01.md - 修复说明
+- Domain/Perception/Agent.cs - 增加地图变化检查
+- Domain/Tutorial.cs - 回滚延迟修复
+- Domain/Click/Character.cs - 保留防护代码
+- Domain/Display/Left.cs - 保留防护代码
