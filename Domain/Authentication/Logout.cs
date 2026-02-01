@@ -15,6 +15,10 @@ namespace Domain.Authentication
             {
                 player.Database.pos = Domain.Story.Maze.Get(player).Last.Database.teleport;
             }
+            else if (Domain.Story.Copy.IsIn(player))
+            {
+                player.Database.pos = Domain.Story.Copy.Get(player)?.Teleport;
+            }
             else
             {
                 player.Database.pos = player.Map == null ? default : player.Map.Database.pos;

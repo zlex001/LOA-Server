@@ -13,6 +13,7 @@ namespace Logic
 
         public Logic.Map Start { get; set; }
         public Plot Plot { get;  set; }
+        public int[] Teleport { get; set; }
         public override void Init(params object[] args)
         {
             var start = (Logic.Map)args[0];
