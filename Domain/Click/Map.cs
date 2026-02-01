@@ -21,6 +21,15 @@ namespace Domain.Click
                 return;
             }
             
+            // If target is in the same scene as player, handle as map click
+            // This prevents coordinate conflicts between different scenes
+            if (IsInPlayerScene(player, pos))
+            {
+                Utils.Debug.Log.Info("CLICK", $"[Map.On] Target is in player's scene, using HandleMapClick");
+                HandleMapClick(player, pos);
+                return;
+            }
+            
             if (IsSceneCoordinate(pos))
             {
                 HandleSceneClick(player, pos);
@@ -29,6 +38,19 @@ namespace Domain.Click
             {
                 HandleMapClick(player, pos);
             }
+        }
+
+        private static bool IsInPlayerScene(Player player, int[] pos)
+        {
+            if (player?.Map?.Scene == null || pos == null || pos.Length < 3) return false;
+            
+            // Check if target position exists as a map in player's current scene
+            return player.Map.Scene.Content.Has<Logic.Map>(m => 
+                m.Database.pos != null 
+                && m.Database.pos.Length >= 3
+                && m.Database.pos[0] == pos[0] 
+                && m.Database.pos[1] == pos[1] 
+                && m.Database.pos[2] == pos[2]);
         }
 
         private static bool IsSceneCoordinate(int[] pos)
