@@ -87,7 +87,7 @@ namespace Logic
 
 
         public Copy Copy { get; set; }
-        public Scene Scene => Copy != null ? Copy.Parent as Scene : Parent as Scene;
+        public Scene Scene => (Scene)Parent;
         public Types Type { get; set; }
         public Database.Map Database { get; private set; }
         public override void Init(params object[] args)
