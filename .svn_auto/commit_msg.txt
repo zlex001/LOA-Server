@@ -1,4 +1,4 @@
-[调试] 添加 Click 事件调试日志
+[修复] 恢复 Logout 保存副本内坐标逻辑
 
-在协议层和业务层添加日志，诊断登录后无法行走的问题
-- 确认问题根因：教程中断开后被传送到随机城市而非继续教程
+- Logout 时保存 player.Map.Database.pos 而不是 copy.Teleport
+- 添加诊断日志确认 Copy.Release、Login、Logout 行为

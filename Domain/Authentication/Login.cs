@@ -126,6 +126,7 @@ namespace Domain.Authentication
         private static void CreatePlayerAtPosition(Client client, Logic.Database.Player database, Logic.Text.Languages language)
         {
             var map = Logic.Agent.Instance.Content.Get<Logic.Map>(m => Enumerable.SequenceEqual(m.Database.pos, database.pos));
+            Utils.Debug.Log.Info("AUTH", $"[Login.CreatePlayerAtPosition] pos=[{string.Join(",", database.pos)}], map={map?.GetType().Name}, isCopyMap={map is Logic.Copy.Map}, mapCopy={((map as Logic.Copy.Map)?.Copy != null ? "exists" : "null")}");
             client.Player = map.Create<Logic.Player>(database);
             client.Player.SignIn = DateTime.Now;
             client.Player.Language = language;
