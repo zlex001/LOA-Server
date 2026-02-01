@@ -1,17 +1,3 @@
-[调试] 添加Option关闭流程详细日志
+[修复] 教程系统在玩家到达目标后重复发送提示的问题
 
-为了追踪空option面板问题，添加了以下日志点：
-- OptionReturn协议接收
-- OptionBackward调用
-- OnPlayerRemoveOption触发
-- Refresh调用（包括跳过和发送）
-
-通过日志可以确认：
-1. 客户端是否发送了OptionReturn协议
-2. 服务器是否正确删除了player.Option
-3. 后续Refresh是否被触发
-
-修改文件：
-- Net/Protocol.cs - OptionReturn日志
-- Logic/Player.cs - OptionBackward日志
-- Domain/Display/Agent.cs - OnPlayerRemoveOption和Refresh日志
+修复了玩家到达探索目标(金矿/蜥蜴)位置后，如果继续移动离开但目标仍可见时，系统会反复发送提示导致客户端弹出空白面板的bug。现在玩家到达目标后，系统会保持AtTarget状态等待玩家交互，不再重复发送提示。

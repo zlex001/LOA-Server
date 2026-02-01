@@ -493,18 +493,19 @@ namespace Domain
                 {
                     Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Left target location, checking visibility");
                     bool isVisible = CanSeeCharacter(player, targetConfigId);
+                    
+                    // Clear previous hint when leaving target location
+                    ClearHint(player);
+                    
                     if (isVisible)
                     {
-                        // Still visible, go back to SeeTarget
-                        Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Target still visible, reverting to SeeTarget");
-                        state.CurrentAction = ExploreAction.SeeTarget;
-                        SendExploreHint(player, state);
+                        // Target still visible, keep AtTarget state and wait for interaction
+                        Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Target still visible, keeping AtTarget state, hint cleared");
                     }
                     else
                     {
                         // No longer visible, find new target
                         Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Target no longer visible, finding new target");
-                        ClearHint(player);
                         state.CurrentExploreTarget = ExploreTask.None;
                         state.CurrentAction = ExploreAction.None;
                         SelectNearestExploreTarget(player, state);
