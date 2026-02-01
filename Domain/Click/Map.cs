@@ -9,6 +9,7 @@ namespace Domain.Click
 
         public static void On(params object[] args)
         {
+            Utils.Debug.Log.Info("CLICK", $"[Map.On] args.Length={args?.Length}, player={args?[0]}, pos={args?[1]}");
             Logic.Player player = (Logic.Player)args[0];
             int[] pos = (int[])args[1];
             

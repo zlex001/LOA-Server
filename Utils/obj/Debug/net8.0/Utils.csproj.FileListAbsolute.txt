@@ -18,13 +18,3 @@ E:/LOA-Server/1.1/Utils/obj/Debug/net8.0/Utils.dll
 E:/LOA-Server/1.1/Utils/obj/Debug/net8.0/refint/Utils.dll
 E:/LOA-Server/1.1/Utils/obj/Debug/net8.0/Utils.pdb
 E:/LOA-Server/1.1/Utils/obj/Debug/net8.0/ref/Utils.dll
-/Users/zhangxi/LOA-Server/trunk/Utils/bin/Debug/net8.0/Utils.deps.json
-/Users/zhangxi/LOA-Server/trunk/Utils/bin/Debug/net8.0/Utils.dll
-/Users/zhangxi/LOA-Server/trunk/Utils/bin/Debug/net8.0/Utils.pdb
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/Utils.csproj.AssemblyReference.cache
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/Utils.GeneratedMSBuildEditorConfig.editorconfig
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/Utils.csproj.CoreCompileInputs.cache
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/Utils.dll
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/refint/Utils.dll
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/Utils.pdb
-/Users/zhangxi/LOA-Server/trunk/Utils/obj/Debug/net8.0/ref/Utils.dll

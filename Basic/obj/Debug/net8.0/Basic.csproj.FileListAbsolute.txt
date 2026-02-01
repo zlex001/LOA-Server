@@ -24,16 +24,3 @@ E:/LOA-Server/1.1/Basic/obj/Debug/net8.0/Basic.dll
 E:/LOA-Server/1.1/Basic/obj/Debug/net8.0/refint/Basic.dll
 E:/LOA-Server/1.1/Basic/obj/Debug/net8.0/Basic.pdb
 E:/LOA-Server/1.1/Basic/obj/Debug/net8.0/ref/Basic.dll
-/Users/zhangxi/LOA-Server/trunk/Basic/bin/Debug/net8.0/Basic.deps.json
-/Users/zhangxi/LOA-Server/trunk/Basic/bin/Debug/net8.0/Basic.dll
-/Users/zhangxi/LOA-Server/trunk/Basic/bin/Debug/net8.0/Basic.pdb
-/Users/zhangxi/LOA-Server/trunk/Basic/bin/Debug/net8.0/Utils.dll
-/Users/zhangxi/LOA-Server/trunk/Basic/bin/Debug/net8.0/Utils.pdb
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/Basic.csproj.AssemblyReference.cache
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/Basic.GeneratedMSBuildEditorConfig.editorconfig
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/Basic.csproj.CoreCompileInputs.cache
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/Basic.csproj.CopyComplete
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/Basic.dll
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/refint/Basic.dll
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/Basic.pdb
-/Users/zhangxi/LOA-Server/trunk/Basic/obj/Debug/net8.0/ref/Basic.dll

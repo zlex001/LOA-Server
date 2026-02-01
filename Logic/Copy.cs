@@ -93,6 +93,7 @@ namespace Logic
             foreach (var copyMap in Content.Gets<Copy.Map>().ToList())
             {
                 copyMap.Copy = null;
+                Agent.Instance.Remove(copyMap);
                 copyMap.Destroy();
             }
             Start = null;
