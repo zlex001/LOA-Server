@@ -38,11 +38,6 @@ namespace Domain.State
                     // Check for tutorial lizard defeat
                     if (hostile is Logic.Player player)
                     {
-                        var lizardDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
-                        if (lizardDesign != null && Parent.Config?.Id == lizardDesign.id)
-                        {
-                            Tutorial.Instance.OnDefeatLizard(player);
-                        }
                     }
                 }
             }

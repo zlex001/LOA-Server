@@ -115,10 +115,7 @@ namespace Domain.Authentication
             // Move player to tutorial start
             copy.Start.AddAsParent(player);
             
-            // Start tutorial guidance
-            Tutorial.Instance.Start(player);
-            
-            Utils.Debug.Log.Info("AUTH", $"[Register] Tutorial started for player {player.Database.text["Name"]}");
+            Utils.Debug.Log.Info("AUTH", $"[Register] Player {player.Database.text["Name"]} moved to start location");
         }
         
         private static Logic.Copy CreateTutorialCopy(Logic.Map startMap)
