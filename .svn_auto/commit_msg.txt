@@ -1,1 +1,1 @@
-[修复] 移除已废弃的Merchandise表验证逻辑
+[回退] 撤销对Login.cs和Tcp.cs的错误修改
