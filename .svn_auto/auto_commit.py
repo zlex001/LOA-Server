@@ -17,7 +17,7 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='repla
 
 def run(cmd, cwd):
     try:
-        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, shell=False)
+        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding='utf-8', shell=False)
         return p.returncode, p.stdout.strip(), p.stderr.strip()
     except FileNotFoundError as e:
         return 127, "", str(e)

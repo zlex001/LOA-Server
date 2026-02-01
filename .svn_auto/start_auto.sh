@@ -1,6 +1,10 @@
 #!/bin/bash
 # SVN Auto Commit (AI Agent) - Mac/Linux version
 
+# Ensure UTF-8 encoding for Chinese commit messages
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 cd "$(dirname "$0")"
 
 if [ ! -f "commit_msg.txt" ]; then
