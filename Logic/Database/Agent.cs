@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Utils;
 
@@ -408,11 +408,32 @@ namespace Logic.Database
                     }
                 }
 
-            // 验证道具CID
-            CollectItemCidsFromPlayerWithDetails(playerDict, usedItemCids, playerId);
-        }
+                // 验证道具CID
+                CollectItemCidsFromPlayerWithDetails(playerDict, usedItemCids, playerId);
+            }
 
-        // 检查未找到的技能CID
+            // 验证商品CID
+            try
+            {
+                var merchandiseRawData = Query(Logic.Config.MySQL.ConnectionString, "Merchandise");
+                foreach (var merchandiseDict in merchandiseRawData)
+                {
+                    var cid = merchandiseDict.Get<string>("Cid");
+                    if (!string.IsNullOrEmpty(cid))
+                    {
+                        var merchantId = merchandiseDict.Get<string>("Id");
+                        usedItemCids.Add((cid, $"Merchandise[{merchantId}]", "Cid"));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.Debug.Log.Error("DATABASE", $"[Merchandise CID Validation Failed]");
+                Utils.Debug.Log.Error("DATABASE", $"Exception: {ex.Message}");
+                Utils.Debug.Log.Error("DATABASE", $"StackTrace: {ex.StackTrace}");
+            }
+
+            // 检查未找到的技能CID
             foreach (var (cid, playerId, field) in usedSkillCids)
             {
                 if (!validSkillCids.Contains(cid) && !IsAutoHandleCid(cid))

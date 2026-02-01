@@ -287,6 +287,11 @@ namespace Domain.Cast
             // Check if this is the tutorial gold mine by looking up the config
             var goldMineDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
             if (goldMineDesign == null) return;
+            
+            if (item.Config?.Id == goldMineDesign.id)
+            {
+                Tutorial.Instance.OnInteractGoldMine(player);
+            }
         }
     }
 }

@@ -190,6 +190,11 @@ namespace Domain.Exchange
                     Receive.Do(sub, obj, count);
                     obj.monitor.Fire(Item.Event.Picked, sub);
                     
+                    // Check for tutorial pickup progress
+                    if (sub is Player player)
+                    {
+                        Tutorial.Instance.OnPickupItem(player, obj);
+                    }
                 }
             }
         }

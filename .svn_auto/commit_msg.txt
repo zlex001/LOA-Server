@@ -1,1 +1,6 @@
-[删除] 移除教程系统及所有相关引用
+[回退] 恢复r70版本状态并修复Copy.Map.Scene属性
+
+1. 反向合并r71-r74，恢复Tutorial.cs及相关调用
+2. 修复Logic/Map.cs中Scene属性对Copy.Map的处理
+   - Copy.Map的Parent是Copy而非Scene，导致副本中寻路失败
+   - 修改为：Copy != null ? Copy.Parent as Scene : Parent as Scene
