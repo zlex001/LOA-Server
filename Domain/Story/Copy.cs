@@ -19,10 +19,8 @@ namespace Domain.Story
         }
         public static void Do(Plot plot, Player player)
         {
-            var teleport = player.Map?.Database.pos;
             Logic.Copy copy = Logic.Agent.Instance.Create<Logic.Copy>(player.Map, plot.Config.copy);
             copy.Plot = plot;
-            copy.Teleport = teleport;
             copy.Start.AddAsParent(player);
         }
         public static List<Logic.Player> GetPlayers(Logic.Copy copy)

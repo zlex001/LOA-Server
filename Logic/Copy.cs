@@ -19,6 +19,9 @@ namespace Logic
             var start = (Logic.Map)args[0];
             var config = (Config.Plot.Copy)args[1];
             
+            // Save teleport position (where to return when exiting copy)
+            Teleport = start.Database.pos;
+            
             // First pass: create all maps and group by Config.Id
             var mapsByConfigId = new Dictionary<int, List<Map>>();
             
