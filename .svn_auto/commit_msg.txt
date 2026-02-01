@@ -1,23 +1,21 @@
-[修复] Perception视野缓存未检查地图变化导致视野不更新
+[修复] Perception视野缓存未检查地图变化 + 空option面板重复发送
 
-根本原因：
-- Perception.GetVisibleCharacters只检查IsDirty标志
-- 未检查玩家是否换了地图
-- 导致玩家移动后仍返回旧地图的视野缓存
-- 所以走到金矿旁边还是看不到，直到同地图时才更新
+问题1：视野缓存未更新
+- GetVisibleCharacters只检查IsDirty，未检查地图变化
+- 玩家移动后仍返回旧地图的视野缓存
+- 走到距离1时应该看到目标，但缓存导致看不到
 
-表现：
-- 初始地图看不到金矿/蜥蜴（正常，距离>1）
-- 走到距离1时应该看到，但还是看不到（缓存bug）
-- 走到同地图（距离0）才突然看到（某事件触发缓存更新）
+问题2：空option面板重复弹出
+- Refresh在player.Option==null时发送空协议
+- OptionBackward删除option后触发Refresh
+- 数据变化等事件也触发Refresh
+- 导致重复发送空协议，客户端反复弹空面板
 
 修复方案：
-- GetVisibleCharacters增加地图变化检查
-- cache.CachedAtMap == viewer.Map
-- 回滚之前不必要的100ms延迟修复
+1. Perception缓存增加地图变化检查
+2. OnPlayerRemoveOption删除option时发送一次关闭信号
+3. Refresh在option==null时直接return，避免重复发送
 
 修改文件：
-- Domain/Perception/Agent.cs - 增加地图变化检查
-- Domain/Tutorial.cs - 回滚延迟修复
-- Domain/Click/Character.cs - 保留防护代码
-- Domain/Display/Left.cs - 保留防护代码
+- Domain/Perception/Agent.cs - 视野缓存地图检查
+- Domain/Display/Agent.cs - option关闭信号优化

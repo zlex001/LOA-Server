@@ -257,13 +257,13 @@ namespace Domain.Display
         {
             if (player.Option == null)
             {
-                Net.Tcp.Instance.Send(player, new Net.Protocol.Option());
+                // Don't send empty option protocol - it causes client to show empty panel
+                // Client should already have closed the option panel when player.Option was removed
+                return;
             }
-            else
-            {
-                var protocol = CreateOptionProtocol(player.Option);
-                Net.Tcp.Instance.Send(player, protocol);
-            }
+            
+            var protocol = CreateOptionProtocol(player.Option);
+            Net.Tcp.Instance.Send(player, protocol);
         }
         private void OnRefresh(params object[] args)
         {
@@ -331,9 +331,17 @@ namespace Domain.Display
         private void OnPlayerRemoveOption(params object[] args)
         {
             Player player = (Player)args[0];
+            Option removedOption = (Option)args[1];
+            
             // 清理所有容器监听器
             UnlistenAllContainersForPlayer(player);
             player.Viewer = null;
+            
+            // If this was the current option and no other options remain, send close signal
+            if (player.Option == null)
+            {
+                Net.Tcp.Instance.Send(player, new Net.Protocol.Option());
+            }
         }
 
         private void ListenTargetLife(Player viewer, Life target)
