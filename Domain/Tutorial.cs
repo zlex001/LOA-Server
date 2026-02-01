@@ -142,6 +142,8 @@ namespace Domain
 
             var stele = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "石碑");
             _steleItemId = stele?.id ?? 0;
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[CacheConfigIds] sandMap={_tutorialSandMapId}, tower={_tutorialTowerMapId}, goldOre={_goldOreItemId}, rawMeat={_rawMeatItemId}, goldMine={_goldMineItemId}, lizard={_lizardLifeId}, stele={_steleItemId}");
         }
 
         /// <summary>
@@ -447,6 +449,8 @@ namespace Domain
 
         private void HandleExploreMoved(Player player, PlayerState state)
         {
+            Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] target={state.CurrentExploreTarget}, action={state.CurrentAction}, traveling={state.IsTraveling}");
+
             if (state.CurrentExploreTarget == ExploreTask.None)
             {
                 // No target selected, try to find one
@@ -456,13 +460,14 @@ namespace Domain
 
             // Check if player arrived at current target
             int targetConfigId = state.CurrentExploreTarget == ExploreTask.GoldMine ? _goldMineItemId : _lizardLifeId;
+            bool atLocation = IsAtCharacterLocation(player, targetConfigId);
+            Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] targetConfigId={targetConfigId}, atLocation={atLocation}");
 
             if (state.CurrentAction == ExploreAction.SeeTarget)
             {
-                // Check if arrived at target location
-                if (IsAtCharacterLocation(player, targetConfigId))
+                if (atLocation)
                 {
-                    Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Arrived at {state.CurrentExploreTarget}");
+                    Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Arrived at {state.CurrentExploreTarget}, sending AtTarget hint");
                     state.CurrentAction = ExploreAction.AtTarget;
                     state.IsTraveling = false;
                     SendExploreHint(player, state);
@@ -474,6 +479,31 @@ namespace Domain
                     if (!isVisible && !state.JustAdvanced)
                     {
                         // Target no longer visible, clear hint and try to find another
+                        ClearHint(player);
+                        state.CurrentExploreTarget = ExploreTask.None;
+                        state.CurrentAction = ExploreAction.None;
+                        SelectNearestExploreTarget(player, state);
+                    }
+                }
+            }
+            else if (state.CurrentAction == ExploreAction.AtTarget)
+            {
+                // Player was at target but may have moved away
+                if (!atLocation)
+                {
+                    Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Left target location, checking visibility");
+                    bool isVisible = CanSeeCharacter(player, targetConfigId);
+                    if (isVisible)
+                    {
+                        // Still visible, go back to SeeTarget
+                        Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Target still visible, reverting to SeeTarget");
+                        state.CurrentAction = ExploreAction.SeeTarget;
+                        SendExploreHint(player, state);
+                    }
+                    else
+                    {
+                        // No longer visible, find new target
+                        Utils.Debug.Log.Info("TUTORIAL", $"[HandleExploreMoved] Target no longer visible, finding new target");
                         ClearHint(player);
                         state.CurrentExploreTarget = ExploreTask.None;
                         state.CurrentAction = ExploreAction.None;
@@ -628,9 +658,15 @@ namespace Domain
             bool canSeeGoldMine = CanSeeCharacter(player, _goldMineItemId);
             bool canSeeLizard = CanSeeCharacter(player, _lizardLifeId);
 
-            if (canSeeGoldMine || canSeeLizard)
+            // Also check if already at target location
+            bool atGoldMine = IsAtCharacterLocation(player, _goldMineItemId);
+            bool atLizard = IsAtCharacterLocation(player, _lizardLifeId);
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[CheckInitialVisibility] canSeeGoldMine={canSeeGoldMine}, canSeeLizard={canSeeLizard}, atGoldMine={atGoldMine}, atLizard={atLizard}");
+
+            if (canSeeGoldMine || canSeeLizard || atGoldMine || atLizard)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[CheckInitialVisibility] Can already see targets, advancing to Explore");
+                Utils.Debug.Log.Info("TUTORIAL", $"[CheckInitialVisibility] Can see or at targets, advancing to Explore");
                 AdvancePhase(player, state, Phase.Explore);
             }
         }
@@ -714,22 +750,43 @@ namespace Domain
             Utils.Debug.Log.Info("TUTORIAL", $"[SelectNearestExploreTarget] Selected {selectedTask}");
 
             state.CurrentExploreTarget = selectedTask;
-            state.CurrentAction = ExploreAction.SeeTarget;
             state.JustAdvanced = true;
+
+            // Check if already at target location - if so, go directly to AtTarget
+            int targetConfigId = selectedTask == ExploreTask.GoldMine ? _goldMineItemId : _lizardLifeId;
+            if (IsAtCharacterLocation(player, targetConfigId))
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[SelectNearestExploreTarget] Already at target, setting AtTarget");
+                state.CurrentAction = ExploreAction.AtTarget;
+            }
+            else
+            {
+                state.CurrentAction = ExploreAction.SeeTarget;
+            }
 
             SendExploreHint(player, state);
         }
 
         private bool IsAtCharacterLocation(Player player, int configId)
         {
-            if (player.Map == null) return false;
+            if (player.Map == null)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[IsAtCharacterLocation] player.Map is null");
+                return false;
+            }
 
             // Check items in current map
-            if (player.Map.Content.Has<Item>(i => i.Config?.Id == configId)) return true;
+            bool hasItem = player.Map.Content.Has<Item>(i => i.Config?.Id == configId);
             // Check lives in current map
-            if (player.Map.Content.Has<Life>(l => l.Config?.Id == configId)) return true;
+            bool hasLife = player.Map.Content.Has<Life>(l => l.Config?.Id == configId);
 
-            return false;
+            // Get map position for better debugging
+            var pos = player.Map.Database?.pos;
+            string posStr = pos != null ? $"[{string.Join(",", pos)}]" : "null";
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[IsAtCharacterLocation] configId={configId}, mapId={player.Map.Config?.Id}, pos={posStr}, hasItem={hasItem}, hasLife={hasLife}");
+
+            return hasItem || hasLife;
         }
 
         private bool CanSeeCharacter(Player player, int configId)
@@ -764,6 +821,7 @@ namespace Domain
         private void SendWalkToSandHint(Player player)
         {
             var pos = GetMapPos(_tutorialSandMapId, player);
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendWalkToSandHint] sandMapId={_tutorialSandMapId}, pos={pos?.Length ?? -1}, playerMap={player.Map?.Config?.Id ?? 0}");
             var protocol = new Net.Protocol.Tutorial(
                 (int)Phase.WalkToSand,
                 (int)TargetType.Map,
@@ -805,6 +863,8 @@ namespace Domain
 
             string hintText = Domain.Text.Agent.Instance.GetByCid(hintCid, player);
 
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendExploreHint] target={state.CurrentExploreTarget}, action={state.CurrentAction}, path={path}, targetId={targetId}");
+
             var protocol = new Net.Protocol.Tutorial(
                 (int)Phase.Explore,
                 (int)targetType,
@@ -818,16 +878,9 @@ namespace Domain
 
         private void SendExploreWaitHint(Player player)
         {
-            // Generic hint to explore the area
-            var protocol = new Net.Protocol.Tutorial(
-                (int)Phase.Explore,
-                (int)TargetType.UI,
-                0,
-                "",
-                null,
-                ""
-            );
-            Net.Tcp.Instance.Send(player, protocol);
+            // No visible targets - just clear any existing hint, don't send empty hint
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendExploreWaitHint] Clearing hint (no visible targets)");
+            ClearHint(player);
         }
 
         private void SendCollectHint(Player player)
@@ -878,6 +931,8 @@ namespace Domain
 
         private void ClearHint(Player player)
         {
+            Utils.Debug.Log.Info("TUTORIAL", $"[ClearHint] Sending clear protocol (step=0, targetType=0)");
+            // Note: step=0 and targetType=0 signals client to clear/hide tutorial UI
             var protocol = new Net.Protocol.Tutorial(0, 0, 0, "", null, "");
             Net.Tcp.Instance.Send(player, protocol);
         }
@@ -885,21 +940,35 @@ namespace Domain
         private int[] GetMapPos(int mapId, Player player)
         {
             var currentMap = player.Map;
-            if (currentMap?.Copy != null)
+            if (currentMap == null)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[GetMapPos] player.Map is null");
+                return null;
+            }
+
+            if (currentMap.Copy != null)
             {
                 var targetMap = currentMap.Copy.Content.Get<Logic.Map>(m => m.Config.Id == mapId);
                 if (targetMap != null)
                 {
+                    Utils.Debug.Log.Info("TUTORIAL", $"[GetMapPos] Found in Copy, pos={string.Join(",", targetMap.Database.pos)}");
                     return targetMap.Database.pos;
                 }
+                Utils.Debug.Log.Info("TUTORIAL", $"[GetMapPos] Not found in Copy (mapId={mapId})");
             }
-            else if (currentMap?.Scene != null)
+            else if (currentMap.Scene != null)
             {
                 var targetMap = currentMap.Scene.Content.Get<Logic.Map>(m => m.Config.Id == mapId);
                 if (targetMap != null)
                 {
+                    Utils.Debug.Log.Info("TUTORIAL", $"[GetMapPos] Found in Scene, pos={string.Join(",", targetMap.Database.pos)}");
                     return targetMap.Database.pos;
                 }
+                Utils.Debug.Log.Info("TUTORIAL", $"[GetMapPos] Not found in Scene (mapId={mapId})");
+            }
+            else
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[GetMapPos] No Copy or Scene");
             }
             return null;
         }

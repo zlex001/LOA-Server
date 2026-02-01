@@ -135,8 +135,10 @@ namespace Domain.Display
             var target = option.Relates.FirstOrDefault();
             if (target == null)
             {
+                Utils.Debug.Log.Info("OPTION", $"[CreateOptionProtocol] Relates is empty, returning empty Option. Type={option.Type}, RelatesCount={option.Relates.Count}");
                 return new Net.Protocol.Option();
             }
+            Utils.Debug.Log.Info("OPTION", $"[CreateOptionProtocol] Type={option.Type}, target={target.GetType().Name}, RelatesCount={option.Relates.Count}");
 
             var left = Create(option.Player, info, target);
             var right = Create(option.Player, oper, target);

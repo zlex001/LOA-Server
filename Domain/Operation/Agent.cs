@@ -37,7 +37,21 @@ namespace Domain.Operation
         private static bool IsSameMap(Player player, Logic.Ability target)
         {
             if (player?.Map == null) return false;
-            if (target is Logic.Item) return true; // Items are always accessible (including nested items in containers)
+            if (target is Logic.Item item)
+            {
+                // Items equipped on player's Part are always accessible
+                if (item.Parent is Logic.Part part && part.Parent == player)
+                {
+                    return true;
+                }
+                // Items in player's containers are always accessible
+                if (item.Parent == player)
+                {
+                    return true;
+                }
+                // For world items, check if they are in the same map
+                return item.Map == player.Map;
+            }
             if (target is Character character)
             {
                 return character.Map == player.Map;
