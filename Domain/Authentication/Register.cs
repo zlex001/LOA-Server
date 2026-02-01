@@ -104,6 +104,9 @@ namespace Domain.Authentication
                 return;
             }
             
+            // Save player's initial city position before entering tutorial
+            var initialPos = player.Database.pos;
+            
             // Create tutorial copy for this player
             var copy = CreateTutorialCopy(tutorialMap);
             if (copy == null)
@@ -111,6 +114,9 @@ namespace Domain.Authentication
                 Utils.Debug.Log.Warning("AUTH", "[Register] Failed to create tutorial copy");
                 return;
             }
+            
+            // Override Teleport with player's initial city position
+            copy.Teleport = initialPos;
             
             // Move player to tutorial start
             copy.Start.AddAsParent(player);
