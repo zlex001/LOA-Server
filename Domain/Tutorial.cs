@@ -842,6 +842,14 @@ namespace Domain
                 return;
             }
 
+            // Don't send hint if player has an active Option panel open
+            // This prevents interfering with player's manual interactions
+            if (player.Option != null)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[SendExploreHint] Player has active Option ({player.Option.Type}), skipping hint to avoid interference");
+                return;
+            }
+
             int targetId;
             TargetType targetType;
             string path;

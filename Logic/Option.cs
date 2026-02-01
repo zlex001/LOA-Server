@@ -168,13 +168,28 @@ namespace Logic
         {
             Type = (Types)args[0];
             Player = (Player)args[1];
+            
+            // Validate that at least one target is provided
+            if (args.Length < 3)
+            {
+                string playerId = (Player?.Database?.Id ?? "unknown");
+                Utils.Debug.Log.Warning("OPTION", $"[Option.Init] Creating Option with no targets! Type={Type}, Player={playerId}, ArgsLength={args.Length}");
+            }
+            
             for (int i = 2; i < args.Length; i++)
             {
                 Ability obj = (Ability)args[i];
+                if (obj == null)
+                {
+                    string playerId = (Player?.Database?.Id ?? "unknown");
+                    Utils.Debug.Log.Warning("OPTION", $"[Option.Init] Target at index {i} is null! Type={Type}, Player={playerId}");
+                    continue;
+                }
                 obj.monitor.Register(Event.Update, OnUpdate);
                 obj.monitor.Register(Event.Delete, OnDelete);
                 Relates.Add(obj);
             }
+            
             if (!Player.Content.Has<Settings>(s => s.Type == Type))
             {
                 Player.Create<Settings>(args);
@@ -185,7 +200,10 @@ namespace Logic
                 setting.Relates.Clear();
                 for (int i = 2; i < args.Length; i++)
                 {
-                    setting.Relates.Add((Ability)args[i]);
+                    if (args[i] is Ability ability && ability != null)
+                    {
+                        setting.Relates.Add(ability);
+                    }
                 }
                 Player.Content.Add.Fire(typeof(Settings), Player, setting);
             }
