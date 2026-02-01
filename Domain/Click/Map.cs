@@ -13,44 +13,63 @@ namespace Domain.Click
             Logic.Player player = (Logic.Player)args[0];
             int[] pos = (int[])args[1];
             
+            Utils.Debug.Log.Info("CLICK", $"[Map.On] player.Map={player.Map?.GetType().Name}, player.Map.Copy={player.Map?.Copy}, player.Map.Scene={player.Map?.Scene?.GetType().Name}");
+            
             // If player is in a Copy instance, always handle as map click (not scene click)
             // Copy instances use relative coordinates that may conflict with world scene coordinates
             if (player.Map?.Copy != null)
             {
+                Utils.Debug.Log.Info("CLICK", $"[Map.On] Branch: player in Copy");
                 HandleMapClick(player, pos);
                 return;
             }
             
             // If target is in the same scene as player, handle as map click
             // This prevents coordinate conflicts between different scenes
-            if (IsInPlayerScene(player, pos))
+            bool inPlayerScene = IsInPlayerScene(player, pos);
+            Utils.Debug.Log.Info("CLICK", $"[Map.On] IsInPlayerScene={inPlayerScene}");
+            if (inPlayerScene)
             {
-                Utils.Debug.Log.Info("CLICK", $"[Map.On] Target is in player's scene, using HandleMapClick");
+                Utils.Debug.Log.Info("CLICK", $"[Map.On] Branch: target in player's scene");
                 HandleMapClick(player, pos);
                 return;
             }
             
-            if (IsSceneCoordinate(pos))
+            bool isSceneCoord = IsSceneCoordinate(pos);
+            Utils.Debug.Log.Info("CLICK", $"[Map.On] IsSceneCoordinate={isSceneCoord}");
+            if (isSceneCoord)
             {
+                Utils.Debug.Log.Info("CLICK", $"[Map.On] Branch: HandleSceneClick");
                 HandleSceneClick(player, pos);
             }
             else
             {
+                Utils.Debug.Log.Info("CLICK", $"[Map.On] Branch: HandleMapClick (default)");
                 HandleMapClick(player, pos);
             }
         }
 
         private static bool IsInPlayerScene(Player player, int[] pos)
         {
-            if (player?.Map?.Scene == null || pos == null || pos.Length < 3) return false;
+            Utils.Debug.Log.Info("CLICK", $"[IsInPlayerScene] player.Map.Scene={player?.Map?.Scene?.GetType().Name}, sceneNull={player?.Map?.Scene == null}");
+            if (player?.Map?.Scene == null || pos == null || pos.Length < 3)
+            {
+                Utils.Debug.Log.Info("CLICK", $"[IsInPlayerScene] Early return false (null check)");
+                return false;
+            }
             
             // Check if target position exists as a map in player's current scene
-            return player.Map.Scene.Content.Has<Logic.Map>(m => 
+            var mapsInScene = player.Map.Scene.Content.Gets<Logic.Map>().ToList();
+            Utils.Debug.Log.Info("CLICK", $"[IsInPlayerScene] Maps in scene count={mapsInScene.Count}");
+            
+            bool result = player.Map.Scene.Content.Has<Logic.Map>(m => 
                 m.Database.pos != null 
                 && m.Database.pos.Length >= 3
                 && m.Database.pos[0] == pos[0] 
                 && m.Database.pos[1] == pos[1] 
                 && m.Database.pos[2] == pos[2]);
+            Utils.Debug.Log.Info("CLICK", $"[IsInPlayerScene] result={result}");
+            return result;
         }
 
         private static bool IsSceneCoordinate(int[] pos)
@@ -67,6 +86,7 @@ namespace Domain.Click
 
         private static void HandleSceneClick(Player player, int[] scenePos)
         {
+            Utils.Debug.Log.Info("CLICK", $"[HandleSceneClick] Start - scenePos=[{string.Join(",", scenePos)}]");
             var sceneInfo = Logic.Design.World.SceneCoordinates
                 .FirstOrDefault(coord => coord.pos != null 
                     && coord.pos.Length >= 3 
@@ -74,6 +94,7 @@ namespace Domain.Click
                     && coord.pos[1] == scenePos[1] 
                     && coord.pos[2] == scenePos[2]);
             
+            Utils.Debug.Log.Info("CLICK", $"[HandleSceneClick] sceneInfo.sceneCid={sceneInfo.sceneCid}");
             if (sceneInfo.sceneCid == null)
             {
                 Utils.Debug.Log.Warning("CLICK", $"Scene not found at position [{scenePos[0]}, {scenePos[1]}, {scenePos[2]}]");
@@ -81,6 +102,7 @@ namespace Domain.Click
             }
             
             var sceneDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Scene>(s => s.cid == sceneInfo.sceneCid);
+            Utils.Debug.Log.Info("CLICK", $"[HandleSceneClick] sceneDesign={sceneDesign?.cid}, id={sceneDesign?.id}");
             if (sceneDesign == null)
             {
                 Utils.Debug.Log.Warning("CLICK", $"Scene design not found for cid: {sceneInfo.sceneCid}");

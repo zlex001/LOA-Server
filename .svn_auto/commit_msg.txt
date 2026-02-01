@@ -1,4 +1,3 @@
-[修复] 解决遗迹场景坐标与世界场景坐标冲突问题
+[调试] 添加详细的 Click 分支判断日志
 
-- 添加 IsInPlayerScene 检查：优先判断点击目标是否在玩家当前场景内
-- 避免同场景内的点击被误判为跨场景传送
+追踪 Map.On 的每个分支、IsInPlayerScene、HandleSceneClick 的执行情况
