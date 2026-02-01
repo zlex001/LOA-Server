@@ -20,3 +20,14 @@ E:/LOA-Server/1.1/Domain/obj/Debug/Domain.dll
 E:/LOA-Server/1.1/Domain/obj/Debug/refint/Domain.dll
 E:/LOA-Server/1.1/Domain/obj/Debug/Domain.pdb
 E:/LOA-Server/1.1/Domain/obj/Debug/ref/Domain.dll
+/Users/zhangxi/LOA-Server/trunk/Library/Artifacts/Domain.deps.json
+/Users/zhangxi/LOA-Server/trunk/Library/Artifacts/Domain.dll
+/Users/zhangxi/LOA-Server/trunk/Library/Artifacts/Domain.pdb
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/Domain.csproj.AssemblyReference.cache
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/Domain.csproj.CoreCompileInputs.cache
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/Domain.csproj.CopyComplete
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/Domain.dll
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/refint/Domain.dll
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/Domain.pdb
+/Users/zhangxi/LOA-Server/trunk/Domain/obj/Debug/ref/Domain.dll
