@@ -12,15 +12,17 @@ User reported three issues with the tutorial system:
 
 ### Issue 1 & 2: Initial Visibility Problem
 
-**Root Cause**: Gold mine and lizard were being placed on a **random** sand map in the tutorial copy, which could be at distance >1 from the shore (starting position).
+**Root Cause**: **Timing issue** - Characters were created in the copy but Perception system hadn't indexed them yet when initial visibility check happened.
 
 **Analysis**:
-- Player starts at "遗迹-岸边" (Ruins Shore) with ViewScale = 1
-- Tutorial copy creation uses `scope=5`, copying all maps within range
-- There are multiple "遗迹-沙地" (Ruins Sand) map tiles (see map coordinates rows 96-100)
-- `Copy.Init` (line 54) randomly selects one sand map from all available candidates
-- If the selected sand map is at distance >1 from shore, player cannot see the characters initially
-- After player moves, visibility system updates, but the inconsistency suggests timing issues
+- Player spawns in tutorial copy at "遗迹-岸边" (Ruins Shore)
+- Copy.Init creates gold mine and lizard on random sand map
+- Tutorial.Start immediately calls CheckInitialVisibility
+- BUT: Perception system needs time to index newly created characters
+- Characters are actually there, but not yet visible in GetVisibleCharacters()
+- After player moves, Perception updates and characters become visible
+
+**Key Insight**: This is NOT a distance/placement problem - it's a timing/indexing problem. The random placement by Copy is correct and should be preserved.
 
 ### Issue 3: Empty Option Panel
 
@@ -33,28 +35,7 @@ User reported three issues with the tutorial system:
 
 ## Solutions Implemented
 
-### Fix 1: Place Characters on Closest Map
-
-**File**: `Domain/Authentication/Register.cs`  
-**Method**: `CreateTutorialCopy`
-
-Changed strategy:
-1. Create empty copy first (without characters in config)
-2. Find the **closest** sand map to the start position in the copy
-3. Manually create gold mine and lizard on that specific map
-4. This ensures they are always within player's initial vision range
-
-```csharp
-// Before: Random selection via Copy config
-copyConfig.characters[sandMap.Config.Id] = sandCharacters; // Uses random map
-
-// After: Explicit placement on closest map
-var closestSandMap = FindClosestSandMap(copy.Start, copy.Content.Gets<Copy.Map>());
-var goldMine = closestSandMap.Load<Item>(goldMineConfig);
-var lizard = closestSandMap.Create<Life>(lizardConfig, 1);
-```
-
-### Fix 2: Delay Initial Visibility Check
+### Fix 1: Delay Initial Visibility Check
 
 **File**: `Domain/Tutorial.cs`  
 **Method**: `Start`
@@ -71,7 +52,7 @@ Domain.Time.Agent.Instance.Scheduler.Once(100, (_) =>
 });
 ```
 
-### Fix 3: Validate Click Targets
+### Fix 2: Validate Click Targets
 
 **File**: `Domain/Click/Character.cs`  
 **Method**: `Do`
@@ -80,7 +61,7 @@ Added validation to prevent creating options for invalid characters:
 - Check if target is null
 - Check if character has no map and is not equipped (may be destroyed)
 
-### Fix 4: Prevent Empty Option Lists
+### Fix 3: Prevent Empty Option Lists
 
 **File**: `Domain/Display/Left.cs`  
 **Method**: `Operation`
@@ -92,10 +73,11 @@ Added safety checks:
 
 ## Expected Behavior After Fix
 
-1. Player spawns at shore and can **immediately see** gold mine and lizard (distance = 1)
-2. Tutorial guidance triggers correctly from the start
-3. Clicking on characters always shows valid option panels
-4. No more game freezes from empty option panels
+1. Characters are randomly placed by Copy system (preserves original design)
+2. After 100ms delay, initial visibility check runs correctly
+3. Tutorial guidance triggers based on actual visibility state
+4. Clicking on characters always shows valid option panels
+5. No more game freezes from empty option panels
 
 ## Testing Recommendations
 
@@ -106,25 +88,26 @@ Added safety checks:
 
 ## Related Files Modified
 
-- `Domain/Authentication/Register.cs` - Tutorial copy creation logic
-- `Domain/Tutorial.cs` - Initial visibility check timing
+- `Domain/Tutorial.cs` - Initial visibility check timing (100ms delay)
 - `Domain/Click/Character.cs` - Click validation
 - `Domain/Display/Left.cs` - Option safety checks
 
 ## Technical Notes
 
-### Map Coordinate System
+### Why Not Change Character Placement?
 
-From `Library/Design/地图坐标.csv`:
-- Row 100, Col 0: 遗迹-岸边 (Shore)
-- Row 100, Cols 1-4: 遗迹-沙地 (Sand, distance 1)
-- Rows 96-99: More sand maps (distance 2-4)
+Initially considered changing character placement logic to guarantee distance/visibility, but this would:
+1. Add unnecessary complexity to tutorial-specific code
+2. Duplicate logic that Copy already handles well
+3. Violate the principle that Copy should randomly place characters
 
-### Copy Behavior
+The random placement is **intentional** and **correct** - tutorial should work regardless of where characters spawn.
+
+### Copy Behavior (Preserved)
 
 `Logic/Copy.cs` line 54 uses `random.Next()` to select map for character placement:
 ```csharp
 var targetMap = candidateMaps[random.Next(candidateMaps.Count)];
 ```
 
-This was causing non-deterministic character placement in tutorial copies.
+This random selection is preserved for all copies including tutorial.

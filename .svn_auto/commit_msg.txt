@@ -1,24 +1,18 @@
-[修复] 教程系统视野和交互问题
+[修复] 教程系统视野时序问题和空option面板
 
-修复问题：
-1. 初始地图看不到金矿和蜥蜴，走一步后才能看到
-2. 走回初始地图又能看到，视野行为不一致
-3. 乱走时弹出空option面板导致游戏卡死
+问题本质：
+- 角色创建后Perception系统索引需要时间，导致初始视野检查失败
+- 点击角色时未验证有效性，可能触发空option面板导致卡死
 
-根本原因：
-- 金矿和蜥蜴被随机放置在距离>1的沙地地图上
-- 视野系统索引新角色需要时间
-- 点击无效角色时未做验证
-
-解决方案：
-- 修改教程副本创建逻辑，确保金矿和蜥蜴放在最近的沙地上
-- 延迟100ms检查初始视野，等待Perception索引完成
-- 添加点击角色验证，防止空option面板
-- 添加option面板安全检查，避免返回空列表
+修复方案：
+1. 延迟100ms检查初始视野，等待Perception完成索引
+2. 添加点击角色验证，防止操作无效对象
+3. 添加option面板安全检查，避免空列表发送到客户端
+4. 保持Copy随机放置角色的原有机制
 
 修改文件：
-- Domain/Authentication/Register.cs - 教程副本创建逻辑
-- Domain/Tutorial.cs - 初始视野检查时机
+- Domain/Tutorial.cs - 延迟视野检查
 - Domain/Click/Character.cs - 点击验证
 - Domain/Display/Left.cs - option安全检查
-- Documents/BugFix-Tutorial-Visibility-2026-02-01.md - 详细修复说明
+- Domain/Authentication/Register.cs - 使用Copy随机机制
+- Documents/BugFix-Tutorial-Visibility-2026-02-01.md - 修复说明

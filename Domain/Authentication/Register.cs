@@ -125,88 +125,49 @@ namespace Domain.Authentication
         {
             if (startMap?.Scene == null) return null;
             
-            // Get Design layer configs
+            // Get Design layer configs for cid lookups
             var sandDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-沙地");
             var towerDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-通天塔");
             var goldMineDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
             var lizardDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
             var steleDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "石碑");
             
-            // Create copy first (without characters)
+            // Create copy config with character placement rules
             var copyConfig = new Logic.Config.Plot.Copy
             {
                 scope = 5,
                 characters = new Dictionary<int, List<Logic.Config.Plot.Character>>()
             };
             
-            var copy = Logic.Agent.Instance.Create<Logic.Copy>(startMap, copyConfig);
-            if (copy == null) return null;
-            
-            // Now manually place characters on the closest maps in the copy
-            // Find the closest sand map in the copy
-            Logic.Copy.Map closestSandMap = null;
-            int minDistance = int.MaxValue;
-            
+            // Add characters for sand map (gold mine and lizard)
             if (sandDesign != null)
             {
-                var copySandMaps = copy.Content.Gets<Logic.Copy.Map>(m => m.Config.Id == sandDesign.id);
-                foreach (var sandMap in copySandMaps)
-                {
-                    int distance = Move.Distance.Get(copy.Start, sandMap);
-                    if (distance < minDistance && distance != int.MaxValue)
-                    {
-                        minDistance = distance;
-                        closestSandMap = sandMap;
-                    }
-                }
-            }
-            
-            // Place gold mine and lizard on the closest sand map
-            if (closestSandMap != null)
-            {
-                Utils.Debug.Log.Info("AUTH", $"[CreateTutorialCopy] Placing tutorial characters on sand map at distance {minDistance}");
-                
+                var sandCharacters = new List<Logic.Config.Plot.Character>();
                 if (goldMineDesign != null)
                 {
-                    var goldMineConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.Id == goldMineDesign.id);
-                    if (goldMineConfig != null)
-                    {
-                        var goldMine = closestSandMap.Load<Logic.Item>(goldMineConfig);
-                        Utils.Debug.Log.Info("AUTH", $"[CreateTutorialCopy] Created gold mine at pos [{string.Join(",", closestSandMap.Database.pos)}]");
-                    }
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = goldMineDesign.id, count = 1 });
                 }
-                
                 if (lizardDesign != null)
                 {
-                    var lizardConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Life>(l => l.Id == lizardDesign.id);
-                    if (lizardConfig != null)
-                    {
-                        var lizard = closestSandMap.Create<Logic.Life>(lizardConfig, 1);
-                        lizard.Birthplace = closestSandMap;
-                        Utils.Debug.Log.Info("AUTH", $"[CreateTutorialCopy] Created lizard at pos [{string.Join(",", closestSandMap.Database.pos)}]");
-                    }
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = lizardDesign.id, count = 1, min = 1, max = 1 });
+                }
+                if (sandCharacters.Count > 0)
+                {
+                    copyConfig.characters[sandDesign.id] = sandCharacters;
                 }
             }
-            else
-            {
-                Utils.Debug.Log.Warning("AUTH", "[CreateTutorialCopy] Could not find sand map in copy!");
-            }
             
-            // Place stele on tower map
+            // Add stele for tower map
             if (towerDesign != null && steleDesign != null)
             {
-                var towerMap = copy.Content.Get<Logic.Copy.Map>(m => m.Config.Id == towerDesign.id);
-                if (towerMap != null)
+                copyConfig.characters[towerDesign.id] = new List<Logic.Config.Plot.Character>
                 {
-                    var steleConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Item>(i => i.Id == steleDesign.id);
-                    if (steleConfig != null)
-                    {
-                        var stele = towerMap.Load<Logic.Item>(steleConfig);
-                        Utils.Debug.Log.Info("AUTH", $"[CreateTutorialCopy] Created stele on tower map");
-                    }
-                }
+                    new Logic.Config.Plot.Character { id = steleDesign.id, count = 1 }
+                };
             }
             
+            // Create the copy (characters will be randomly placed by Copy.Init)
+            var copy = Logic.Agent.Instance.Create<Logic.Copy>(startMap, copyConfig);
             return copy;
         }
         
