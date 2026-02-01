@@ -1,4 +1,3 @@
-[修复] 恢复 Logout 保存副本内坐标逻辑
+[调试] 添加更多 Click 处理流程日志
 
-- Logout 时保存 player.Map.Database.pos 而不是 copy.Teleport
-- 添加诊断日志确认 Copy.Release、Login、Logout 行为
+追踪 HandleMapClick 和 Do 方法的执行路径
