@@ -555,6 +555,7 @@ namespace Net.Protocol
         public override void Processed(Client client)
         {
             Logic.Player player = client.Player;
+            Utils.Debug.Log.Info("OPTION", $"[OptionReturn] Received, player.Option={(player.Option == null ? "null" : player.Option.Type.ToString())}");
             if (player.Option != null)
             {
                 player.OptionBackward();

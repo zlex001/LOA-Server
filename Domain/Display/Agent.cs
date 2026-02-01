@@ -257,11 +257,11 @@ namespace Domain.Display
         {
             if (player.Option == null)
             {
-                // Don't send empty option protocol - it causes client to show empty panel
-                // Client should already have closed the option panel when player.Option was removed
+                Utils.Debug.Log.Info("OPTION", "[Refresh] player.Option is null, skipping send (option already closed)");
                 return;
             }
             
+            Utils.Debug.Log.Info("OPTION", $"[Refresh] Sending option update, Type={player.Option.Type}");
             var protocol = CreateOptionProtocol(player.Option);
             Net.Tcp.Instance.Send(player, protocol);
         }
@@ -333,6 +333,8 @@ namespace Domain.Display
             Player player = (Player)args[0];
             Option removedOption = (Option)args[1];
             
+            Utils.Debug.Log.Info("OPTION", $"[OnPlayerRemoveOption] Removed option Type={removedOption.Type}, player.Option={(player.Option == null ? "null" : player.Option.Type.ToString())}");
+            
             // 清理所有容器监听器
             UnlistenAllContainersForPlayer(player);
             player.Viewer = null;
@@ -340,6 +342,7 @@ namespace Domain.Display
             // If this was the current option and no other options remain, send close signal
             if (player.Option == null)
             {
+                Utils.Debug.Log.Info("OPTION", "[OnPlayerRemoveOption] Sending empty Option protocol to close UI");
                 Net.Tcp.Instance.Send(player, new Net.Protocol.Option());
             }
         }

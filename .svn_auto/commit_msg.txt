@@ -1,6 +1,17 @@
-[优化] 控制台日志添加时间戳
+[调试] 添加Option关闭流程详细日志
 
-在开发模式下，控制台输出的日志现在会显示时间戳（HH:mm:ss.fff格式），方便调试和定位问题时序。
+为了追踪空option面板问题，添加了以下日志点：
+- OptionReturn协议接收
+- OptionBackward调用
+- OnPlayerRemoveOption触发
+- Refresh调用（包括跳过和发送）
+
+通过日志可以确认：
+1. 客户端是否发送了OptionReturn协议
+2. 服务器是否正确删除了player.Option
+3. 后续Refresh是否被触发
 
 修改文件：
-- Utils/Debug/Log.cs - 控制台输出添加时间戳
+- Net/Protocol.cs - OptionReturn日志
+- Logic/Player.cs - OptionBackward日志
+- Domain/Display/Agent.cs - OnPlayerRemoveOption和Refresh日志

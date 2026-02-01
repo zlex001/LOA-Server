@@ -379,10 +379,12 @@ namespace Logic
         public void OptionBackward()
         {
             Option last = Content.Gets<Option>().LastOrDefault();
+            Utils.Debug.Log.Info("OPTION", $"[OptionBackward] last={(last == null ? "null" : last.Type.ToString())}");
             if (last != null)
             {
                 Remove(last);
             }
+            Utils.Debug.Log.Info("OPTION", $"[OptionBackward] Firing Refresh event, current Option={(Option == null ? "null" : Option.Type.ToString())}");
             monitor.Fire(Option.Event.Refresh, this);
         }
 
