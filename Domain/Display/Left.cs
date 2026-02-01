@@ -9,6 +9,14 @@ namespace Domain.Display
         {
             List<Option.Item> items = new();
             
+            // Safety check: if target is null or invalid, return error message
+            if (target == null)
+            {
+                Utils.Debug.Log.Warning("DISPLAY", "[Left.Operation] Target is null");
+                items.Add(new Option.Item("[Error: Target not found]"));
+                return items;
+            }
+            
             // For remote Life, show name + description + distance (replace Part info)
             if (target is Life life && life.Map != player.Map)
             {
@@ -44,6 +52,14 @@ namespace Domain.Display
             {
                 items = results.Cast<Option.Item>().ToList();
             }
+            
+            // Safety check: if no items were generated, add a placeholder to prevent empty UI
+            if (items.Count == 0)
+            {
+                Utils.Debug.Log.Warning("DISPLAY", $"[Left.Operation] No items generated for target type={target.GetType().Name}");
+                items.Add(new Option.Item("[No information available]"));
+            }
+            
             return items;
         }
 
