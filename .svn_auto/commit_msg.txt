@@ -1,6 +1,1 @@
-[修复] 解决SVN提交信息中文乱码问题
-
-问题原因：LANG/LC_ALL环境变量为空，subprocess使用非UTF-8编码
-解决方案：
-1. auto_commit.py: subprocess.run显式指定encoding='utf-8'
-2. start_auto.sh: 设置LANG和LC_ALL为en_US.UTF-8
+[配置] 合并分层架构规则，新增反向通信机制说明
