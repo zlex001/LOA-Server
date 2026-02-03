@@ -90,11 +90,8 @@ namespace Logic
         }
         public override void Release()
         {
-            var copyMaps = Content.Gets<Copy.Map>().ToList();
-            Utils.Debug.Log.Info("COPY", $"[Release] Releasing {copyMaps.Count} copy maps");
-            foreach (var copyMap in copyMaps)
+            foreach (var copyMap in Content.Gets<Copy.Map>().ToList())
             {
-                Utils.Debug.Log.Info("COPY", $"[Release] Removing map pos=[{string.Join(",", copyMap.Database.pos)}], isCopyMap={copyMap is Copy.Map}");
                 copyMap.Copy = null;
                 Agent.Instance.Remove(copyMap);
                 copyMap.Destroy();
@@ -102,7 +99,6 @@ namespace Logic
             Start = null;
             Plot = null;
             base.Release();
-            Utils.Debug.Log.Info("COPY", $"[Release] Copy released");
         }
 
 

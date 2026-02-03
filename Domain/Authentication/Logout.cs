@@ -14,20 +14,15 @@ namespace Domain.Authentication
             if (Domain.Story.Maze.IsIn(player))
             {
                 player.Database.pos = Domain.Story.Maze.Get(player).Last.Database.teleport;
-                Utils.Debug.Log.Info("AUTH", $"[Logout] In Maze, saving teleport pos=[{string.Join(",", player.Database.pos ?? new int[0])}]");
             }
             else if (Domain.Story.Copy.IsIn(player))
             {
                 // Save current map position (same coordinates exist in world)
-                var currentPos = player.Map?.Database.pos;
-                var teleportPos = Domain.Story.Copy.Get(player)?.Teleport;
-                Utils.Debug.Log.Info("AUTH", $"[Logout] In Copy, currentMapPos=[{string.Join(",", currentPos ?? new int[0])}], teleportPos=[{string.Join(",", teleportPos ?? new int[0])}]");
-                player.Database.pos = currentPos;  // Changed: save current position, not teleport
+                player.Database.pos = player.Map?.Database.pos;
             }
             else
             {
                 player.Database.pos = player.Map == null ? default : player.Map.Database.pos;
-                Utils.Debug.Log.Info("AUTH", $"[Logout] Normal, saving pos=[{string.Join(",", player.Database.pos ?? new int[0])}]");
             }
             player.Database.text["Name"] = player.data.Get<string>(Logic.Player.Data.Name);
             player.Database.text["Master"] = player.Master;

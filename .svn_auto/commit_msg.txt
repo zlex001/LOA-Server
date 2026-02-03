@@ -1,3 +1,5 @@
-[调试] 添加详细的 Click 分支判断日志
+[优化] 清理调试日志，保留功能修复
 
-追踪 Map.On 的每个分支、IsInPlayerScene、HandleSceneClick 的执行情况
+- 移除 Click、Login、Logout、Copy、Protocol 中的调试日志
+- 保留 IsInPlayerScene 检查逻辑（修复场景坐标冲突问题）
+- 保留 Copy.Release 中的 Agent.Instance.Remove 调用（修复 ghost map 问题）

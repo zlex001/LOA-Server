@@ -430,7 +430,6 @@ namespace Net.Protocol
         public int[] pos;
         public override void Processed(Client client)
         {
-            Utils.Debug.Log.Info("CLICK", $"[ClickMap.Processed] client={client?.Name}, player={client?.Player}, pos=[{string.Join(",", pos ?? new int[0])}]");
             Logic.Agent.Instance.monitor.Fire(Logic.Player.Click.Map, client.Player, pos);
         }
     }
