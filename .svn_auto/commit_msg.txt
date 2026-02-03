@@ -1,5 +1,5 @@
-[优化] 清理调试日志，保留功能修复
+[文档] 更新教程系统设计：支持断线恢复
 
-- 移除 Click、Login、Logout、Copy、Protocol 中的调试日志
-- 保留 IsInPlayerScene 检查逻辑（修复场景坐标冲突问题）
-- 保留 Copy.Release 中的 Agent.Instance.Remove 调用（修复 ghost map 问题）
+- 修改持久化策略：从"不恢复"改为"恢复教程进度"
+- 添加恢复流程说明：检测进度、重建副本、定位玩家、恢复引导
+- 更新流程图：添加断线恢复入口节点
