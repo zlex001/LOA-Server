@@ -55,8 +55,8 @@ namespace Utils
             var files = new[]
             {
                 "BehaviorTree.xlsx", "Item.xlsx", "Movement.xlsx", "Skill.xlsx", "Life.xlsx",
-                "Scene.xlsx", "Map.xlsx", "Maze.xlsx", "Plot.xlsx", "Multilingual.xlsx",
-                "Buff.xlsx", "Shop.xlsx", "Story.xlsx", "SeveredLimb.xlsx", "Step.xlsx"
+                "Scene.xlsx", "Map.xlsx", "Maze.xlsx", "Quest.xlsx", "Multilingual.xlsx",
+                "Buff.xlsx", "Shop.xlsx", "SeveredLimb.xlsx", "Step.xlsx"
             };
 
             foreach (var file in files)

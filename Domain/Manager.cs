@@ -56,7 +56,7 @@ namespace Domain
             PVP.Offline.Instance.Init();
             Recharge.Instance.Init();
             Hot.Instance.Init();
-            Story.Agent.Instance.Init();
+            Quest.Agent.Instance.Init();
             Infrastructure.Agent.Init();
             Click.Agent.Init();
             Operation.Agent.Instance.Init();

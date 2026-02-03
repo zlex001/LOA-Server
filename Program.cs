@@ -108,7 +108,7 @@ namespace WorldService
                 Utils.Debug.Log.Info("SERVER", "  GM: F1=Farmer F2=Miner F3=Hunter F4=Merchant");
                 Utils.Debug.Log.Info("SERVER", "  Debug: F5=BehaviorTree F11=TCP Log");
                 Utils.Debug.Log.Info("SERVER", "  Export: F10=LifeAttributes CSV");
-                Utils.Debug.Log.Info("SERVER", "  Plot: F6=Theft F7=Blade F8=Sword F9=BeastTaming");
+                Utils.Debug.Log.Info("SERVER", "  Quest: F6=Theft F7=Blade F8=Sword F9=BeastTaming");
                 Utils.Debug.Log.Info("SERVER", "  Command: / to enter (e.g. /addgem 100)");
                 Utils.Debug.Log.Info("SERVER", "  System: Delete=Clear ESC=Exit");
                 Utils.Debug.Log.Info("SERVER", "========================================");

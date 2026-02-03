@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Logic.Config
@@ -18,7 +18,7 @@ namespace Logic.Config
         public int[] skills;
         public Dictionary<Logic.Life.Attributes, int> attribute;
         public Dictionary<int, int> item;
-        public int[] plotors;
+        public int[] quests;
 
 
         public override void Init(params object[] args)
@@ -39,7 +39,7 @@ namespace Logic.Config
             skills = Utils.Json.Deserialize<int[]>(Get<string>(dict, "skills"));
             attribute = Utils.Json.Deserialize<Logic.Life.Attributes, int>(Get<string>(dict, "attribute"));
             text = Utils.Json.Deserialize<Dictionary<string, List<string>>>(Get<string>(dict, "text"));
-            plotors = Utils.Json.Deserialize<int[]>(Get<string>(dict, "plotors"));
+            quests = Utils.Json.Deserialize<int[]>(Get<string>(dict, "quests"));
         }
 
         public IEnumerable<string> GetTags() => Tags ?? Enumerable.Empty<string>();

@@ -310,7 +310,7 @@ namespace Logic.Validation
             var lifeCids = lives.Select(l => l.cid).ToHashSet();
             var itemCids = items.Select(i => i.cid).ToHashSet();
             var multilingualCids = Logic.Design.Agent.Instance.Content.Gets<Logic.Design.Multilingual>().Select(ml => ml.cid).ToHashSet();
-            var plotCids = Logic.Design.Agent.Instance.Content.Gets<Logic.Design.Plot>().Select(p => p.cid).ToHashSet();
+            var questCids = Logic.Design.Agent.Instance.Content.Gets<Logic.Design.Quest>().Select(p => p.cid).ToHashSet();
             var usedMapCids = new HashSet<string>();
 
             // ��֤�����ͼ����
@@ -371,14 +371,14 @@ namespace Logic.Validation
                 }
 
                 // ��֤��ͼ�¼�����
-                if (map.plotors != null && map.plotors.Length > 0)
+                if (map.quests != null && map.quests.Length > 0)
                 {
-                    foreach (var plotCid in map.plotors)
+                    foreach (var questCid in map.quests)
                     {
-                        if (!string.IsNullOrEmpty(plotCid) && !plotCids.Contains(plotCid))
+                        if (!string.IsNullOrEmpty(questCid) && !questCids.Contains(questCid))
                         {
-                            validation.Create<Logic.Validation.Error>("Plot CID not found", "Design", "Map", map.cid, 
-                                $"Map [{map.cid}] references plot [{plotCid}] which is not defined in Plot config");
+                            validation.Create<Logic.Validation.Error>("Quest CID not found", "Design", "Map", map.cid, 
+                                $"Map [{map.cid}] references quest [{questCid}] which is not defined in Quest config");
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +13,7 @@ namespace Logic.Design
         public string[] characters;
         public string translate;
         public string xiulian;
-        public string[] plotors;
+        public string[] quests;
         public string function;
 
         public override void Init(params object[] args)
@@ -28,7 +28,7 @@ namespace Logic.Design
             characters = Get<string>(dict, "characters")?.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToArray() ?? Array.Empty<string>();
             translate = Get<string>(dict, "translate");
             xiulian = Get<string>(dict, "xiulian");
-            plotors = Get<string>(dict, "plotors")?.Split(',') ?? Array.Empty<string>();
+            quests = Get<string>(dict, "quests")?.Split(',') ?? Array.Empty<string>();
         }
 
         private static string ConvertTypeToEnglish(string chineseType)
@@ -291,11 +291,11 @@ namespace Logic.Design
                     throw new System.Exception($"Map Convert Error: Cannot find multilingual for name='{config.name}', cid='{config.cid}', id={config.id}");
                 }
 
-                int[] plotors = config.plotors
+                int[] quests = config.quests
                     .Select(p =>
                     {
-                        var plot = Agent.Instance.Content.Get<Plot>(x => x.cid == p);
-                        return plot.id;
+                        var quest = Agent.Instance.Content.Get<Quest>(x => x.cid == p);
+                        return quest.id;
                     })
                     .ToArray();
 
@@ -307,7 +307,7 @@ namespace Logic.Design
                     {"characters",JsonConvert.SerializeObject(charactersExport) },
                     {"information", JsonConvert.SerializeObject(information)},
                     {"function", JsonConvert.SerializeObject(function)},
-                    {"plotors", JsonConvert.SerializeObject(plotors)},
+                    {"quests", JsonConvert.SerializeObject(quests)},
                 };
                 datas.Add(data);
             }

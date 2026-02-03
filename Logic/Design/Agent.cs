@@ -13,7 +13,7 @@ namespace Logic.Design
         public static Agent Instance { get { if (instance == null) { instance = new Agent(); } return instance; } }
         public override void Init(params object[] args)
         {
-            LoadByRow<Plot>($"{Utils.Paths.DesignData}/剧情.csv");
+            LoadByRow<Quest>($"{Utils.Paths.DesignData}/任务.csv");
             LoadByRow<Life>($"{Utils.Paths.DesignData}/生物.csv");
             LoadByRow<Item>($"{Utils.Paths.DesignData}/道具.csv");
             LoadByRow<Skill>($"{Utils.Paths.DesignData}/技能.csv");
@@ -34,7 +34,7 @@ namespace Logic.Design
             Life.Convert();
             Item.Convert();
             Skill.Convert();
-            Plot.Convert();
+            Quest.Convert();
             Movement.Convert();
             Buff.Convert();
             BehaviorTree.Convert();

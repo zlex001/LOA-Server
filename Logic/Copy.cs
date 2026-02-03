@@ -12,12 +12,12 @@ namespace Logic
 
 
         public Logic.Map Start { get; set; }
-        public Plot Plot { get;  set; }
+        public Quest Quest { get;  set; }
         public int[] Teleport { get; set; }
         public override void Init(params object[] args)
         {
             var start = (Logic.Map)args[0];
-            var config = (Config.Plot.Copy)args[1];
+            var config = (Config.Quest.Copy)args[1];
             
             // Save teleport position (where to return when exiting copy)
             Teleport = start.Database.pos;
@@ -97,12 +97,12 @@ namespace Logic
                 copyMap.Destroy();
             }
             Start = null;
-            Plot = null;
+            Quest = null;
             base.Release();
         }
 
 
-        private void GenerateLootForContainer(Item container, List<Config.Plot.Loot> lootPool)
+        private void GenerateLootForContainer(Item container, List<Config.Quest.Loot> lootPool)
         {
             if (lootPool == null || lootPool.Count == 0) return;
 
@@ -113,7 +113,7 @@ namespace Logic
             }
         }
         
-        private void GenerateNestedCharactersForContainer(Item container, List<Config.Plot.Character> nestedCharacters)
+        private void GenerateNestedCharactersForContainer(Item container, List<Config.Quest.Character> nestedCharacters)
         {
             if (nestedCharacters == null || nestedCharacters.Count == 0) return;
 
@@ -148,7 +148,7 @@ namespace Logic
             }
         }
         
-        private (int id, int count) GenerateLoot(List<Config.Plot.Loot> lootPool)
+        private (int id, int count) GenerateLoot(List<Config.Quest.Loot> lootPool)
         {
 
             double roll = random.NextDouble();

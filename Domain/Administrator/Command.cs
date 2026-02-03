@@ -180,26 +180,26 @@ namespace Domain.Administrator
 
                     if (command.plotId <= 0)
                     {
-                        var plots = Logic.Config.Agent.Instance.Content.Gets<Logic.Config.Plot>()
+                        var quests = Logic.Config.Agent.Instance.Content.Gets<Logic.Config.Quest>()
                             .Select(p => p.Id)
                             .ToList();
-                        var listResult = new { success = true, message = "可用剧情ID列表", plots = plots };
+                        var listResult = new { success = true, message = "Available quest ID list", quests = quests };
                         await Net.Http.Instance.SendJson(response, listResult);
                         return;
                     }
 
-                    var plotConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Plot>(p => p.Id == command.plotId);
-                    if (plotConfig == null)
+                    var questConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Quest>(p => p.Id == command.plotId);
+                    if (questConfig == null)
                     {
-                        var errorResult = new { success = false, message = $"未找到剧情ID: {command.plotId}" };
+                        var errorResult = new { success = false, message = $"Quest not found: {command.plotId}" };
                         await Net.Http.Instance.SendJson(response, errorResult);
                         return;
                     }
 
-                    var plot = new Logic.Plot { Config = plotConfig };
-                    Story.DialogueSender.Do(player, plot);
+                    var quest = new Logic.Quest { Config = questConfig };
+                    Quest.DialogueSender.Do(player, quest);
 
-                    var result = new { success = true, message = $"已播放剧情ID: {command.plotId}" };
+                    var result = new { success = true, message = $"Playing quest ID: {command.plotId}" };
                     await Net.Http.Instance.SendJson(response, result);
                     return;
                 }

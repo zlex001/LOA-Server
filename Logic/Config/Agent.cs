@@ -26,7 +26,7 @@ namespace Logic.Config
             LoadByRow<Scene>($"{Utils.Paths.Config}/Scene.csv");
             LoadByRow<Map>($"{Utils.Paths.Config}/Map.csv");
             LoadByRow<Maze>($"{Utils.Paths.Config}/Maze.csv");
-            LoadByRow<Plot>($"{Utils.Paths.Config}/Plot.csv");
+            LoadByRow<Quest>($"{Utils.Paths.Config}/Quest.csv");
             LoadByRow<Dialogue>($"{Utils.Paths.Config}/Dialogue.csv");
             LoadByRow<Mall>($"{Utils.Paths.Config}/Mall.csv");
             BuildIndexCache();

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace Logic.Design
 {
@@ -23,7 +23,7 @@ namespace Logic.Design
         public int stage;
         public string literary;
         public string item;
-        public List<string> plotors;
+        public List<string> quests;
 
 
         public override void Init(params object[] args)
@@ -50,7 +50,7 @@ namespace Logic.Design
             mp = Get<int>(dict, "mp");
             skills = Get<string>(dict, "skills")?.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray() ?? Array.Empty<string>();
             item = Get<string>(dict, "item");
-            plotors = Get<string>(dict, "plotors")?.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList() ?? new List<string>();
+            quests = Get<string>(dict, "quests")?.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList() ?? new List<string>();
         }
 
         private static string ConvertPartsToEnglish(string partsInChinese)
@@ -204,7 +204,7 @@ namespace Logic.Design
                 int[] skills = config.skills.Select(e => Agent.Instance.Content.Get<Skill>(c => c.cid == e).id).ToArray();
                 int[] equipments = config.equipments.Select(e => Agent.Instance.Content.Get<Item>(c => c.cid == e).id).ToArray();
 
-                List<int> plotors = config.plotors.Select(p => Agent.Instance.Content.Get<Plot>(x => x.cid == p).id).ToList();
+                List<int> quests = config.quests.Select(p => Agent.Instance.Content.Get<Quest>(x => x.cid == p).id).ToList();
 
                 // 转换tags中的BehaviorTree cid为id
                 string convertedTags = ConvertTagsBehaviorTreeCidToId(config.tags);
@@ -229,7 +229,7 @@ namespace Logic.Design
                     {"equipments", JsonConvert.SerializeObject(equipments)},
                     {"attribute",JsonConvert.SerializeObject(attribute) },
                     {"item",JsonConvert.SerializeObject(item) },
-                    {"plotors", JsonConvert.SerializeObject(plotors)},
+                    {"quests", JsonConvert.SerializeObject(quests)},
                 };
                 datas.Add(data);
             }

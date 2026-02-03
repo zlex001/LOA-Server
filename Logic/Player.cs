@@ -209,9 +209,9 @@ namespace Logic
             {
                 foreach (int signId in Database.signs.Distinct())
                 {
-                    if (!Content.Has<Plot>(s => s.Config.Id == signId))
+                    if (!Content.Has<Quest>(s => s.Config.Id == signId))
                     {
-                        var existingSign = Logic.Agent.Instance.Content.Get<Plot>(s => s.Config.Id == signId);
+                        var existingSign = Logic.Agent.Instance.Content.Get<Quest>(s => s.Config.Id == signId);
                         if (existingSign != null) Add(existingSign);
                     }
                 }

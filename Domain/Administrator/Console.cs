@@ -135,18 +135,18 @@ namespace Domain.Administrator
                     GameMaster.ExecuteFollowedNpcBehaviorTree();
                     break;
 
-                // F6-F9: Plot tests
+                // F6-F9: Quest tests
                 case ConsoleKey.F6:
-                    GameMaster.PlayPlot(30001, "Theft");
+                    GameMaster.PlayQuest(30001, "Theft");
                     break;
                 case ConsoleKey.F7:
-                    GameMaster.PlayPlot(30002, "Blade");
+                    GameMaster.PlayQuest(30002, "Blade");
                     break;
                 case ConsoleKey.F8:
-                    GameMaster.PlayPlot(30003, "Sword");
+                    GameMaster.PlayQuest(30003, "Sword");
                     break;
                 case ConsoleKey.F9:
-                    GameMaster.PlayPlot(30004, "BeastTaming");
+                    GameMaster.PlayQuest(30004, "BeastTaming");
                     break;
 
                 // F10: Export life attributes

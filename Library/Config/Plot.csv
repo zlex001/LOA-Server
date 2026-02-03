@@ -1,5 +1,0 @@
-﻿id,trigger,dialogues,condition,repeatable,copy,maze,reward
-30001,Logic.Life+Event.Talked,"[3000101,3000102,3000103,3000104,3000105,3000106,3000107,3000108,3000109,3000110]","{""type"":""not"",""child"":{""type"":""single"",""value"":""Skill:2""}}",True,"{""scope"":0,""characters"":{}}",0,"[[""Skill"",2,1]]"
-30002,Logic.Life+Event.Talked,"[3000201,3000202,3000203,3000204,3000205,3000206,3000207,3000208]","{""type"":""not"",""child"":{""type"":""single"",""value"":""Skill:3""}}",True,"{""scope"":0,""characters"":{}}",0,"[[""Skill"",3,1]]"
-30003,Logic.Life+Event.Talked,"[3000301,3000302,3000303,3000304,3000305,3000306,3000307,3000308]","{""type"":""not"",""child"":{""type"":""single"",""value"":""Skill:4""}}",True,"{""scope"":0,""characters"":{}}",0,"[[""Skill"",4,1]]"
-30004,Logic.Life+Event.Talked,"[3000401,3000402,3000403,3000404,3000405,3000406,3000407,3000408,3000409,3000410,3000411]","{""type"":""not"",""child"":{""type"":""single"",""value"":""Skill:5""}}",True,"{""scope"":0,""characters"":{}}",0,"[[""Skill"",5,1]]"

@@ -127,9 +127,9 @@ namespace Domain.Administrator
         }
 
         /// <summary>
-        /// Play a plot/story for the player.
+        /// Play a quest for the player.
         /// </summary>
-        public static Result PlayPlot(int plotId, string plotName = null)
+        public static Result PlayQuest(int questId, string questName = null)
         {
             var player = Logic.Agent.Instance.Content.Get<Logic.Player>();
             if (player == null)
@@ -137,17 +137,17 @@ namespace Domain.Administrator
                 return Result.Fail("No online player found");
             }
 
-            var plotConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Plot>(p => p.Id == plotId);
-            if (plotConfig == null)
+            var questConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Quest>(p => p.Id == questId);
+            if (questConfig == null)
             {
-                return Result.Fail($"Plot not found: {plotName ?? plotId.ToString()}");
+                return Result.Fail($"Quest not found: {questName ?? questId.ToString()}");
             }
 
-            var plot = new Logic.Plot { Config = plotConfig };
-            Story.DialogueSender.Do(player, plot);
+            var quest = new Logic.Quest { Config = questConfig };
+            Quest.DialogueSender.Do(player, quest);
 
-            var message = $"Playing plot: {plotName ?? plotId.ToString()}";
-            Utils.Debug.Log.Info("GM", $"[PlayPlot] {message}");
+            var message = $"Playing quest: {questName ?? questId.ToString()}";
+            Utils.Debug.Log.Info("GM", $"[PlayQuest] {message}");
 
             return Result.Ok(message);
         }

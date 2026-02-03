@@ -114,13 +114,13 @@ namespace Domain.Click
                 return;
             }
             
-            if (Story.Copy.WillExit(player, destination))
+            if (Quest.Copy.WillExit(player, destination))
             {
-                Story.Copy.Exit(player, player.Map.Copy, destination);
+                Quest.Copy.Exit(player, player.Map.Copy, destination);
             }
-            else if (Story.Maze.WillExit(player, destination, out Logic.Maze maze))
+            else if (Quest.Maze.WillExit(player, destination, out Logic.Maze maze))
             {
-                Story.Maze.Exit(player, maze, destination);
+                Quest.Maze.Exit(player, maze, destination);
             }
             else
             {

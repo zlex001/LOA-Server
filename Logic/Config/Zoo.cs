@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace Logic.Config
             LoadByRow<Scene>($"{Utils.Paths.Config}/Scene.csv");
             LoadByRow<Map>($"{Utils.Paths.Config}/Map.csv");
             LoadByRow<Maze>($"{Utils.Paths.Config}/Maze.csv");
-            LoadByRow<Plot>($"{Utils.Paths.Config}/Plot.csv");
+            LoadByRow<Quest>($"{Utils.Paths.Config}/Quest.csv");
             BuildIndexCache();
         }
         

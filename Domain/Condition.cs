@@ -197,10 +197,10 @@ namespace Domain
             string[] parts = condition.Split(':');
             if (parts.Length >= 2 && int.TryParse(parts[1], out int id))
             {
-                bool hasPlot = element.Content.Has<Logic.Plot>(s => s.Config.Id == id);
+                bool hasQuest = element.Content.Has<Logic.Quest>(s => s.Config.Id == id);
 
 
-                return hasPlot;
+                return hasQuest;
             }
             return false;
         }

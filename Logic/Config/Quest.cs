@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Logic.Config
 {
-    public class Plot : Ability
+    public class Quest : Ability
     {
         public string trigger;
         public Copy copy;

@@ -18,7 +18,7 @@ namespace Logic.Design
         public int weight;
         public int flashpoint;
         public int volume;
-        public string[] plotors;
+        public string[] quests;
         public string[] usage;
         public HashSet<string> tags;
 
@@ -42,7 +42,7 @@ namespace Logic.Design
             flashpoint = Get<int>(dict, "flashpoint");
             volume = Get<int>(dict, "volume");
 
-            plotors = Get<string>(dict, "plotors")?.Split(';').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray() ?? Array.Empty<string>();
+            quests = Get<string>(dict, "quests")?.Split(';').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray() ?? Array.Empty<string>();
             usage = Get<string>(dict, "usage")?.Split(';').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray() ?? Array.Empty<string>();
             tags = Utils.Tag.ParseTagsFromString(Get<string>(dict, "tags"));
         }
@@ -268,7 +268,7 @@ namespace Logic.Design
 
 
 
-                List<int> plotors = config.plotors.Select(p => Agent.Instance.Content.Get<Plot>(x => x.cid == p).id).ToList();
+                List<int> quests = config.quests.Select(p => Agent.Instance.Content.Get<Quest>(x => x.cid == p).id).ToList();
 
                 var nameMultilingual = Agent.Instance.Content.Get<Multilingual>(m => m.cid == config.name);
                 var descriptionMultilingual = Agent.Instance.Content.Get<Multilingual>(m => m.cid == config.description);
@@ -295,7 +295,7 @@ namespace Logic.Design
                     {"value", config.value },
                     {"volume", config.volume },
 
-                    {"plotors", JsonConvert.SerializeObject(plotors)},
+                    {"quests", JsonConvert.SerializeObject(quests)},
                     {"tags", JsonConvert.SerializeObject(ConvertTagsCidToId(config.tags))}
                 };
                 datas.Add(data);

@@ -274,23 +274,23 @@ namespace Domain
             var initialPos = player.Database.pos;
 
             // Create copy config with character placement rules
-            var copyConfig = new Logic.Config.Plot.Copy
+            var copyConfig = new Logic.Config.Quest.Copy
             {
                 scope = 5,
-                characters = new Dictionary<int, List<Logic.Config.Plot.Character>>()
+                characters = new Dictionary<int, List<Logic.Config.Quest.Character>>()
             };
 
             // Add characters for sand map (gold mine and lizard)
             if (_tutorialSandMapId > 0)
             {
-                var sandCharacters = new List<Logic.Config.Plot.Character>();
+                var sandCharacters = new List<Logic.Config.Quest.Character>();
                 if (_goldMineItemId > 0)
                 {
-                    sandCharacters.Add(new Logic.Config.Plot.Character { id = _goldMineItemId, count = 1 });
+                    sandCharacters.Add(new Logic.Config.Quest.Character { id = _goldMineItemId, count = 1 });
                 }
                 if (_lizardLifeId > 0)
                 {
-                    sandCharacters.Add(new Logic.Config.Plot.Character { id = _lizardLifeId, count = 1, min = 1, max = 1 });
+                    sandCharacters.Add(new Logic.Config.Quest.Character { id = _lizardLifeId, count = 1, min = 1, max = 1 });
                 }
                 if (sandCharacters.Count > 0)
                 {
@@ -301,9 +301,9 @@ namespace Domain
             // Add stele for tower map
             if (_tutorialTowerMapId > 0 && _steleItemId > 0)
             {
-                copyConfig.characters[_tutorialTowerMapId] = new List<Logic.Config.Plot.Character>
+                copyConfig.characters[_tutorialTowerMapId] = new List<Logic.Config.Quest.Character>
                 {
-                    new Logic.Config.Plot.Character { id = _steleItemId, count = 1 }
+                    new Logic.Config.Quest.Character { id = _steleItemId, count = 1 }
                 };
             }
 

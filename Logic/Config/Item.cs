@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Logic.Config
@@ -8,7 +8,7 @@ namespace Logic.Config
         public int Name { get; private set; }
         public int Description { get; private set; }
         public string Type { get; private set; }
-        public int[] plotors;
+        public int[] quests;
         public string type;
         public Dictionary<string, int> feature;
         public List<string> Tags { get; private set; }
@@ -26,7 +26,7 @@ namespace Logic.Config
             Name = Get<int>(dict, "name");
             Description = Get<int>(dict, "description");
             type = Get<string>(dict, "type");
-            plotors = Utils.Json.Deserialize<int[]>(Get<string>(dict, "plotors"));
+            quests = Utils.Json.Deserialize<int[]>(Get<string>(dict, "quests"));
             feature = Utils.Json.Deserialize<Dictionary<string, int>>(Get<string>(dict, "feature"));
             text = Utils.Json.Deserialize<Dictionary<string, List<string>>>(Get<string>(dict, "information"));
             Tags = Utils.Json.Deserialize<List<string>>(Get<string>(dict, "tags"));

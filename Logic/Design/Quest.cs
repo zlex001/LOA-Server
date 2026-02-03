@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Logic.Design
 {
-    public class Plot : Ability
+    public class Quest : Ability
     {
         public string trigger;
         public string copy;
@@ -32,14 +32,14 @@ namespace Logic.Design
         public static void Convert()
         {
             List<Dictionary<string, object>> datas = new List<Dictionary<string, object>>();
-                var plots = Agent.Instance.Content.Gets<Plot>().ToList();
+                var quests = Agent.Instance.Content.Gets<Quest>().ToList();
                 
-                foreach (Plot config in plots)
+                foreach (Quest config in quests)
                 {
                 List<int> dialogues = new List<int>();
                 if (!string.IsNullOrEmpty(config.dialogues))
                 {
-                    // 逗号分隔的对白cid列表
+                    // Comma-separated dialogue cid list
                     var cidList = config.dialogues.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s));
                     foreach (var cid in cidList)
                     {
@@ -64,10 +64,10 @@ namespace Logic.Design
 
 
                 string convertedTrigger = ConvertTrigger(config.trigger);
-                // 解析并转换copy字段为结构化数据
+                // Parse and convert copy field to structured data
                 var copyData = ParseAndConvertCopyData(config.copy);
                 
-                // 转换maze字段的cid到id
+                // Convert maze cid to id
                 int mazeId = 0;
                 if (!string.IsNullOrEmpty(config.maze))
                 {
@@ -95,7 +95,7 @@ namespace Logic.Design
                 datas.Add(data);
             }
             
-            string path = $"{Utils.Paths.Library}/Config/Plot.csv";
+            string path = $"{Utils.Paths.Library}/Config/Quest.csv";
             Utils.FileManager.Instance.DeleteFile(path);
             Utils.Csv.SaveByRows(datas, path);
         }
@@ -142,12 +142,12 @@ namespace Logic.Design
         }
 
 
-        private static Config.Plot.Copy ParseAndConvertCopyData(string copyString)
+        private static Config.Quest.Copy ParseAndConvertCopyData(string copyString)
         {
-            var result = new Config.Plot.Copy
+            var result = new Config.Quest.Copy
             {
                 scope = 0,
-                characters = new Dictionary<int, List<Config.Plot.Character>>()
+                characters = new Dictionary<int, List<Config.Quest.Character>>()
             };
 
             if (string.IsNullOrEmpty(copyString)) return result;
@@ -161,7 +161,7 @@ namespace Logic.Design
                 if (string.IsNullOrEmpty(trimmedLine)) continue;
 
 
-                // 解析scope
+                // Parse scope
                 if (trimmedLine.StartsWith("【") && trimmedLine.Contains("】"))
                 {
                     var scopeStr = trimmedLine.Substring(1, trimmedLine.IndexOf("】") - 1);
@@ -171,7 +171,7 @@ namespace Logic.Design
                     }
                 }
 
-                // 解析地图和角色配置
+                // Parse map and character configuration
                 if (trimmedLine.Contains("=>"))
                 {
                     var parts = trimmedLine.Split(new[] { "=>" }, StringSplitOptions.None);
@@ -184,7 +184,7 @@ namespace Logic.Design
                     var characterPart = parts[1].Trim();
 
 
-                    // 提取地图CID
+                    // Extract map CID
                     var scopeEndIndex = mapPart.IndexOf("】");
                     if (scopeEndIndex == -1) 
                     {
@@ -193,7 +193,7 @@ namespace Logic.Design
                     
                     var mapCid = mapPart.Substring(scopeEndIndex + 1);
                     
-                    // 通过CID查找地图ID
+                    // Find map ID by CID
                     var designMap = Agent.Instance.Content.Get<Map>(m => m.cid == mapCid);
                     if (designMap == null) 
                     {
@@ -201,12 +201,12 @@ namespace Logic.Design
                     }
 
 
-                    // 解析角色配置
+                    // Parse character configuration
                     var character = ParseCharacterData(characterPart);
                     if (character != null)
                     {
                         if (!result.characters.ContainsKey(designMap.id))
-                            result.characters[designMap.id] = new List<Config.Plot.Character>();
+                            result.characters[designMap.id] = new List<Config.Quest.Character>();
                         
                         result.characters[designMap.id].Add(character);
                     }
@@ -219,26 +219,26 @@ namespace Logic.Design
             return result;
         }
 
-        private static Config.Plot.Character ParseCharacterData(string config)
+        private static Config.Quest.Character ParseCharacterData(string config)
         {
-            var character = new Config.Plot.Character();
+            var character = new Config.Quest.Character();
 
-            // 处理方括号内容 [loot配置] 或 [嵌套角色配置]
+            // Handle bracket content [loot config] or [nested character config]
             var bracketStart = config.IndexOf('[');
             var bracketEnd = config.IndexOf(']');
             if (bracketStart >= 0 && bracketEnd > bracketStart)
             {
                 var bracketContent = config.Substring(bracketStart + 1, bracketEnd - bracketStart - 1);
                 
-                // 判断是loot还是nested：如果包含"%"说明是loot，否则是nested
+                // Determine if loot or nested: if contains "%" it's loot, otherwise nested
                 if (bracketContent.Contains('%'))
                 {
                     character.loot = ParseLootData(bracketContent);
                 }
                 else
                 {
-                    // 嵌套角色配置，递归解析
-                    character.nested = new List<Config.Plot.Character>();
+                    // Nested character config, parse recursively
+                    character.nested = new List<Config.Quest.Character>();
                     var nestedChar = ParseCharacterData(bracketContent);
                     if (nestedChar != null)
                     {
@@ -248,7 +248,7 @@ namespace Logic.Design
                 config = config.Substring(0, bracketStart).Trim();
             }
 
-            // 解析角色CID和数量 "角色CID:等级×数量" 或 "容器CID×数量"
+            // Parse character CID and count "CharacterCID:Level×Count" or "ContainerCID×Count"
             string characterCid;
             var multiplyIndex = config.LastIndexOf('×');
             if (multiplyIndex >= 0)
@@ -265,7 +265,7 @@ namespace Logic.Design
                 character.count = 1;
             }
 
-            // 解析等级范围 "角色CID:5~10" 或 "角色CID:5"
+            // Parse level range "CharacterCID:5~10" or "CharacterCID:5"
             var colonIndex = config.IndexOf(':');
             if (colonIndex >= 0)
             {
@@ -294,7 +294,7 @@ namespace Logic.Design
                 characterCid = config;
             }
 
-            // 查找角色或道具ID
+            // Find character or item ID
             
             var designLife = Agent.Instance.Content.Get<Life>(l => l.cid == characterCid);
             if (designLife != null)
@@ -313,11 +313,11 @@ namespace Logic.Design
             return null;
         }
 
-        private static List<Config.Plot.Loot> ParseLootData(string lootStr)
+        private static List<Config.Quest.Loot> ParseLootData(string lootStr)
         {
-            var loot = new List<Config.Plot.Loot>();
+            var loot = new List<Config.Quest.Loot>();
             
-            // 解析 "物品CID:概率%*数量"
+            // Parse "ItemCID:Probability%*Count"
             var parts = lootStr.Split(':');
             if (parts.Length != 2) 
             {
@@ -365,10 +365,10 @@ namespace Logic.Design
             var designItem = Agent.Instance.Content.Get<Item>(i => i.cid == itemCid);
             if (designItem != null)
             {
-                loot.Add(new Config.Plot.Loot
+                loot.Add(new Config.Quest.Loot
                 {
                     id = designItem.id,
-                    probability = probability / 100.0, // 转换为0-1概率
+                    probability = probability / 100.0, // Convert to 0-1 probability
                     minCount = minCount,
                     maxCount = maxCount
                 });
@@ -390,7 +390,7 @@ namespace Logic.Design
                 "给予" => "Logic.Character+Event.Given",
                 "死亡" => "Logic.Life+Event.Die",
                 "进入" => "Logic.Item+Event.Enter",
-                _ => chineseTrigger // 保持原样，支持已有的英文格式
+                _ => chineseTrigger // Keep as is, support existing English format
             };
         }
 
@@ -413,7 +413,7 @@ namespace Logic.Design
 
             return prefix switch
             {
-                "Event" or "事件" => $"Event:{GetIdOrRecord<Plot>(cid, p => p.cid == cid, "Plot")}",
+                "Event" or "事件" => $"Event:{GetIdOrRecord<Quest>(cid, p => p.cid == cid, "Quest")}",
                 "Target" or "目标" => $"Target:{GetIdOrRecord<Ability>(cid, c => c.cid != null && c.cid == cid, "Ability")}",
                 "Skill" or "技能" => $"Skill:{GetIdOrRecord<Skill>(cid, s => s.cid == cid, "Skill")}",
                 "Item" or "道具" => $"Item:{GetIdOrRecord<Item>(cid, i => i.cid == cid, "Item")}",
@@ -426,8 +426,8 @@ namespace Logic.Design
             var item = Agent.Instance.Content.Get<T>(predicate);
             if (item == null)
             {
-                Logic.Validation.Agent.Instance.Create<Logic.Validation.Error>("Reference not found", "Design", "Plot", cid,
-                    $"Plot condition references {typeName} [{cid}] which is not defined");
+                Logic.Validation.Agent.Instance.Create<Logic.Validation.Error>("Reference not found", "Design", "Quest", cid,
+                    $"Quest condition references {typeName} [{cid}] which is not defined");
                 return 0;
             }
             
@@ -445,17 +445,17 @@ namespace Logic.Design
 
             try
             {
-                // 第1步：解析表达式为ConditionNode树
+                // Step 1: Parse expression to ConditionNode tree
                 var parser = new ConditionExpressionParser();
                 var conditionTree = parser.Parse(expression);
                 
                 if (conditionTree == null)
                     return null;
 
-                // 第2步：转换树中的条件（将cid转换为id）
+                // Step 2: Convert references in tree (cid to id)
                 ConvertConditionTreeReferences(conditionTree);
 
-                // 第3步：序列化为JSON
+                // Step 3: Serialize to JSON
                 return Newtonsoft.Json.JsonConvert.SerializeObject(conditionTree);
             }
             catch (Exception)

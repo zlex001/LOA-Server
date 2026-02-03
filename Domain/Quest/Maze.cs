@@ -1,12 +1,12 @@
 using Logic;
 
-namespace Domain.Story
+namespace Domain.Quest
 {
     public static class Maze
     {
-        public static bool Can(Plot plot, Player player)
+        public static bool Can(Logic.Quest quest, Player player)
         {
-            bool hasMazeConfig = plot.Config.maze > 0;
+            bool hasMazeConfig = quest.Config.maze > 0;
             bool hasScene = player.Map?.Scene != null;
             return hasMazeConfig && hasScene;
         }
@@ -15,9 +15,9 @@ namespace Domain.Story
             return (Logic.Maze)player?.Map.Parent;
 
         }
-        public static void Do(Plot plot, Player player)
+        public static void Do(Logic.Quest quest, Player player)
         {
-            var mazeConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Maze>(m => m.Id == plot.Config.maze);
+            var mazeConfig = Logic.Config.Agent.Instance.Content.Get<Logic.Config.Maze>(m => m.Id == quest.Config.maze);
             if (mazeConfig != null)
             {
                 var maze = Logic.Agent.Instance.Create<Logic.Maze>(mazeConfig, player.Map.Database.pos);

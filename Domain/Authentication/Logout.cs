@@ -11,11 +11,11 @@ namespace Domain.Authentication
 
             player.SignOutTime = DateTime.Now;
             player.Database.grade = player.Grade;
-            if (Domain.Story.Maze.IsIn(player))
+            if (Domain.Quest.Maze.IsIn(player))
             {
-                player.Database.pos = Domain.Story.Maze.Get(player).Last.Database.teleport;
+                player.Database.pos = Domain.Quest.Maze.Get(player).Last.Database.teleport;
             }
-            else if (Domain.Story.Copy.IsIn(player))
+            else if (Domain.Quest.Copy.IsIn(player))
             {
                 // Save current map position (same coordinates exist in world)
                 player.Database.pos = player.Map?.Database.pos;
@@ -106,7 +106,7 @@ namespace Domain.Authentication
             }
 
             player.Database.activitys = player.Activitys;
-            player.Database.signs = player.Content.Gets<Logic.Plot>().Select(sign => sign.Config.Id).Distinct().ToList();
+            player.Database.signs = player.Content.Gets<Logic.Quest>().Select(sign => sign.Config.Id).Distinct().ToList();
 
             try
             {
@@ -147,7 +147,7 @@ namespace Domain.Authentication
 
             // Save copy/maze reference before removing player
             var playerCopy = player.Map?.Copy;
-            var playerMaze = Domain.Story.Maze.IsIn(player) ? player.Map.Parent as Logic.Maze : null;
+            var playerMaze = Domain.Quest.Maze.IsIn(player) ? player.Map.Parent as Logic.Maze : null;
 
             if (player.Leader != null)
             {
@@ -166,11 +166,11 @@ namespace Domain.Authentication
             // Cleanup copy/maze AFTER player is removed
             if (playerCopy != null)
             {
-                Domain.Story.Copy.CheckAndDestroy(playerCopy);
+                Domain.Quest.Copy.CheckAndDestroy(playerCopy);
             }
             else if (playerMaze != null)
             {
-                Domain.Story.Maze.CheckAndDestroy(playerMaze);
+                Domain.Quest.Maze.CheckAndDestroy(playerMaze);
             }
         }
 
