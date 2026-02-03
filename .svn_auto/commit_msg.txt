@@ -1,5 +1,10 @@
-[文档] 简化教程系统流程图
+[重构] Plot/Story 重命名为 Quest
 
-- 将复杂的单一流程图拆分为：主流程图 + 入口逻辑图
-- 删除探索阶段的内嵌子图，用阶段说明表格替代
-- 提高文档的可读性和准确性
+- Logic/Plot.cs -> Logic/Quest.cs
+- Logic/Config/Plot.cs -> Logic/Config/Quest.cs
+- Logic/Design/Plot.cs -> Logic/Design/Quest.cs
+- Domain/Story/ -> Domain/Quest/
+- plotors 字段 -> quests 字段
+- 策划表: 剧情.csv -> 任务.csv
+- 文档: 剧情系统.md -> 任务系统.md
+- 更新所有相关引用 (约30个文件)
