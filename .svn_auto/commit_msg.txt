@@ -1,10 +1,6 @@
-[重构] Plot/Story 重命名为 Quest
+[文档] 更新教程系统文档，引入 Quest 依赖
 
-- Logic/Plot.cs -> Logic/Quest.cs
-- Logic/Config/Plot.cs -> Logic/Config/Quest.cs
-- Logic/Design/Plot.cs -> Logic/Design/Quest.cs
-- Domain/Story/ -> Domain/Quest/
-- plotors 字段 -> quests 字段
-- 策划表: 剧情.csv -> 任务.csv
-- 文档: 剧情系统.md -> 任务系统.md
-- 更新所有相关引用 (约30个文件)
+- 添加 Quest 系统依赖说明
+- ExploreTask 使用 Quest.SubTask 进行状态追踪
+- 补充目标不可见时的处理逻辑
+- 更新持久化说明，说明与 Quest 的集成

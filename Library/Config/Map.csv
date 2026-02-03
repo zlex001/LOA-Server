@@ -1,4 +1,4 @@
-﻿id,type,name,characters,information,function,plotors
+﻿id,type,name,characters,information,function,quests
 1001,FarmerHouse,100737,"[{""id"":1000007,""count"":1,""probability"":1.0},{""id"":1000008,""count"":1,""probability"":1.0},{""id"":2010000,""count"":1,""probability"":1.0,""minLevel"":100,""maxLevel"":100},{""id"":2010002,""count"":1,""probability"":1.0,""minLevel"":100,""maxLevel"":100}]",{},"{""Translate"":[],""Xiulian"":[]}",[]
 1002,Road,100025,[],{},"{""Translate"":[],""Xiulian"":[]}",[]
 1003,Restaurant,100026,"[{""id"":1000002,""count"":1,""probability"":1.0},{""id"":1000007,""count"":1,""probability"":1.0},{""id"":1000009,""count"":1,""probability"":1.0},{""id"":2010020,""count"":1,""probability"":1.0,""minLevel"":100,""maxLevel"":100}]",{},"{""Translate"":[],""Xiulian"":[]}",[]

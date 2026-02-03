@@ -1,4 +1,4 @@
-﻿id,name,description,type,weight,value,volume,plotors,tags
+﻿id,name,description,type,weight,value,volume,quests,tags
 1000001,100037,100098,Currency,1,1,1,[],[]
 1000086,100689,100694,Currency,1,1,1,[],[]
 1000002,100038,100099,,50000,0,100000,[],"[""Craft:Cook"",""Capacity:100000"",""Carry:50000""]"
