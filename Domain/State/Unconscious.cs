@@ -36,13 +36,10 @@ namespace Domain.State
                     Develop.Experience.GiveBattleExp(hostile, Parent);
                     
                     // Check for tutorial lizard defeat
+                    // Fire global event for life defeated (tutorial, achievements, quests, etc.)
                     if (hostile is Logic.Player player)
                     {
-                        var lizardDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Life>(l => l.cid == "蜥蜴");
-                        if (lizardDesign != null && Parent.Config?.Id == lizardDesign.id)
-                        {
-                            Tutorial.Instance.OnDefeatLizard(player);
-                        }
+                        Logic.Agent.Instance.monitor.Fire(Logic.Life.Event.Die, player, Parent);
                     }
                 }
             }

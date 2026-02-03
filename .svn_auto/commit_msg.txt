@@ -1,4 +1,15 @@
-[文档] 优化教程流程图：合并创建副本步骤
+[重构] 教程系统重构：事件监听 + 进度恢复
 
-- 将新玩家和断线恢复的"创建副本"合并为单一节点
-- 创建副本后再判断是新开始还是恢复进度
+1. 项目规则更新
+   - layer-architecture.mdc 添加事件作用域规范（对象实例 vs 管理单例）
+
+2. 事件机制重构
+   - Logic/Character.cs 添加 GoTo 事件
+   - Domain 层 5 处直接调用改为触发管理单例事件
+   - Tutorial.cs 改为监听全局事件，删除公开 OnXxx 方法
+
+3. 教程进度恢复
+   - Login.CompleteLogin 统一调用 Tutorial.Instance.Start()
+   - Register.cs 删除 StartTutorial/CreateTutorialCopy 方法
+   - Tutorial.Start() 根据 Phase 判断：None=新开始，未完成=恢复，Complete=跳过
+   - 新增 CreateTutorialCopy() 和 PlacePlayerInCopy() 方法

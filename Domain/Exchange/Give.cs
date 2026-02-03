@@ -101,10 +101,10 @@ namespace Domain.Exchange
                 Broadcast.Instance.Local(obj, [Domain.Text.Agent.Instance.Id(Logic.Text.Labels.GiveItemToItem)], ("sub", sub), ("target", target), ("obj", obj), ("count", count.ToString()));
                 Receive.Do(obj, target, count);
                 
-                // Check for tutorial stele interaction (obj is the container receiving items, target is the given item)
-                if (sub is Player player && obj.Config?.Tags != null && obj.Config.Tags.Contains("Tutorial:Stele"))
+                // Fire global event for item given (tutorial, quests, etc.)
+                if (sub is Player player)
                 {
-                    Tutorial.Instance.OnGiveToStele(player, obj, target);
+                    Logic.Agent.Instance.monitor.Fire(Logic.Character.Event.Given, player, target, obj);
                 }
             }
         }

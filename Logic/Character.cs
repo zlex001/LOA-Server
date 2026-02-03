@@ -1,4 +1,4 @@
-﻿using Logic.Config;
+using Logic.Config;
 
 namespace Logic
 {
@@ -7,7 +7,8 @@ namespace Logic
         public enum Event
         {
             Broadcast,
-            Given
+            Given,
+            GoTo
         }
         public enum Data
         {

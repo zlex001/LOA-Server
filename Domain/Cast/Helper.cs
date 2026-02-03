@@ -285,13 +285,8 @@ namespace Domain.Cast
         private static void CheckTutorialGoldMineInteraction(Player player, Item item)
         {
             // Check if this is the tutorial gold mine by looking up the config
-            var goldMineDesign = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "金矿");
-            if (goldMineDesign == null) return;
-            
-            if (item.Config?.Id == goldMineDesign.id)
-            {
-                Tutorial.Instance.OnInteractGoldMine(player);
-            }
+            // Fire global event for item interaction (tutorial, achievements, etc.)
+            Logic.Agent.Instance.monitor.Fire(Logic.Item.Event.Used, player, item);
         }
     }
 }

@@ -191,8 +191,8 @@ namespace Domain.Operation
 
             if (target is Character character && character.Map != null)
             {
-                // Notify tutorial system that player is going to a target
-                Tutorial.Instance.OnPlayerGoTo(player, character);
+                // Fire global event for player going to character (tutorial, etc.)
+                Logic.Agent.Instance.monitor.Fire(Logic.Character.Event.GoTo, player, character);
                 
                 player.ClickTarget = character.Map;
                 BehaviorTree.Agent.SetBehaviorTree(player, Logic.Constant.OneTimePathfinding);

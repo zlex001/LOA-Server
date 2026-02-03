@@ -72,6 +72,7 @@ namespace Domain
         private const string RecordExploreCompleted = "TutorialExplore";
 
         // Cached config IDs (resolved at runtime)
+        private int _tutorialShoreMapId;
         private int _tutorialSandMapId;
         private int _tutorialTowerMapId;
         private int _goldOreItemId;
@@ -112,8 +113,13 @@ namespace Domain
             // Cache config IDs for runtime lookup
             CacheConfigIds();
 
-            // Register event listeners
+            // Register event listeners on Logic.Agent singleton (global scope)
             Logic.Agent.Instance.monitor.Register(Logic.Player.Event.StoryComplete, OnStoryComplete);
+            Logic.Agent.Instance.monitor.Register(Logic.Item.Event.Used, OnItemUsed);
+            Logic.Agent.Instance.monitor.Register(Logic.Item.Event.Picked, OnItemPicked);
+            Logic.Agent.Instance.monitor.Register(Logic.Character.Event.Given, OnCharacterGiven);
+            Logic.Agent.Instance.monitor.Register(Logic.Life.Event.Die, OnLifeDie);
+            Logic.Agent.Instance.monitor.Register(Logic.Character.Event.GoTo, OnCharacterGoTo);
 
             // Register for first-seen events from Perception
             Perception.Agent.Instance.FirstSeen += OnFirstSeen;
@@ -122,6 +128,9 @@ namespace Domain
         private void CacheConfigIds()
         {
             // Lookup Design layer configs for cid
+            var tutorialShore = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-岸边");
+            _tutorialShoreMapId = tutorialShore?.id ?? 0;
+
             var tutorialSand = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Map>(m => m.cid == "遗迹-沙地");
             _tutorialSandMapId = tutorialSand?.id ?? 0;
 
@@ -143,7 +152,7 @@ namespace Domain
             var stele = Logic.Design.Agent.Instance.Content.Get<Logic.Design.Item>(i => i.cid == "石碑");
             _steleItemId = stele?.id ?? 0;
 
-            Utils.Debug.Log.Info("TUTORIAL", $"[CacheConfigIds] sandMap={_tutorialSandMapId}, tower={_tutorialTowerMapId}, goldOre={_goldOreItemId}, rawMeat={_rawMeatItemId}, goldMine={_goldMineItemId}, lizard={_lizardLifeId}, stele={_steleItemId}");
+            Utils.Debug.Log.Info("TUTORIAL", $"[CacheConfigIds] shore={_tutorialShoreMapId}, sand={_tutorialSandMapId}, tower={_tutorialTowerMapId}, goldOre={_goldOreItemId}, rawMeat={_rawMeatItemId}, goldMine={_goldMineItemId}, lizard={_lizardLifeId}, stele={_steleItemId}");
         }
 
         /// <summary>
@@ -172,27 +181,171 @@ namespace Domain
         #region Public API
 
         /// <summary>
-        /// Start tutorial for a new player
+        /// Tutorial entry point (called by Login.CompleteLogin for all players).
+        /// Detects saved progress and handles: None=new start, incomplete=recovery, Complete=skip.
         /// </summary>
         public void Start(Player player)
         {
             if (player == null) return;
 
-            Utils.Debug.Log.Info("TUTORIAL", $"[Start] Starting tutorial for player");
+            // Load saved phase from database
+            Phase savedPhase = LoadProgress(player);
+            Utils.Debug.Log.Info("TUTORIAL", $"[Start] Player phase={savedPhase}");
 
-            // Register map change listener
-            RegisterPlayerMapListener(player);
+            // Skip if tutorial already completed
+            if (savedPhase == Phase.Completed)
+            {
+                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Tutorial already completed, skipping");
+                return;
+            }
 
-            // Initialize state
-            var state = GetOrCreateState(player);
-            state.Phase = Phase.WalkToSand;
+            // Create tutorial copy (for both new players and recovery)
+            if (savedPhase == Phase.None || (int)savedPhase > 0 && (int)savedPhase < 100)
+            {
+                var copy = CreateTutorialCopy(player);
+                if (copy == null)
+                {
+                    Utils.Debug.Log.Warning("TUTORIAL", "[Start] Failed to create tutorial copy, skipping tutorial");
+                    return;
+                }
 
-            // Save and send hint
-            SaveProgress(player, state);
-            SendPhaseHint(player, state);
+                // Register map change listener
+                RegisterPlayerMapListener(player);
 
-            // Check if already at sand or can see targets
-            CheckInitialVisibility(player, state);
+                // Initialize or restore state
+                var state = GetOrCreateState(player);
+
+                if (savedPhase == Phase.None)
+                {
+                    // New player: start from beginning
+                    Utils.Debug.Log.Info("TUTORIAL", $"[Start] New player, starting tutorial");
+                    state.Phase = Phase.WalkToSand;
+                    copy.Start.AddAsParent(player);
+                }
+                else
+                {
+                    // Recovery: restore to saved phase
+                    Utils.Debug.Log.Info("TUTORIAL", $"[Start] Recovering tutorial from phase={savedPhase}");
+                    state.Phase = savedPhase;
+                    state.ExploreCompleted = (ExploreTask)player.Database.GetRecord(RecordExploreCompleted);
+
+                    // Find map matching player's saved position and place them there
+                    PlacePlayerInCopy(player, copy);
+                }
+
+                // Save and send hint
+                SaveProgress(player, state);
+                SendPhaseHint(player, state);
+
+                // Check if already at targets
+                if (state.Phase == Phase.WalkToSand)
+                {
+                    CheckInitialVisibility(player, state);
+                }
+                else if (state.Phase == Phase.Explore)
+                {
+                    SelectNearestExploreTarget(player, state);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create tutorial copy for a player.
+        /// </summary>
+        private Logic.Copy CreateTutorialCopy(Player player)
+        {
+            if (_tutorialShoreMapId == 0)
+            {
+                Utils.Debug.Log.Warning("TUTORIAL", "[CreateTutorialCopy] Shore map ID not cached");
+                return null;
+            }
+
+            // Find the world tutorial shore map
+            var tutorialMap = Logic.Agent.Instance.Content.Get<Logic.Map>(m =>
+                m.Config.Id == _tutorialShoreMapId && m.Copy == null);
+
+            if (tutorialMap?.Scene == null)
+            {
+                Utils.Debug.Log.Warning("TUTORIAL", "[CreateTutorialCopy] Tutorial shore map not found");
+                return null;
+            }
+
+            // Save player's initial city position before entering tutorial
+            var initialPos = player.Database.pos;
+
+            // Create copy config with character placement rules
+            var copyConfig = new Logic.Config.Plot.Copy
+            {
+                scope = 5,
+                characters = new Dictionary<int, List<Logic.Config.Plot.Character>>()
+            };
+
+            // Add characters for sand map (gold mine and lizard)
+            if (_tutorialSandMapId > 0)
+            {
+                var sandCharacters = new List<Logic.Config.Plot.Character>();
+                if (_goldMineItemId > 0)
+                {
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = _goldMineItemId, count = 1 });
+                }
+                if (_lizardLifeId > 0)
+                {
+                    sandCharacters.Add(new Logic.Config.Plot.Character { id = _lizardLifeId, count = 1, min = 1, max = 1 });
+                }
+                if (sandCharacters.Count > 0)
+                {
+                    copyConfig.characters[_tutorialSandMapId] = sandCharacters;
+                }
+            }
+
+            // Add stele for tower map
+            if (_tutorialTowerMapId > 0 && _steleItemId > 0)
+            {
+                copyConfig.characters[_tutorialTowerMapId] = new List<Logic.Config.Plot.Character>
+                {
+                    new Logic.Config.Plot.Character { id = _steleItemId, count = 1 }
+                };
+            }
+
+            // Create the copy
+            var copy = Logic.Agent.Instance.Create<Logic.Copy>(tutorialMap, copyConfig);
+            if (copy != null)
+            {
+                // Override Teleport with player's initial city position
+                copy.Teleport = initialPos;
+            }
+
+            return copy;
+        }
+
+        /// <summary>
+        /// Place player in the copy at their saved position.
+        /// </summary>
+        private void PlacePlayerInCopy(Player player, Logic.Copy copy)
+        {
+            var savedPos = player.Database.pos;
+            if (savedPos == null || savedPos.Length < 3)
+            {
+                // Fallback to copy start
+                copy.Start.AddAsParent(player);
+                return;
+            }
+
+            // Find map in copy matching saved position
+            var targetMap = copy.Content.Get<Logic.Map>(m =>
+                m.Database.pos != null && System.Linq.Enumerable.SequenceEqual(m.Database.pos, savedPos));
+
+            if (targetMap != null)
+            {
+                targetMap.AddAsParent(player);
+                Utils.Debug.Log.Info("TUTORIAL", $"[PlacePlayerInCopy] Placed at saved position [{string.Join(",", savedPos)}]");
+            }
+            else
+            {
+                // Fallback to copy start
+                copy.Start.AddAsParent(player);
+                Utils.Debug.Log.Info("TUTORIAL", $"[PlacePlayerInCopy] Saved position not found, placed at start");
+            }
         }
 
         /// <summary>
@@ -257,19 +410,30 @@ namespace Domain
             _registeredPlayers.Remove(playerHash);
         }
 
+        #endregion
+
+        #region Event Handlers
+
         /// <summary>
-        /// Called when player interacts with gold mine
+        /// Global event callback: Item used (interaction)
         /// </summary>
-        public void OnInteractGoldMine(Player player)
+        private void OnItemUsed(params object[] args)
         {
+            if (args.Length < 2) return;
+            var player = args[0] as Player;
+            var item = args[1] as Item;
+            if (player == null || item == null) return;
+
+            // Filter: only gold mine
+            if (item.Config?.Id != _goldMineItemId) return;
+
             var state = GetState(player);
             if (state == null || state.Phase != Phase.Explore) return;
             if (state.CurrentExploreTarget != ExploreTask.GoldMine) return;
             if (state.CurrentAction != ExploreAction.AtTarget) return;
 
-            Utils.Debug.Log.Info("TUTORIAL", $"[OnInteractGoldMine] Gold mine interaction completed");
+            Utils.Debug.Log.Info("TUTORIAL", $"[OnItemUsed] Gold mine interaction completed");
 
-            // Mark gold mine as completed
             state.ExploreCompleted |= ExploreTask.GoldMine;
             state.CurrentExploreTarget = ExploreTask.None;
             state.CurrentAction = ExploreAction.None;
@@ -278,30 +442,15 @@ namespace Domain
         }
 
         /// <summary>
-        /// Called when player defeats lizard
+        /// Global event callback: Item picked up
         /// </summary>
-        public void OnDefeatLizard(Player player)
+        private void OnItemPicked(params object[] args)
         {
-            var state = GetState(player);
-            if (state == null || state.Phase != Phase.Explore) return;
-            if (state.CurrentExploreTarget != ExploreTask.Lizard) return;
-            if (state.CurrentAction != ExploreAction.AtTarget) return;
+            if (args.Length < 2) return;
+            var player = args[0] as Player;
+            var item = args[1] as Item;
+            if (player == null) return;
 
-            Utils.Debug.Log.Info("TUTORIAL", $"[OnDefeatLizard] Lizard defeated");
-
-            // Mark lizard as completed
-            state.ExploreCompleted |= ExploreTask.Lizard;
-            state.CurrentExploreTarget = ExploreTask.None;
-            state.CurrentAction = ExploreAction.None;
-
-            CheckExploreCompletion(player, state);
-        }
-
-        /// <summary>
-        /// Called when player picks up items
-        /// </summary>
-        public void OnPickupItem(Player player, Item item)
-        {
             var state = GetState(player);
             if (state == null || state.Phase != Phase.Collect) return;
 
@@ -311,43 +460,81 @@ namespace Domain
 
             if (hasGoldOre && hasRawMeat)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnPickupItem] All items collected, advancing to Offering");
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnItemPicked] All items collected, advancing to Offering");
                 AdvancePhase(player, state, Phase.Offering);
             }
         }
 
         /// <summary>
-        /// Called when player gives items to stele
+        /// Global event callback: Character given item
         /// </summary>
-        public void OnGiveToStele(Player player, Item stele, Item givenItem)
+        private void OnCharacterGiven(params object[] args)
         {
-            if (player == null || stele == null) return;
+            if (args.Length < 3) return;
+            var player = args[0] as Player;
+            var givenItem = args[1] as Item;
+            var receiver = args[2] as Item;
+            if (player == null || receiver == null) return;
+
+            // Filter: only stele
+            if (receiver.Config?.Id != _steleItemId) return;
 
             var state = GetState(player);
             if (state == null || state.Phase != Phase.Offering) return;
 
             // Check if stele has required items
-            bool hasGoldOre = stele.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
-            bool hasRawMeat = stele.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
+            bool hasGoldOre = receiver.Content.Has<Item>(i => i.Config.Id == _goldOreItemId);
+            bool hasRawMeat = receiver.Content.Has<Item>(i => i.Config.Id == _rawMeatItemId);
 
             if (hasGoldOre && hasRawMeat)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnGiveToStele] Items given, playing story");
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnCharacterGiven] Items given to stele, playing story");
                 PlayTutorialStory(player);
             }
         }
 
         /// <summary>
-        /// Called when player clicks "GoTo" button on a character.
+        /// Global event callback: Life died (defeated)
         /// </summary>
-        public void OnPlayerGoTo(Player player, Logic.Character target)
+        private void OnLifeDie(params object[] args)
         {
+            if (args.Length < 2) return;
+            var player = args[0] as Player;
+            var life = args[1] as Life;
+            if (player == null || life == null) return;
+
+            // Filter: only lizard
+            if (life.Config?.Id != _lizardLifeId) return;
+
+            var state = GetState(player);
+            if (state == null || state.Phase != Phase.Explore) return;
+            if (state.CurrentExploreTarget != ExploreTask.Lizard) return;
+            if (state.CurrentAction != ExploreAction.AtTarget) return;
+
+            Utils.Debug.Log.Info("TUTORIAL", $"[OnLifeDie] Lizard defeated");
+
+            state.ExploreCompleted |= ExploreTask.Lizard;
+            state.CurrentExploreTarget = ExploreTask.None;
+            state.CurrentAction = ExploreAction.None;
+
+            CheckExploreCompletion(player, state);
+        }
+
+        /// <summary>
+        /// Global event callback: Player going to character
+        /// </summary>
+        private void OnCharacterGoTo(params object[] args)
+        {
+            if (args.Length < 2) return;
+            var player = args[0] as Player;
+            var target = args[1] as Character;
+            if (player == null || target == null) return;
+
             var state = GetState(player);
             if (state == null) return;
 
             int targetConfigId = Perception.Agent.GetCharacterConfigId(target);
 
-            // Check if this is the current explore target
             if (state.Phase == Phase.Explore && state.CurrentAction == ExploreAction.SeeTarget)
             {
                 bool isCurrentTarget =
@@ -356,22 +543,18 @@ namespace Domain
 
                 if (isCurrentTarget)
                 {
-                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to explore target");
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnCharacterGoTo] Player going to explore target");
                     state.IsTraveling = true;
                     ClearHint(player);
                 }
             }
             else if (state.Phase == Phase.Offering && targetConfigId == _steleItemId)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerGoTo] Player going to stele");
+                Utils.Debug.Log.Info("TUTORIAL", $"[OnCharacterGoTo] Player going to stele");
                 state.IsTraveling = true;
                 ClearHint(player);
             }
         }
-
-        #endregion
-
-        #region Event Handlers
 
         private void OnFirstSeen(Player player, Character character)
         {

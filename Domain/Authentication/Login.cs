@@ -190,6 +190,9 @@ namespace Domain.Authentication
             // 推送屏幕自适应值
             int screenAdaptation = client.Player.ScreenUIAdaptation > 0 ? client.Player.ScreenUIAdaptation : 100;
             Net.Tcp.Instance.Send(client.Player, new Net.Protocol.ScreenAdaptation(screenAdaptation));
+            
+            // Tutorial: unified entry point for new players and progress recovery
+            Tutorial.Instance.Start(client.Player);
         }
 
         private static Net.Protocol.HomeUI CreateHomeUI(Logic.Player player)

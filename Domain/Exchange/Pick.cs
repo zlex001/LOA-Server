@@ -190,10 +190,10 @@ namespace Domain.Exchange
                     Receive.Do(sub, obj, count);
                     obj.monitor.Fire(Item.Event.Picked, sub);
                     
-                    // Check for tutorial pickup progress
+                    // Fire global event for item pickup (tutorial, achievements, etc.)
                     if (sub is Player player)
                     {
-                        Tutorial.Instance.OnPickupItem(player, obj);
+                        Logic.Agent.Instance.monitor.Fire(Logic.Item.Event.Picked, player, obj);
                     }
                 }
             }
