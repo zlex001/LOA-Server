@@ -357,3 +357,4 @@
 {"timestamp": "2026-02-04 12:33:00", "message": "[文档] 精简教程系统概述为一句话", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md"], "svn_revision": "102"}
 {"timestamp": "2026-02-04 12:36:09", "message": "[文档] 删除教程系统概述区的术语表", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md", "Documents/System/教程系统.pdf"], "svn_revision": "103"}
 {"timestamp": "2026-02-04 12:39:00", "message": "[文档] 删除教程系统概述中的实现细节描述", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md", "Documents/System/教程系统.pdf"], "svn_revision": "104"}
+{"timestamp": "2026-02-04 13:22:39", "message": "[文档] 重构教程系统文档结构，符合单模块规范\n\n- 删除多余的 ## Tutorial（教程）层级\n- 三级标题提升为二级标题\n- 模块说明移到概述区\n- 术语定义格式统一为：**中文**（English）是...", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md", "Documents/System/教程系统.pdf"], "svn_revision": "105"}
