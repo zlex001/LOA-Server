@@ -356,3 +356,4 @@
 {"timestamp": "2026-02-04 12:29:14", "message": "[配置] 更新系统文档撰写规则，添加术语跳转链接规范\n\n- 术语有独立章节时，引用应添加跳转链接\n- 定义锚点格式：标题转小写，括号移除，中英文连续", "files": [".cursor/rules/system-doc-writing-rules.mdc", ".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.pdf"], "svn_revision": "101"}
 {"timestamp": "2026-02-04 12:33:00", "message": "[文档] 精简教程系统概述为一句话", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md"], "svn_revision": "102"}
 {"timestamp": "2026-02-04 12:36:09", "message": "[文档] 删除教程系统概述区的术语表", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md", "Documents/System/教程系统.pdf"], "svn_revision": "103"}
+{"timestamp": "2026-02-04 12:39:00", "message": "[文档] 删除教程系统概述中的实现细节描述", "files": [".svn_auto/commit_msg.txt", ".svn_auto/work_history.jsonl", "Documents/System/教程系统.md", "Documents/System/教程系统.pdf"], "svn_revision": "104"}
