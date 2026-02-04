@@ -1,6 +1,5 @@
-[文档] 统一教程系统文档的术语格式
+[文档] 为教程系统文档添加术语跳转链接
 
-- 修正术语首次定义格式：中文（English）
-- 补充术语表：Phase、ExploreAction
-- 删除已移除术语 ExploreTask 的引用
-- 移除非术语的加粗（设计理念）
+- Phase 引用添加链接到 #阶段phase
+- Guidance 引用添加链接到 #引导guidance
+- ExplicitGuidance 引用添加链接到 #显性引导explicitguidance
