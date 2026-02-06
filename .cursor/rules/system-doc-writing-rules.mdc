@@ -1,4 +1,5 @@
 ---
+description: 
 alwaysApply: true
 ---
 
@@ -32,6 +33,13 @@ alwaysApply: true
 - 锚点格式：标题转小写，括号移除，中英文连续（如 `### 阶段（Phase）` → `#阶段phase`）
 - 术语的英文命名应与代码中的命名保持一致
 
-3) 正文使用中文撰写
+3) 名词解释：
+- 格式：**中文名**（代码方法/属性名）是...描述...
+- 用途：将流程图节点或核心功能与代码中的实际实现映射
+- 位置：流程图下方，或概述区
+- 括号内的英文必须与代码中的方法名、属性名或类名一致
+- 示例：**教程入口**（Start）是由 `Login.CompleteLogin` 调用的方法...
 
-4) System、Module、通用模块（Agent.cs）的概念与约定，以规则《system-and-module-definition》为准
+4) 正文使用中文撰写
+
+5) System、Module、通用模块（Agent.cs）的概念与约定，以规则《system-and-module-definition》为准
