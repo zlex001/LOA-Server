@@ -39,8 +39,8 @@ namespace Domain.Authentication
                 }
             }
             
-            var timestamp = Utils.DateTime.CurrentTimeMillis();
-            var random = Utils.Random.Int(1000, 9999);
+            var timestamp = DateTime.Now.Ticks;
+            var random = Utils.Random.Range(1000, 10000);
             var guestId = $"Traveler{timestamp}{random}";
             var guestName = $"Traveler{random}";
             

@@ -847,7 +847,7 @@ namespace Domain.Display
                 return;
             
             var panels = playerUnlockedPanels[player.Id].ToList();
-            player.Send(new Net.Protocol.UILock(panels));
+            Net.Tcp.Instance.Send(player, new Net.Protocol.UILock(panels));
             Utils.Debug.Log.Info("DISPLAY", $"[SendUILock] Sent to {player.Id}: {string.Join(", ", panels)}");
         }
     }
