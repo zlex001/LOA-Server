@@ -220,7 +220,7 @@ namespace Domain.Authentication
                 GenerateRandomCharacter(database);
                 
                 double age = (Logic.Constant.InitialPlayerAge * Domain.Time.Agent.Rate);
-                var initialMap = Logic.SpawnPoint.GetRandomInitialMap()
+                var initialMap = Logic.SpawnPoint.GetRandomInitialMap();
 
                 // TODO: 临时注释，等待世界观迁移完成后恢复
                 // var template = Domain.Text.Agent.Instance.Get(Logic.Constant.PlayerInitializeDescriptionTemplate, client);

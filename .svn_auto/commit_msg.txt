@@ -1,1 +1,15 @@
-[文档] 教程系统引导内容改为名词解释格式，表格替换为代码实际实现的具体引导项
+[功能] 新手游客快速登录与UI渐进式显示
+
+- 新增QuickStart协议，支持游客一键进入游戏
+- 实现设备绑定机制，同设备自动登录
+- 新增UILock协议，控制Home面板渐进式显示
+- Tutorial系统集成UI解锁控制（Phase推进解锁面板）
+- 调整Login.CompleteLogin协议发送顺序
+- 新增登录系统设计文档，更新教程系统文档
+
+涉及文件：
+- Net/Protocol.cs, Net/Client.cs - 协议定义
+- Domain/Authentication/* - 游客登录逻辑
+- Domain/Display/Agent.cs - UI锁定机制
+- Domain/Tutorial.cs - UI解锁控制
+- Documents/System/* - 设计文档
