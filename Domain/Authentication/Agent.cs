@@ -244,8 +244,9 @@ namespace Domain.Authentication
             Client client = (Client)args[1];
             Utils.Debug.Log.Info("AUTH", $"[OnNetAddClient] New client connected: {client.Name}");
             client.monitor.Register(Client.Event.Login, OnLogin);
+            client.monitor.Register(Client.Event.QuickStart, OnQuickStart);
             client.monitor.Register(Client.Event.InitializeRandom, OnInitializeRandom);
-            Utils.Debug.Log.Info("AUTH", $"[OnNetAddClient] Login and InitializeRandom handlers registered for {client.Name}");
+            Utils.Debug.Log.Info("AUTH", $"[OnNetAddClient] Login, QuickStart and InitializeRandom handlers registered for {client.Name}");
         }
 
         private void OnNetRemoveClient(params object[] args)
@@ -260,6 +261,7 @@ namespace Domain.Authentication
             
             client.Socket.Close();
             client.monitor.Unregister(Client.Event.Login, OnLogin);
+            client.monitor.Unregister(Client.Event.QuickStart, OnQuickStart);
             client.monitor.Unregister(Client.Event.InitializeRandom, OnInitializeRandom);
             Utils.Debug.Log.Info("AUTH", $"[OnNetRemoveClient] Client cleanup complete");
         }
@@ -278,6 +280,20 @@ namespace Domain.Authentication
             Utils.Debug.Log.Info("AUTH", $"[OnLogin] Processing login for id={id}, version={version}, platform={platform}, language={language}");
             Login.Do(client, device, id, pw, version, platform, language, loginStartTime);
             Utils.Debug.Log.Info("AUTH", $"[OnLogin] Login.Do completed for id={id}");
+        }
+
+        private void OnQuickStart(params object[] args)
+        {
+            Utils.Debug.Log.Info("AUTH", $"[OnQuickStart] Event received, args count: {args.Length}");
+            var startTime = DateTime.Now;
+            Client client = (Client)args[0];
+            string device = (string)args[1];
+            string version = (string)args[2];
+            string platform = (string)args[3];
+            string language = (string)args[4];
+            Utils.Debug.Log.Info("AUTH", $"[OnQuickStart] Processing quick start for device={device}, version={version}, platform={platform}, language={language}");
+            Login.QuickStart(client, device, version, platform, language, startTime);
+            Utils.Debug.Log.Info("AUTH", $"[OnQuickStart] QuickStart completed");
         }
 
         private void OnInitializeRandom(params object[] args)

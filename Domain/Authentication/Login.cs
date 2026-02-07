@@ -8,6 +8,91 @@ namespace Domain.Authentication
     {
         private const LoginResponse.Code AccountNotFound = (LoginResponse.Code)(-1);
 
+        public static void QuickStart(Client client, string device, string version, string platform, string language, DateTime startTime = default)
+        {
+            Utils.Debug.Log.Info("AUTH", $"[QuickStart] Start - device={device}, version={version}");
+            Logic.Text.Languages lang = ParseLanguage(language);
+            client.data.raw[Client.Data.Language] = lang;
+            
+            if (!Utils.Mathematics.VersionAdapt(Utils.Text.Version(version), Logic.Config.Agent.Instance.ClientVersion))
+            {
+                Utils.Debug.Log.Info("AUTH", $"[QuickStart] Version check failed");
+                string errorMessage = GetErrorMessage(LoginResponse.Code.AppVersionUnfit, lang);
+                client.Send(new LoginResponse(LoginResponse.Code.AppVersionUnfit, errorMessage));
+                return;
+            }
+            
+            var boundAccountId = Device.GetBoundAccountId(device);
+            
+            if (!string.IsNullOrEmpty(boundAccountId))
+            {
+                Utils.Debug.Log.Info("AUTH", $"[QuickStart] Device already bound to account: {boundAccountId}, auto-login");
+                var database = Logic.Database.Agent.Instance.Content.Get<Logic.Database.Player>(p => p.Id == boundAccountId);
+                if (database != null)
+                {
+                    Do(client, device, boundAccountId, database.text["Pw"], version, platform, language, startTime);
+                    return;
+                }
+                else
+                {
+                    Utils.Debug.Log.Warning("AUTH", $"[QuickStart] Bound account {boundAccountId} not found in database, creating new account");
+                }
+            }
+            
+            var timestamp = Utils.DateTime.CurrentTimeMillis();
+            var random = Utils.Random.Int(1000, 9999);
+            var guestId = $"Traveler{timestamp}{random}";
+            var guestName = $"Traveler{random}";
+            
+            Utils.Debug.Log.Info("AUTH", $"[QuickStart] Creating new guest account: {guestId}");
+            
+            var newDatabase = new Logic.Database.Player(guestId, "");
+            
+            if (!string.IsNullOrEmpty(Logic.Agent.Instance.ServerId))
+            {
+                newDatabase.text["ServerId"] = Logic.Agent.Instance.ServerId;
+                Utils.Debug.Log.Info("AUTH", $"[QuickStart] Guest {guestId} registered to server {Logic.Agent.Instance.ServerId}");
+            }
+            
+            client.data.Change(Client.Data.Device, device);
+            client.data.Change(Client.Data.AccountId, guestId);
+            client.Add(newDatabase);
+            
+            Register.GenerateRandomCharacter(newDatabase);
+            
+            newDatabase.text["Name"] = guestName;
+            newDatabase.time["Register"] = newDatabase.time["SignOut"] = DateTime.Now.ToString();
+            Logic.Database.Agent.Instance.AddAsParent(newDatabase);
+            
+            var map = Logic.Agent.Instance.Content.Get<Logic.Map>(m => Enumerable.SequenceEqual(m.Database.pos, newDatabase.pos));
+            if (map == null)
+            {
+                Utils.Debug.Log.Error("AUTH", $"[QuickStart] Cannot find map at position {string.Join(",", newDatabase.pos)} for guest {guestName}");
+                string errorMessage = Domain.Text.Agent.Instance.Get(Logic.Text.Labels.InitializeErrorNameEmpty, client.Language);
+                client.Send(new LoginResponse(LoginResponse.Code.PasswordError, errorMessage));
+                return;
+            }
+            
+            client.Player = map.Create<Logic.Player>(newDatabase);
+            client.Player.data.Full<int>(Life.Data.Mp);
+            client.Player.data.Full<double>(Life.Data.Lp);
+            foreach (Logic.Part part in client.Player.Content.Gets<Logic.Part>())
+            {
+                part.data.Full<int>(Logic.Part.Data.Hp);
+            }
+            
+            Register.SyncPlayerDataToDatabase(client.Player);
+            
+            Logic.Database.Agent.Instance.Save(Logic.Config.MySQL.ConnectionString, newDatabase);
+            
+            Device.Bind(device, guestId);
+            
+            CompleteLogin(client, device, guestId);
+            client.Send(new LoginResponse(LoginResponse.Code.Success, ""));
+            
+            Utils.Debug.Log.Info("AUTH", $"[QuickStart] Complete - guest account {guestId} created and logged in");
+        }
+
         public static void Do(Client client, string device, string id, string pw, string version, string platform, string language, DateTime loginStartTime = default)
         {
             Utils.Debug.Log.Info("AUTH", $"[Login.Do] Start - id={id}, version={version}");
@@ -166,6 +251,10 @@ namespace Domain.Authentication
             
             RestoreCompanions(client.Player);
             
+            // Tutorial: Initialize UI lock state before sending Home protocol
+            // This ensures UILock protocol is sent before Home, so client knows which panels to show
+            Tutorial.Instance.Start(client.Player);
+            
             var walkableArea = Move.Walk.Area(client.Player);
             
             // 使用统一的资源显示API
@@ -190,9 +279,6 @@ namespace Domain.Authentication
             // 推送屏幕自适应值
             int screenAdaptation = client.Player.ScreenUIAdaptation > 0 ? client.Player.ScreenUIAdaptation : 100;
             Net.Tcp.Instance.Send(client.Player, new Net.Protocol.ScreenAdaptation(screenAdaptation));
-            
-            // Tutorial: unified entry point for new players and progress recovery
-            Tutorial.Instance.Start(client.Player);
         }
 
         private static Net.Protocol.HomeUI CreateHomeUI(Logic.Player player)

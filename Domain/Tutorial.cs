@@ -195,7 +195,8 @@ namespace Domain
             // Skip if tutorial already completed
             if (savedPhase == Phase.Completed)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Tutorial already completed, skipping");
+                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Tutorial already completed, unlocking all UI");
+                Display.Agent.Instance.UnlockAllHomePanels(player);
                 return;
             }
 
@@ -219,6 +220,7 @@ namespace Domain
                 {
                     // New player: start from beginning
                     Utils.Debug.Log.Info("TUTORIAL", $"[Start] New player, starting tutorial");
+                    Display.Agent.Instance.InitializeUILock(player);
                     state.Phase = Phase.WalkToSand;
                     copy.Start.AddAsParent(player);
                 }
@@ -388,6 +390,9 @@ namespace Domain
             var state = GetOrCreateState(player);
             state.Phase = Phase.Completed;
             SaveProgress(player, state);
+            
+            // Unlock all UI
+            Display.Agent.Instance.UnlockAllHomePanels(player);
 
             Utils.Debug.Log.Info("TUTORIAL", $"[Complete] Tutorial completed for player");
 
@@ -774,6 +779,8 @@ namespace Domain
             state.JustAdvanced = true;
 
             SaveProgress(player, state);
+            
+            OnPhaseAdvance(player, newPhase);
 
             switch (newPhase)
             {
@@ -804,6 +811,30 @@ namespace Domain
                     {
                         SendWalkToTowerHint(player);
                     }
+                    break;
+            }
+        }
+
+        private void OnPhaseAdvance(Player player, Phase newPhase)
+        {
+            switch (newPhase)
+            {
+                case Phase.WalkToSand:
+                    // Initial state: only Scene visible (already set in InitializeUILock)
+                    break;
+                    
+                case Phase.Explore:
+                    // Unlock Area and Information panels
+                    Display.Agent.Instance.UnlockHomePanels(player, 
+                        Display.Agent.HomePanels.Area, 
+                        Display.Agent.HomePanels.Information);
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPhaseAdvance] Unlocked Area and Information panels");
+                    break;
+                    
+                case Phase.Completed:
+                    // Unlock all Home panels
+                    Display.Agent.Instance.UnlockAllHomePanels(player);
+                    Utils.Debug.Log.Info("TUTORIAL", $"[OnPhaseAdvance] Unlocked all Home panels");
                     break;
             }
         }

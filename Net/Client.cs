@@ -12,6 +12,7 @@ namespace Net
     public enum Event
     {
         Login,
+        QuickStart,
         InitializeRandom,
         InitializeConfirm,
         Send,

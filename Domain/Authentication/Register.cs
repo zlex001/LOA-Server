@@ -80,7 +80,7 @@ namespace Domain.Authentication
             // Tutorial is now started via CompleteLogin -> Tutorial.Instance.Start()
         }
         
-        private static void SyncPlayerDataToDatabase(Logic.Player player)
+        public static void SyncPlayerDataToDatabase(Logic.Player player)
         {
             player.Database.pos = player.Map.Database.pos;
             player.Database.parts.Clear();
@@ -191,27 +191,36 @@ namespace Domain.Authentication
             }
             Utils.Debug.Log.Info("AUTH", $"[Register.Satart] End - id={id}");
         }
+
+        public static void GenerateRandomCharacter(Logic.Database.Player database)
+        {
+            double age = (Logic.Constant.InitialPlayerAge * Domain.Time.Agent.Rate);
+            database.record["Age"] = (int)age;
+            database.text["Gender"] = Utils.Random.Range(0, 2) == 0 ? Life.Genders.Female.ToString() : Life.Genders.Male.ToString();
+            database.text["Category"] = Utils.Random.Range(0, 2) == 0 ? Logic.Life.Categories.Atlantean.ToString() : Logic.Life.Categories.Lemurian.ToString();
+            int[] grades = Utils.Random.WithSum<int>(100, 5, 1, 25);
+            for (int i = (int)Life.Attributes.Hp; i <= (int)Life.Attributes.Mp; i++)
+            {
+                int index = i - (int)Life.Attributes.Hp;
+                database.grade[(Life.Attributes)i] = grades[index];
+            }
+
+            var initialMap = Logic.SpawnPoint.GetRandomInitialMap();
+            if (initialMap != null)
+            {
+                database.pos = initialMap.Database.pos;
+            }
+        }
+
         public static void Reset(Client client)
         {
             if (client.Content.Has<Logic.Database.Player>())
             {
-                double age =(Logic.Constant.InitialPlayerAge * Domain.Time.Agent.Rate);
                 Logic.Database.Player database = client.Content.Get<Logic.Database.Player>();
-                database.record["Age"] = (int)age;
-                database.text["Gender"] = Utils.Random.Range(0, 2) == 0 ? Life.Genders.Female.ToString() : Life.Genders.Male.ToString();
-                database.text["Category"] = Utils.Random.Range(0, 2) == 0 ? Logic.Life.Categories.Atlantean.ToString() : Logic.Life.Categories.Lemurian.ToString();
-                int[] grades = Utils.Random.WithSum<int>(100, 5, 1, 25);
-                for (int i = (int)Life.Attributes.Hp; i <= (int)Life.Attributes.Mp; i++)
-                {
-                    int index = i - (int)Life.Attributes.Hp;
-                    database.grade[(Life.Attributes)i] = grades[index];
-                }
-
-                var initialMap = Logic.SpawnPoint.GetRandomInitialMap();
-                if (initialMap != null)
-                {
-                    database.pos = initialMap.Database.pos;
-                }
+                GenerateRandomCharacter(database);
+                
+                double age = (Logic.Constant.InitialPlayerAge * Domain.Time.Agent.Rate);
+                var initialMap = Logic.SpawnPoint.GetRandomInitialMap()
 
                 // TODO: 临时注释，等待世界观迁移完成后恢复
                 // var template = Domain.Text.Agent.Instance.Get(Logic.Constant.PlayerInitializeDescriptionTemplate, client);

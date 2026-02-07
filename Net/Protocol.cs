@@ -106,6 +106,29 @@ namespace Net.Protocol
         }
     }
 
+    public class QuickStartRequest : Base
+    {
+        public string device;
+        public string version;
+        public string platform;
+        public string language;
+
+        public override void Processed(Client client)
+        {
+            client.monitor.Fire(Client.Event.QuickStart, client, device, version, platform, language);
+        }
+    }
+
+    public class UILock : Base
+    {
+        public List<string> unlockedPanels;
+
+        public UILock(List<string> unlockedPanels)
+        {
+            this.unlockedPanels = unlockedPanels;
+        }
+    }
+
     public class InitializeRandom : Base
     {
         public override void Processed(Client client)

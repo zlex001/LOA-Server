@@ -100,6 +100,19 @@ namespace Domain.Authentication
             }
         }
 
+        public static string GetBoundAccountId(string deviceId)
+        {
+            var content = Logic.Database.Agent.Instance.Content;
+            
+            if (content.Has<Logic.Database.Device>(d => d.Id == deviceId))
+            {
+                var device = content.Get<Logic.Database.Device>(d => d.Id == deviceId);
+                return device.player;
+            }
+            
+            return null;
+        }
+
 
     }
 }

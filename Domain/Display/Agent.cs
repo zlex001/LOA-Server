@@ -5,6 +5,16 @@ namespace Domain.Display
 {
     public class Agent : Agent<Agent>
     {
+        public static class HomePanels
+        {
+            public const string Scene = "Home.Scene";
+            public const string Area = "Home.Area";
+            public const string Information = "Home.Information";
+            public const string Resource = "Home.Resource";
+            public const string Chat = "Home.Chat";
+            
+            public static readonly string[] All = { Scene, Area, Information, Resource, Chat };
+        }
 
         private static Agent instance;
         public static Agent Instance { get { if (instance == null) { instance = new Agent(); } return instance; } }
@@ -20,6 +30,7 @@ namespace Domain.Display
         private Dictionary<Enum, Action<Player, Ability, string>> filterHandlers = new Dictionary<Enum, Action<Player, Ability, string>>();
         private Dictionary<Enum, Action<Player, Ability, string, bool>> toggleHandlers = new Dictionary<Enum, Action<Player, Ability, string, bool>>();
         private Dictionary<Enum, Action<Player, Ability, int>> amountHandlers = new Dictionary<Enum, Action<Player, Ability, int>>();
+        private Dictionary<string, HashSet<string>> playerUnlockedPanels = new Dictionary<string, HashSet<string>>();
         
         private int _displayRefreshDepth = 0;
         private const int MaxDisplayRefreshDepth = 10;
@@ -788,6 +799,56 @@ namespace Domain.Display
                 {"Mp", GetResourceForDisplay(player, "mp")},
                 {"Lp", GetResourceForDisplay(player, "lp")}
             };
+        }
+
+        public void InitializeUILock(Player player)
+        {
+            if (!playerUnlockedPanels.ContainsKey(player.Id))
+            {
+                playerUnlockedPanels[player.Id] = new HashSet<string> { HomePanels.Scene };
+            }
+            SendUILock(player);
+            Utils.Debug.Log.Info("DISPLAY", $"[InitializeUILock] Player {player.Id} UI locked, only Scene visible");
+        }
+
+        public void UnlockHomePanels(Player player, params string[] panelNames)
+        {
+            if (!playerUnlockedPanels.ContainsKey(player.Id))
+            {
+                playerUnlockedPanels[player.Id] = new HashSet<string>();
+            }
+            
+            bool changed = false;
+            foreach (var panel in panelNames)
+            {
+                if (playerUnlockedPanels[player.Id].Add(panel))
+                {
+                    changed = true;
+                    Utils.Debug.Log.Info("DISPLAY", $"[UnlockPanel] Player {player.Id} unlocked: {panel}");
+                }
+            }
+            
+            if (changed)
+            {
+                SendUILock(player);
+            }
+        }
+
+        public void UnlockAllHomePanels(Player player)
+        {
+            playerUnlockedPanels[player.Id] = new HashSet<string>(HomePanels.All);
+            SendUILock(player);
+            Utils.Debug.Log.Info("DISPLAY", $"[UnlockAllPanels] Player {player.Id} unlocked all Home panels");
+        }
+
+        private void SendUILock(Player player)
+        {
+            if (!playerUnlockedPanels.ContainsKey(player.Id))
+                return;
+            
+            var panels = playerUnlockedPanels[player.Id].ToList();
+            player.Send(new Net.Protocol.UILock(panels));
+            Utils.Debug.Log.Info("DISPLAY", $"[SendUILock] Sent to {player.Id}: {string.Join(", ", panels)}");
         }
     }
 }
