@@ -923,4 +923,14 @@ namespace Net.Protocol
             language = lang.ToString();
         }
     }
+
+    public class Texts : Base
+    {
+        public Dictionary<string, string> data;
+
+        public Texts(Dictionary<string, string> data)
+        {
+            this.data = data;
+        }
+    }
 }

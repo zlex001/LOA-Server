@@ -128,6 +128,20 @@ namespace Domain.Text
             return text;
         }
         
+        public Dictionary<string, string> GetUITexts(Logic.Text.Languages language)
+        {
+            var result = new Dictionary<string, string>();
+            foreach (var pair in Logic.Text.Instance.CidToId)
+            {
+                if (!pair.Key.Contains('.'))
+                    continue;
+                var text = Get(pair.Value, language);
+                if (!string.IsNullOrEmpty(text))
+                    result[pair.Key] = text;
+            }
+            return result;
+        }
+
         /// <summary>
         /// Get translation by cid (content id string)
         /// </summary>

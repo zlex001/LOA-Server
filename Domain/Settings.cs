@@ -145,6 +145,9 @@ namespace Domain
             // 推送世界地图数据
             var worldMap = Display.Agent.CreateWorldMap(player);
             Net.Tcp.Instance.Send(player, worldMap);
+            
+            var uiTexts = Domain.Text.Agent.Instance.GetUITexts(player.Language);
+            Net.Tcp.Instance.Send(player, new Net.Protocol.Texts(uiTexts));
         }
 
         private static Net.Protocol.HomeUI CreateHomeUI(Logic.Player player)

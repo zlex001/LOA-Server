@@ -272,6 +272,9 @@ namespace Domain.Authentication
             
             Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Home(resources, scene, characters, walkableArea, ui));
             
+            var uiTexts = Domain.Text.Agent.Instance.GetUITexts(client.Player.Language);
+            Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Texts(uiTexts));
+            
             // 推送世界地图数据
             var worldMap = Display.Agent.CreateWorldMap(client.Player);
             Net.Tcp.Instance.Send(client.Player, worldMap);
