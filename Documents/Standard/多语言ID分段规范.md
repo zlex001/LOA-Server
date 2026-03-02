@@ -46,7 +46,7 @@
 
 | ID范围 | 枚举 | 成员 |
 |--------|------|------|
-| 4000-4006 | Logic.Channel | System, Private, Local, Battle, All, Rumor, Automation |
+| 4000-4006 | Data.Channel | System, Private, Local, Battle, All, Rumor, Automation |
 
 ### 5000-6999: 人物描述组合
 

@@ -1,119 +1,57 @@
-﻿using System.Net;
-using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using Data;
 using Utils;
 
 namespace Logic
 {
-    public class Agent : Basic.Ability
+    public abstract class Singleton<T> where T : new()
     {
-        public enum Data
-        {
-            Open,
-        }
-        public bool IsDevelopment { get; set; }
-        public string ServerId { get; set; }
-        public Database.Server CurrentServer => !string.IsNullOrEmpty(ServerId) ? Database.Agent.Instance.GetServerById(ServerId) : null;
-        public IPAddress InternalIp => GetInternalIp();
-        private IPAddress externalIp;
-        public IPAddress ExternalIp => externalIp ?? InternalIp;
-        private static Agent instance;
-        public static Agent Instance { get { if (instance == null) { instance = new Agent(); } return instance; } }
-        public Agent()
-        {
-            data.after.Register(Data.Open, OnOpen);
+        private static T instance;
+        public static T Instance => instance ??= new T();
+    }
 
-        }
-        public bool Open { get => data.Get<bool>(Data.Open); set => data.Change(Data.Open, value); }
-        public override void Init(params object[] args)
+    public abstract class Agent<T> : Singleton<T> where T : new()
+    {
+        private readonly Dictionary<(Basic.Monitor monitor, Enum key), Basic.Monitor.Function> callbacks = new();
+
+        protected void Register<TContext>(Basic.Monitor monitor, Enum key, TContext context, Action<TContext, object[]> handler)
         {
-            if (!IsDevelopment)
-            {
-                FetchExternalIpAsync();
-            }
-
-            if (IsDevelopment)
-            {
-                Validation.Agent.Instance.Init();
-                Design.Agent.Instance.Init();
-            }
-
-            Config.Agent.Instance.Init();
-            Database.Agent.Instance.Init();
-            Text.Instance.Init();
+            var callback = (Basic.Monitor.Function)(args => handler(context, args));
+            monitor.Register(key, callback);
+            callbacks[(monitor, key)] = callback;
         }
 
-        private void FetchExternalIpAsync()
+        protected void Unregister(Basic.Monitor monitor, Enum key)
         {
-            Task.Run(async () =>
+            if (callbacks.TryGetValue((monitor, key), out var callback))
             {
-                externalIp = await GetExternalIp();
-            });
-        }
-
-        private IPAddress GetInternalIp()
-        {
-            if (IsDevelopment)
-            {
-                return IPAddress.Loopback;
-            }
-
-            try
-            {
-                return Dns.GetHostAddresses(Dns.GetHostName())
-                    .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) ?? IPAddress.Loopback;
-            }
-            catch
-            {
-                Utils.Debug.Log.Warning("LOGIC", "Failed to get internal IP, using loopback");
-                return IPAddress.Loopback;
+                monitor.Unregister(key, callback);
+                callbacks.Remove((monitor, key));
             }
         }
+    }
 
-        private async Task<IPAddress> GetExternalIp()
+    public abstract class TagFunction<TFunction, TTarget, TUser> : Agent<TFunction> where TFunction : TagFunction<TFunction, TTarget, TUser>, new()
+    {
+        protected readonly Dictionary<string, Action<TTarget, TUser>> Handlers = new();
+
+        public abstract void Init();
+
+        public virtual void Do(TTarget target, TUser user)
         {
-            string[] services = new[]
+            if (target is Data.ITag provider)
             {
-                "https://api.ipify.org",
-                "https://icanhazip.com",
-                "https://ifconfig.me/ip"
-            };
-
-            foreach (string service in services)
-            {
-                try
+                foreach (var tag in provider.GetTags())
                 {
-                    using (var client = new System.Net.Http.HttpClient())
+                    if (Handlers.TryGetValue(tag, out var action))
                     {
-                        client.Timeout = TimeSpan.FromSeconds(3);
-                        string response = await client.GetStringAsync(service);
-                        response = response.Trim();
-                        if (IPAddress.TryParse(response, out IPAddress ip))
-                        {
-                            return ip;
-                        }
+                        action(target, user);
+                        break;
                     }
                 }
-                catch
-                {
-                    continue;
-                }
             }
-
-            return null;
         }
-        public void OnOpen(params object[] args)
-        {
-            bool v = (bool)args[0];
-            if (v)
-            {
-                var sceneDataList = Utils.Binary.Deserialize<List<Database.Scene>>($"{Utils.Paths.Config}/Shortest.bin", Utils.SerializeFormat.Binary);
-                
-                foreach (var data in sceneDataList)
-                {
-                    Create<Scene>(data);
-                }
-            }
 
-        }
     }
 }

@@ -8,15 +8,15 @@ alwaysApply: true
 
 规则定义：
 
-- 静态常量指 Logic/Constant.cs 中定义的字段数据。
-- Logic/Constant.cs 文件由动态代码机制自动生成，不作为手工维护文件。
+- 静态常量指 Data/Constant.cs 中定义的字段数据。
+- Data/Constant.cs 文件由动态代码机制自动生成，不作为手工维护文件。
 
 动态代码机制说明：
 
-- 程序启动时，由 Logic.Design.Code.Init() 触发常量生成流程。
+- 程序启动时，由 Data.Design.Code.Init() 触发常量生成流程。
 - 常量生成通过 Constant() 方法，从已加载的策划表数据中查询所需信息（如道具、地图、行为树等）。
 - 根据策划表数据动态拼接常量定义的代码字符串。
-- 最终通过 Utils.Generator 工具将生成的代码写入 Logic/Constant.cs 文件。
+- 最终通过 Utils.Generator 工具将生成的代码写入 Data/Constant.cs 文件。
 
 设计目标：
 
@@ -25,5 +25,5 @@ alwaysApply: true
 
 使用约束：
 
-- 禁止手工编辑 Logic/Constant.cs。
+- 禁止手工编辑 Data/Constant.cs。
 - 如需新增或变更常量，必须通过策划表数据调整，并由动态代码生成机制重新生成。

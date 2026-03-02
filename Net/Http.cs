@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using Utils;
@@ -87,10 +87,10 @@ namespace Net
         }
         #endregion
 
-        #region Initialization and Core Logic
+        #region Initialization and Core Data
         public override void Init(params object[] args)
         {
-            Logic.Agent.Instance.data.after.Register(Logic.Agent.Data.Open, OnLogicManagerOpenChanged);
+            global::Data.Agent.Instance.data.after.Register(global::Data.Agent.Data.Open, OnLogicManagerOpenChanged);
         }
 
         private void OnLogicManagerOpenChanged(params object[] args)
@@ -213,7 +213,7 @@ namespace Net
         #endregion
 
         #region Language Helper
-        public Logic.Text.Languages GetLanguage(HttpListenerContext context)
+        public global::Data.Text.Languages GetLanguage(HttpListenerContext context)
         {
             string acceptLanguage = context.Request.Headers["Accept-Language"];
             if (!string.IsNullOrEmpty(acceptLanguage))
@@ -221,59 +221,60 @@ namespace Net
                 string firstLang = acceptLanguage.Split(',')[0].Trim().Split(';')[0].ToLower();
                 
                 if (firstLang.StartsWith("zh-cn") || firstLang == "zh")
-                    return Logic.Text.Languages.ChineseSimplified;
+                    return global::Data.Text.Languages.ChineseSimplified;
                 if (firstLang.StartsWith("zh-tw") || firstLang.StartsWith("zh-hk"))
-                    return Logic.Text.Languages.ChineseTraditional;
+                    return global::Data.Text.Languages.ChineseTraditional;
                 if (firstLang.StartsWith("en"))
-                    return Logic.Text.Languages.English;
+                    return global::Data.Text.Languages.English;
                 if (firstLang.StartsWith("ja"))
-                    return Logic.Text.Languages.Japanese;
+                    return global::Data.Text.Languages.Japanese;
                 if (firstLang.StartsWith("ko"))
-                    return Logic.Text.Languages.Korean;
+                    return global::Data.Text.Languages.Korean;
                 if (firstLang.StartsWith("fr"))
-                    return Logic.Text.Languages.French;
+                    return global::Data.Text.Languages.French;
                 if (firstLang.StartsWith("de"))
-                    return Logic.Text.Languages.German;
+                    return global::Data.Text.Languages.German;
                 if (firstLang.StartsWith("es"))
-                    return Logic.Text.Languages.Spanish;
+                    return global::Data.Text.Languages.Spanish;
                 if (firstLang.StartsWith("pt"))
-                    return Logic.Text.Languages.Portuguese;
+                    return global::Data.Text.Languages.Portuguese;
                 if (firstLang.StartsWith("ru"))
-                    return Logic.Text.Languages.Russian;
+                    return global::Data.Text.Languages.Russian;
                 if (firstLang.StartsWith("tr"))
-                    return Logic.Text.Languages.Turkish;
+                    return global::Data.Text.Languages.Turkish;
                 if (firstLang.StartsWith("th"))
-                    return Logic.Text.Languages.Thai;
+                    return global::Data.Text.Languages.Thai;
                 if (firstLang.StartsWith("id"))
-                    return Logic.Text.Languages.Indonesian;
+                    return global::Data.Text.Languages.Indonesian;
                 if (firstLang.StartsWith("vi"))
-                    return Logic.Text.Languages.Vietnamese;
+                    return global::Data.Text.Languages.Vietnamese;
                 if (firstLang.StartsWith("it"))
-                    return Logic.Text.Languages.Italian;
+                    return global::Data.Text.Languages.Italian;
                 if (firstLang.StartsWith("pl"))
-                    return Logic.Text.Languages.Polish;
+                    return global::Data.Text.Languages.Polish;
                 if (firstLang.StartsWith("nl"))
-                    return Logic.Text.Languages.Dutch;
+                    return global::Data.Text.Languages.Dutch;
                 if (firstLang.StartsWith("sv"))
-                    return Logic.Text.Languages.Swedish;
+                    return global::Data.Text.Languages.Swedish;
                 if (firstLang.StartsWith("no") || firstLang.StartsWith("nb"))
-                    return Logic.Text.Languages.Norwegian;
+                    return global::Data.Text.Languages.Norwegian;
                 if (firstLang.StartsWith("da"))
-                    return Logic.Text.Languages.Danish;
+                    return global::Data.Text.Languages.Danish;
                 if (firstLang.StartsWith("fi"))
-                    return Logic.Text.Languages.Finnish;
+                    return global::Data.Text.Languages.Finnish;
                 if (firstLang.StartsWith("uk"))
-                    return Logic.Text.Languages.Ukrainian;
+                    return global::Data.Text.Languages.Ukrainian;
             }
             
-            return Logic.Text.Languages.ChineseSimplified;
+            return global::Data.Text.Languages.ChineseSimplified;
         }
         #endregion
 
         #region Route Registration
         public void RegisterRoute(int port, string path, Event evt, Basic.Monitor.Function handler)
         {
-            UriPrefixs.Add($"http://{Logic.Agent.Instance.InternalIp}:{port}{path}/");
+            var ip = global::Data.Agent.Instance.InternalIp;
+            UriPrefixs.Add($"http://{ip}:{port}{path}/");
             ExactRoutes[(port, path)] = evt;
             monitor.Register(evt, handler);
         }
@@ -286,9 +287,10 @@ namespace Net
 
         public void RegisterPatternRoutes(int port, Event evt, Basic.Monitor.Function handler, params string[] patterns)
         {
+            var ip = global::Data.Agent.Instance.InternalIp;
             foreach (var pattern in patterns)
             {
-                UriPrefixs.Add($"http://{Logic.Agent.Instance.InternalIp}:{port}{pattern}");
+                UriPrefixs.Add($"http://{ip}:{port}{pattern}");
                 PatternRoutes.Add((pattern, evt));
             }
             monitor.Register(evt, handler);

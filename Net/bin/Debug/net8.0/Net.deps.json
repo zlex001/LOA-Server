@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "Net/1.0.0": {
         "dependencies": {
-          "Logic": "1.0.0"
+          "Data": "1.0.0"
         },
         "runtime": {
           "Net.dll": {}
@@ -511,7 +511,7 @@
           "Basic.dll": {}
         }
       },
-      "Logic/1.0.0": {
+      "Data/1.0.0": {
         "dependencies": {
           "AlipaySDKNet.Standard": "4.9.481",
           "Basic": "1.0.0",
@@ -522,7 +522,7 @@
           "Newtonsoft.Json": "13.0.3"
         },
         "runtime": {
-          "Logic.dll": {}
+          "Data.dll": {}
         }
       },
       "Utils/1.0.0": {
@@ -893,7 +893,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Logic/1.0.0": {
+    "Data/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

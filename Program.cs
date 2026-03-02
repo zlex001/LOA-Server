@@ -85,22 +85,22 @@ namespace WorldService
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             
-            Logic.Agent.Instance.IsDevelopment = isDevelopment;
-            Logic.Agent.Instance.ServerId = serverId;
+            Data.Agent.Instance.IsDevelopment = isDevelopment;
+            Data.Agent.Instance.ServerId = serverId;
             
             // 开发环境自动启用经济监控
             if (isDevelopment)
             {
-                Domain.EconomyMonitor.Enabled = true;
+                Logic.EconomyMonitor.Enabled = true;
             }
             
-            Logic.Agent.Instance.Init();
-            Domain.CrashGuard.Instance.Init();
+            Data.Agent.Instance.Init();
+            Logic.CrashGuard.Instance.Init();
             
             Net.Manager.Instance.Init();
-            Domain.Manager.Instance.Init();
+            Logic.Manager.Instance.Init();
 
-            Domain.Administrator.Console.Start(() => Shutdown("ESC"));
+            Logic.Administrator.Console.Start(() => Shutdown("ESC"));
             if (isDevelopment)
             {
                 Utils.Debug.Log.Info("SERVER", "========================================");
@@ -114,7 +114,7 @@ namespace WorldService
                 Utils.Debug.Log.Info("SERVER", "========================================");
             }
             
-            Logic.Agent.Instance.Open = true;            
+            Data.Agent.Instance.Open = true;            
          
         }
 
@@ -238,7 +238,7 @@ namespace WorldService
             {
                 Utils.Debug.Log.Fatal("OnProcessExit触发，开始紧急保存数据...");
                 EmergencySave();
-                Domain.CrashGuard.Instance.MarkNormalShutdown();
+                Logic.CrashGuard.Instance.MarkNormalShutdown();
                 Utils.Debug.Log.Shutdown();
             }
         }
@@ -269,8 +269,8 @@ namespace WorldService
                     
                     try
                     {
-                        crashReport.AppendLine($"Server: {(Logic.Agent.Instance.CurrentServer != null ? Logic.Agent.Instance.CurrentServer.name.ToString() : "Unknown")}");
-                        crashReport.AppendLine($"Environment: {(Logic.Agent.Instance.IsDevelopment ? "Development" : "Production")}");
+                        crashReport.AppendLine($"Server: {(Data.Agent.Instance.CurrentServer != null ? Data.Agent.Instance.CurrentServer.name.ToString() : "Unknown")}");
+                        crashReport.AppendLine($"Environment: {(Data.Agent.Instance.IsDevelopment ? "Development" : "Production")}");
                     }
                     catch { crashReport.AppendLine("Server: Failed to get server info"); }
                     
@@ -332,14 +332,14 @@ namespace WorldService
 
             try
             {
-                var players = Logic.Agent.Instance.Content.Gets<Logic.Player>().ToList();
+                var players = Data.Agent.Instance.Content.Gets<Data.Player>().ToList();
                 Utils.Debug.Log.Fatal($"同步 {players.Count} 个玩家数据到内存...");
                 
                 foreach (var player in players)
                 {
                     try
                     {
-                        Domain.Authentication.Logout.Do(player);
+                        Logic.Authentication.Logout.Do(player);
                     }
                     catch (Exception ex)
                     {
@@ -348,10 +348,10 @@ namespace WorldService
                 }
 
                 Utils.Debug.Log.Fatal("保存所有数据到数据库...");
-                Logic.Database.Agent.Instance.Save<Logic.Database.Device>(Logic.Config.MySQL.ConnectionString);
-                Logic.Database.Agent.Instance.Save<Logic.Database.Player>(Logic.Config.MySQL.ConnectionString);
+                Data.Database.Agent.Instance.Save<Data.Database.Device>(Data.Config.MySQL.ConnectionString);
+                Data.Database.Agent.Instance.Save<Data.Database.Player>(Data.Config.MySQL.ConnectionString);
                 
-                var playerCount = Logic.Database.Agent.Instance.Content.Gets<Logic.Database.Player>().Count();
+                var playerCount = Data.Database.Agent.Instance.Content.Gets<Data.Database.Player>().Count();
                 Utils.Debug.Log.Fatal($"紧急保存完成，共保存 {playerCount} 个账号");
             }
             catch (Exception ex)
@@ -373,14 +373,14 @@ namespace WorldService
 
             try
             {
-                var players = Logic.Agent.Instance.Content.Gets<Logic.Player>().ToList();
+                var players = Data.Agent.Instance.Content.Gets<Data.Player>().ToList();
                 Utils.Debug.Log.Fatal($"同步 {players.Count} 个玩家数据到内存...");
                 
                 foreach (var player in players)
                 {
                     try
                     {
-                        Domain.Authentication.Logout.Do(player);
+                        Logic.Authentication.Logout.Do(player);
                     }
                     catch (Exception ex)
                     {
@@ -389,10 +389,10 @@ namespace WorldService
                 }
 
                 Utils.Debug.Log.Fatal("保存所有数据到数据库...");
-                Logic.Database.Agent.Instance.Save<Logic.Database.Device>(Logic.Config.MySQL.ConnectionString);
-                Logic.Database.Agent.Instance.Save<Logic.Database.Player>(Logic.Config.MySQL.ConnectionString);
+                Data.Database.Agent.Instance.Save<Data.Database.Device>(Data.Config.MySQL.ConnectionString);
+                Data.Database.Agent.Instance.Save<Data.Database.Player>(Data.Config.MySQL.ConnectionString);
                 
-                var playerCount = Logic.Database.Agent.Instance.Content.Gets<Logic.Database.Player>().Count();
+                var playerCount = Data.Database.Agent.Instance.Content.Gets<Data.Database.Player>().Count();
                 Utils.Debug.Log.Fatal($"数据保存完成，共保存 {playerCount} 个账号");
             }
             catch (Exception ex)
@@ -401,7 +401,7 @@ namespace WorldService
                 Utils.Debug.Log.Fatal($"堆栈: {ex.StackTrace}");
             }
 
-            Domain.CrashGuard.Instance.MarkNormalShutdown();
+            Logic.CrashGuard.Instance.MarkNormalShutdown();
             Utils.Debug.Log.Shutdown();
             
             Thread.Sleep(500);

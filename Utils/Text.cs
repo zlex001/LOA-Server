@@ -74,7 +74,7 @@ namespace Utils
             string typeName = full[..lastDot];
             string enumName = full[(lastDot + 1)..];
 
-            Type enumType = Type.GetType(typeName) ?? Type.GetType($"{typeName}, Logic");
+            Type enumType = Type.GetType(typeName) ?? Type.GetType($"{typeName}, Data");
             return (Enum)Enum.Parse(enumType, enumName);
         }
 

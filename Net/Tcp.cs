@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
 using System.Threading;
-using Logic;
-using Logic.Database;
+using Data;
+using Data.Database;
 using Newtonsoft.Json;
 using Utils;
 using System;
@@ -64,7 +64,7 @@ namespace Net
             // Create and bind server socket
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             
-            var ip = Logic.Agent.Instance.InternalIp;
+            var ip = global::Data.Agent.Instance.InternalIp;
             IPEndPoint bindEndPoint = new IPEndPoint(ip, 19881);
             
             Utils.Debug.Log.Info("NET", $"[Tcp.Init] Binding to {bindEndPoint.Address}:{bindEndPoint.Port}...");
@@ -331,7 +331,7 @@ namespace Net
                 {
                     Utils.Debug.Log.Error("NET", $"[ProcessNetwork] Error processing message: {ex.Message}");
                     
-                    if (Logic.Agent.Instance.IsDevelopment)
+                    if (global::Data.Agent.Instance.IsDevelopment)
                     {
                         throw;
                     }
@@ -411,7 +411,7 @@ namespace Net
             {
                 Utils.Debug.Log.Error("NET", $"[HandleDataReceived] Error for {client?.Name}: {ex.Message}");
                 
-                if (Logic.Agent.Instance.IsDevelopment)
+                if (global::Data.Agent.Instance.IsDevelopment)
                 {
                     throw;
                 }
@@ -480,30 +480,30 @@ namespace Net
         #endregion
 
         #region 辅助方法
-        public void Broadcast(Character character, Logic.Channel channel, int id)
+        public void Broadcast(Character character, global::Data.Channel channel, int id)
         {
             switch (channel)
             {
-                case Logic.Channel.All:
-                case Logic.Channel.Rumor:
-                    Logic.Agent.Instance.Content.Gets<Logic.Player>().ForEach(player => Information(player, channel, id));
+                case global::Data.Channel.All:
+                case global::Data.Channel.Rumor:
+                    global::Data.Agent.Instance.Content.Gets<global::Data.Player>().ForEach(player => Information(player, channel, id));
                     break;
-                case Logic.Channel.Local:
-                    if (character.Map != null) { character.Map.Content.Gets<Logic.Player>().ForEach(player => Information(player, channel, id)); }
+                case global::Data.Channel.Local:
+                    if (character.Map != null) { character.Map.Content.Gets<global::Data.Player>().ForEach(player => Information(player, channel, id)); }
                     break;
-                case Logic.Channel.Private:
+                case global::Data.Channel.Private:
                     break;
-                case Logic.Channel.System:
-                case Logic.Channel.Automation:
-                    if (character is Logic.Player player) { Information(player, channel, id); }
+                case global::Data.Channel.System:
+                case global::Data.Channel.Automation:
+                    if (character is global::Data.Player player) { Information(player, channel, id); }
                     break;
             }
         }
 
-        public void Information(Logic.Player player, Logic.Channel channel, int id)
+        public void Information(global::Data.Player player, global::Data.Channel channel, int id)
         {
             Client client = Content.Get<Client>(c => c.Player == player);
-            if (Logic.Text.Instance.Multilingual.TryGetValue(id, out var map) && map.TryGetValue(player.Language, out var text))
+            if (global::Data.Text.Instance.Multilingual.TryGetValue(id, out var map) && map.TryGetValue(player.Language, out var text))
                 Send(client, new Net.Protocol.Information(channel, text));
         }
         #endregion
@@ -616,7 +616,7 @@ namespace Net
             }
         }
 
-        public void Send(Logic.Player player, Protocol.Base protocol)
+        public void Send(global::Data.Player player, Protocol.Base protocol)
         {
             Send(Content.Get<Client>(c => c.Player == player), protocol);
         }

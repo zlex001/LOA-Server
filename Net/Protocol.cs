@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Logic;
+using Data;
 
 namespace Net.Protocol
 {
@@ -10,8 +10,8 @@ namespace Net.Protocol
     {
         public Option() { }
 
-        public List<Logic.Option.Item> lefts;
-        public List<Logic.Option.Item> rights;
+        public List<global::Data.Option.Item> lefts;
+        public List<global::Data.Option.Item> rights;
     }
 
 
@@ -221,77 +221,77 @@ namespace Net.Protocol
 
     public static class MapColorHelper
     {
-        public static string GetMapTypeColor(Logic.Map.Types type)
+        public static string GetMapTypeColor(global::Data.Map.Types type)
         {
             var baseColor = type switch
             {
                 // 功能建筑类型
-                Logic.Map.Types.Default => "#FFFFFFFF",           // 白色
-                Logic.Map.Types.Teleport => "#00CED1FF",          // 青色
-                Logic.Map.Types.Bank => "#FFD700FF",              // 金色
-                Logic.Map.Types.Market => "#32CD32FF",            // 绿色
+                global::Data.Map.Types.Default => "#FFFFFFFF",           // 白色
+                global::Data.Map.Types.Teleport => "#00CED1FF",          // 青色
+                global::Data.Map.Types.Bank => "#FFD700FF",              // 金色
+                global::Data.Map.Types.Market => "#32CD32FF",            // 绿色
 
                 // 服务功能区
-                Logic.Map.Types.Guild => "#FFA07AFF",              // 浅橙色
-                Logic.Map.Types.FoodShop => "#FFA07AFF",          // 浅橙色
-                Logic.Map.Types.PotionShop => "#FFA07AFF",        // 浅橙色
-                Logic.Map.Types.MagicShop => "#FFA07AFF",         // 浅橙色
+                global::Data.Map.Types.Guild => "#FFA07AFF",              // 浅橙色
+                global::Data.Map.Types.FoodShop => "#FFA07AFF",          // 浅橙色
+                global::Data.Map.Types.PotionShop => "#FFA07AFF",        // 浅橙色
+                global::Data.Map.Types.MagicShop => "#FFA07AFF",         // 浅橙色
 
                 // 装备店区
-                Logic.Map.Types.LightGearShop => "#B0B0B0FF",     // 浅灰
-                Logic.Map.Types.HeavyGearShop => "#B0B0B0FF",     // 浅灰
+                global::Data.Map.Types.LightGearShop => "#B0B0B0FF",     // 浅灰
+                global::Data.Map.Types.HeavyGearShop => "#B0B0B0FF",     // 浅灰
 
                 // 居住区
-                Logic.Map.Types.Room => "#F5DEB3FF",              // 米色
+                global::Data.Map.Types.Room => "#F5DEB3FF",              // 米色
 
                 // 执法区
-                Logic.Map.Types.PoliceStation => "#4169E1FF",     // 皇室蓝
-                Logic.Map.Types.Prison => "#4169E1FF",            // 皇室蓝
+                global::Data.Map.Types.PoliceStation => "#4169E1FF",     // 皇室蓝
+                global::Data.Map.Types.Prison => "#4169E1FF",            // 皇室蓝
 
                 // 生活服务区
-                Logic.Map.Types.Restaurant => "#FF6B6BFF",        // 浅红色
-                Logic.Map.Types.Hospital => "#FF6B6BFF",          // 浅红色
+                global::Data.Map.Types.Restaurant => "#FF6B6BFF",        // 浅红色
+                global::Data.Map.Types.Hospital => "#FF6B6BFF",          // 浅红色
 
                 // 居住建筑区
-                Logic.Map.Types.FarmerHouse => "#D2B48CFF",       // 棕褐色
-                Logic.Map.Types.MinerHouse => "#D2B48CFF",        // 棕褐色
+                global::Data.Map.Types.FarmerHouse => "#D2B48CFF",       // 棕褐色
+                global::Data.Map.Types.MinerHouse => "#D2B48CFF",        // 棕褐色
 
                 // 特殊建筑区
-                Logic.Map.Types.Ruins => "#8B8B83FF",             // 暗灰绿
+                global::Data.Map.Types.Ruins => "#8B8B83FF",             // 暗灰绿
 
                 // 自然地形类型
-                Logic.Map.Types.Road => "#808080FF",              // 灰色
-                Logic.Map.Types.Forest => "#1C981CFF",            // 深绿
-                Logic.Map.Types.Cave => "#444444FF",              // 暗灰
-                Logic.Map.Types.Shore => "#489291FF",             // 青绿
-                Logic.Map.Types.Slope => "#F3EA9DFF",             // 浅黄
-                Logic.Map.Types.Grass => "#6FC665FF",             // 草绿
-                Logic.Map.Types.Snow => "#E0FFFFFF",              // 冰蓝白
-                Logic.Map.Types.Swamp => "#5D5026FF",             // 褐色
-                Logic.Map.Types.Sand => "#F0CE8EFF",              // 沙黄
-                Logic.Map.Types.Bridge => "#8B7355FF",            // 木桥棕
-                Logic.Map.Types.Mountain => "#696969FF",          // 山石灰
+                global::Data.Map.Types.Road => "#808080FF",              // 灰色
+                global::Data.Map.Types.Forest => "#1C981CFF",            // 深绿
+                global::Data.Map.Types.Cave => "#444444FF",              // 暗灰
+                global::Data.Map.Types.Shore => "#489291FF",             // 青绿
+                global::Data.Map.Types.Slope => "#F3EA9DFF",             // 浅黄
+                global::Data.Map.Types.Grass => "#6FC665FF",             // 草绿
+                global::Data.Map.Types.Snow => "#E0FFFFFF",              // 冰蓝白
+                global::Data.Map.Types.Swamp => "#5D5026FF",             // 褐色
+                global::Data.Map.Types.Sand => "#F0CE8EFF",              // 沙黄
+                global::Data.Map.Types.Bridge => "#8B7355FF",            // 木桥棕
+                global::Data.Map.Types.Mountain => "#696969FF",          // 山石灰
 
                 // 农业区域类型
-                Logic.Map.Types.VegetableGarden => "#7CFC00FF",   // 翠绿
-                Logic.Map.Types.Farm => "#9ACD32FF",              // 黄绿
-                Logic.Map.Types.Orchard => "#90EE90FF",           // 浅绿
-                Logic.Map.Types.HerbGarden => "#3CB371FF",        // 海绿
-                Logic.Map.Types.Ranch => "#8B7355FF",             // 棕绿
-                Logic.Map.Types.RicePaddy => "#C1E1C1FF",         // 浅绿（稻田）
-                Logic.Map.Types.WheatField => "#F4E4B7FF",        // 麦黄
-                Logic.Map.Types.MelonField => "#FFB347FF",        // 瓜橙
-                Logic.Map.Types.VegetableField => "#90C695FF",    // 菜绿
+                global::Data.Map.Types.VegetableGarden => "#7CFC00FF",   // 翠绿
+                global::Data.Map.Types.Farm => "#9ACD32FF",              // 黄绿
+                global::Data.Map.Types.Orchard => "#90EE90FF",           // 浅绿
+                global::Data.Map.Types.HerbGarden => "#3CB371FF",        // 海绿
+                global::Data.Map.Types.Ranch => "#8B7355FF",             // 棕绿
+                global::Data.Map.Types.RicePaddy => "#C1E1C1FF",         // 浅绿（稻田）
+                global::Data.Map.Types.WheatField => "#F4E4B7FF",        // 麦黄
+                global::Data.Map.Types.MelonField => "#FFB347FF",        // 瓜橙
+                global::Data.Map.Types.VegetableField => "#90C695FF",    // 菜绿
 
                 // 建筑结构类型
-                Logic.Map.Types.Wall => "#F2F2F2FF",              // 浅灰
+                global::Data.Map.Types.Wall => "#F2F2F2FF",              // 浅灰
 
                 // 水体与设施类型
-                Logic.Map.Types.Well => "#1E90FFFF",              // 道奇蓝
-                Logic.Map.Types.Pond => "#489291FF",              // 青绿
+                global::Data.Map.Types.Well => "#1E90FFFF",              // 道奇蓝
+                global::Data.Map.Types.Pond => "#489291FF",              // 青绿
 
                 // 特殊功能类型
-                Logic.Map.Types.MazeEntrance => "#00FF00FF",      // 亮绿
+                global::Data.Map.Types.MazeEntrance => "#00FF00FF",      // 亮绿
 
                 _ => "#FFFFFFFF"                                  // 默认白色
             };
@@ -308,7 +308,7 @@ namespace Net.Protocol
         {
             this.name = name;
             this.pos = pos;
-            color = MapColorHelper.GetMapTypeColor(Logic.Map.Types.Default);
+            color = MapColorHelper.GetMapTypeColor(global::Data.Map.Types.Default);
         }
 
         public Map(string name, int[] pos, string color)
@@ -453,7 +453,7 @@ namespace Net.Protocol
         public int[] pos;
         public override void Processed(Client client)
         {
-            Logic.Agent.Instance.monitor.Fire(Logic.Player.Click.Map, client.Player, pos);
+            global::Data.Agent.Instance.monitor.Fire(global::Data.Player.Click.Map, client.Player, pos);
         }
     }
 
@@ -462,7 +462,7 @@ namespace Net.Protocol
         public int[] scenePos;
         public override void Processed(Client client)
         {
-            Logic.Agent.Instance.monitor.Fire(Logic.Player.Click.Scene, client.Player, scenePos);
+            global::Data.Agent.Instance.monitor.Fire(global::Data.Player.Click.Scene, client.Player, scenePos);
         }
     }
 
@@ -476,7 +476,7 @@ namespace Net.Protocol
             var target = characters.FirstOrDefault(c => c.GetHashCode() == hash);
             if (target != null)
             {
-                Logic.Agent.Instance.monitor.Fire(Logic.Player.Click.Character, client.Player, target);
+                global::Data.Agent.Instance.monitor.Fire(global::Data.Player.Click.Character, client.Player, target);
                 return;
             }
             
@@ -484,38 +484,38 @@ namespace Net.Protocol
             target = FindCharacterByHash(hash);
             if (target != null)
             {
-                Logic.Agent.Instance.monitor.Fire(Logic.Player.Click.Character, client.Player, target);
+                global::Data.Agent.Instance.monitor.Fire(global::Data.Player.Click.Character, client.Player, target);
             }
         }
 
-        private Logic.Character FindCharacterByHash(int hash)
+        private global::Data.Character FindCharacterByHash(int hash)
         {
-            foreach (var life in Logic.Agent.Instance.Content.Gets<Logic.Life>())
+            foreach (var life in global::Data.Agent.Instance.Content.Gets<global::Data.Life>())
             {
                 if (life.GetHashCode() == hash) return life;
             }
-            foreach (var item in Logic.Agent.Instance.Content.Gets<Logic.Item>())
+            foreach (var item in global::Data.Agent.Instance.Content.Gets<global::Data.Item>())
             {
                 if (item.GetHashCode() == hash) return item;
             }
             return null;
         }
 
-        private List<Logic.Character> GetCharacterListForPlayer(Logic.Player player)
+        private List<global::Data.Character> GetCharacterListForPlayer(global::Data.Player player)
         {
-            if (player.Parent is Logic.Item container)
+            if (player.Parent is global::Data.Item container)
             {
-                return container.Content.Gets<Logic.Character>().Where(c => c is Logic.Life || c is Logic.Item).ToList();
+                return container.Content.Gets<global::Data.Character>().Where(c => c is global::Data.Life || c is global::Data.Item).ToList();
             }
-            else if (player.Parent is Logic.Map)
+            else if (player.Parent is global::Data.Map)
             {
-                if (Logic.Player.GetVisibleCharacters != null)
+                if (global::Data.Player.GetVisibleCharacters != null)
                 {
-                    return Logic.Player.GetVisibleCharacters(player);
+                    return global::Data.Player.GetVisibleCharacters(player);
                 }
-                return player.Map.Content.Gets<Logic.Character>().ToList();
+                return player.Map.Content.Gets<global::Data.Character>().ToList();
             }
-            return new List<Logic.Character>();
+            return new List<global::Data.Character>();
         }
     }
 
@@ -527,14 +527,14 @@ namespace Net.Protocol
 
     public class Information : Base
     {
-        public Information(Logic.Channel channel, string message)
+        public Information(global::Data.Channel channel, string message)
         {
             this.channel = channel;
             this.message = message;
         }
 
         public string message;
-        public Logic.Channel channel;
+        public global::Data.Channel channel;
     }
 
     // 🎯 性能监控协议
@@ -562,8 +562,8 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
-            player.monitor.Fire(Logic.Player.Event.Chat, player, content);
+            global::Data.Player player = client.Player;
+            player.monitor.Fire(global::Data.Player.Event.Chat, player, content);
         }
     }
 
@@ -577,7 +577,7 @@ namespace Net.Protocol
     {
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
+            global::Data.Player player = client.Player;
             Utils.Debug.Log.Info("OPTION", $"[OptionReturn] Received, player.Option={(player.Option == null ? "null" : player.Option.Type.ToString())}");
             if (player.Option != null)
             {
@@ -596,11 +596,11 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
+            global::Data.Player player = client.Player;
             if (player.Option != null)
             {
                 player.Option.Setting.Input = text;
-                player.monitor.Fire(Logic.Option.Event.Refresh, player);
+                player.monitor.Fire(global::Data.Option.Event.Refresh, player);
             }
         }
     }
@@ -623,11 +623,11 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
+            global::Data.Player player = client.Player;
             if (player.Option != null)
             {
                 player.Option.Setting.Filter = text;
-                player.monitor.Fire(Logic.Option.Event.Refresh, player);
+                player.monitor.Fire(global::Data.Option.Event.Refresh, player);
             }
         }
     }
@@ -639,10 +639,10 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
+            global::Data.Player player = client.Player;
             
             // Settings panel has special sliders: id=0 is ScreenUIAdaptation, id=1 is FontScale
-            bool isSettingsPanel = player.Option?.Type == Logic.Option.Types.Settings;
+            bool isSettingsPanel = player.Option?.Type == global::Data.Option.Types.Settings;
             
             if (isSettingsPanel && id == 0)
             {
@@ -652,7 +652,7 @@ namespace Net.Protocol
                     Net.Tcp.Instance.Send(player, new ScreenAdaptation(value));
                     if (player.Option != null)
                     {
-                        player.monitor.Fire(Logic.Option.Event.Refresh, player);
+                        player.monitor.Fire(global::Data.Option.Event.Refresh, player);
                     }
                 }
                 return;
@@ -669,7 +669,7 @@ namespace Net.Protocol
                 if (value >= player.Option.Setting.SliderMin && value <= player.Option.Setting.SliderMax)
                 {
                     player.Option.Setting.SliderValue = value;
-                    player.monitor.Fire(Logic.Option.Event.Refresh, player);
+                    player.monitor.Fire(global::Data.Option.Event.Refresh, player);
                 }
             }
         }
@@ -682,7 +682,7 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
+            global::Data.Player player = client.Player;
             if (player.Option != null)
             {
                 if (amount >= 0)
@@ -700,11 +700,11 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            Logic.Player player = client.Player;
+            global::Data.Player player = client.Player;
             if (player.Option != null && player.Option.Setting != null)
             {
                 player.Option.Setting.ToggleGroup = player.Option.Setting.ToggleGroup.ToDictionary(kvp => kvp.Key, kvp => kvp.Key == id ? value : false);
-                player.monitor.Fire(Logic.Option.Event.Refresh, player);
+                player.monitor.Fire(global::Data.Option.Event.Refresh, player);
             }
         }
     }
@@ -719,7 +719,7 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            if (client.Player.monitor.Check(Logic.Player.Event.Purchase, receipt))
+            if (client.Player.monitor.Check(global::Data.Player.Event.Purchase, receipt))
             {
                 client.Send(this);
             }
@@ -824,7 +824,7 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            client.Player.monitor.Fire(Logic.Player.Event.CardPurchase, text);
+            client.Player.monitor.Fire(global::Data.Player.Event.CardPurchase, text);
         }
     }
 
@@ -910,7 +910,7 @@ namespace Net.Protocol
     {
         public override void Processed(Client client)
         {
-            client.Player?.monitor.Fire(Logic.Player.Event.StoryComplete, client.Player);
+            client.Player?.monitor.Fire(global::Data.Player.Event.StoryComplete, client.Player);
         }
     }
 
@@ -918,7 +918,7 @@ namespace Net.Protocol
     {
         public string language;
 
-        public LanguageChanged(Logic.Text.Languages lang)
+        public LanguageChanged(global::Data.Text.Languages lang)
         {
             language = lang.ToString();
         }

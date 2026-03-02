@@ -9,7 +9,7 @@
       "world-service/1.0.0": {
         "dependencies": {
           "Basic": "1.0.0",
-          "Domain": "1.0.0",
+          "Data": "1.0.0",
           "EPPlus": "7.0.6",
           "EPPlus.Interfaces": "6.1.1",
           "EPPlus.System.Drawing": "6.1.1",
@@ -711,15 +711,7 @@
           "Basic.dll": {}
         }
       },
-      "Domain/1.0.0": {
-        "dependencies": {
-          "Net": "1.0.0"
-        },
-        "runtime": {
-          "Domain.dll": {}
-        }
-      },
-      "Logic/1.0.0": {
+      "Data/1.0.0": {
         "dependencies": {
           "AlipaySDKNet.Standard": "4.9.481",
           "Basic": "1.0.0",
@@ -730,12 +722,20 @@
           "Newtonsoft.Json": "13.0.3"
         },
         "runtime": {
+          "Data.dll": {}
+        }
+      },
+      "Logic/1.0.0": {
+        "dependencies": {
+          "Net": "1.0.0"
+        },
+        "runtime": {
           "Logic.dll": {}
         }
       },
       "Net/1.0.0": {
         "dependencies": {
-          "Logic": "1.0.0"
+          "Data": "1.0.0"
         },
         "runtime": {
           "Net.dll": {}
@@ -1256,7 +1256,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Domain/1.0.0": {
+    "Data/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

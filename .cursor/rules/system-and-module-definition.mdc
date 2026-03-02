@@ -6,7 +6,7 @@ alwaysApply: true
 
 为避免歧义，本项目中的术语定义如下：
 
-- System（系统）：指 Domain（业务层）程序集下的业务文件夹
+- System（系统）：指 Logic（业务逻辑层）程序集下的业务文件夹
 - Module（模块）：指某个 System 文件夹下的单个 .cs 文件
 
 补充约定（系统内通用模块）：

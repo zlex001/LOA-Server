@@ -8,15 +8,15 @@ alwaysApply: true
 
 - Utils：工具层（无任何依赖）
 - Basic：基础层（仅依赖 Utils）
-- Logic：数据与业务逻辑层（依赖 Basic）
-- Net：网络层（依赖 Logic）
-- Domain：领域与业务层（依赖 Net）
+- Data：数据层（依赖 Basic）
+- Net：网络层（依赖 Data）
+- Logic：业务逻辑层（依赖 Net）
 - Start：启动层 / 主程序入口（依赖所有核心程序集）
 - Daemon：独立的守护进程项目，不参与主程序分层依赖
 
 ## 依赖方向
 
-Utils → Basic → Logic → Net → Domain → Start
+Utils → Basic → Data → Net → Logic → Start
 
 - 只允许向下依赖，不允许任何形式的反向依赖
 - 严禁跨层依赖与循环依赖

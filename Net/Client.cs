@@ -1,8 +1,8 @@
-using Logic;
+using Data;
 using System.Net.Sockets;
 using System.Net;
-using Logic.Database;
-using Logic.Config;
+using Data.Database;
+using Data.Config;
 
 namespace Net
 {
@@ -36,8 +36,8 @@ namespace Net
     public IPAddress IP { get; private set; }
     public Socket Socket { get; private set; }
     public Basic.Buffer Buffer { get; set; }
-    public Logic.Player Player { get => data.Get<Logic.Player>(Data.Player); set => data.Change(Data.Player, value); }
-    public Logic.Database.Device.Platforms Platform { get; set; }
+    public global::Data.Player Player { get => data.Get<global::Data.Player>(Data.Player); set => data.Change(Data.Player, value); }
+    public global::Data.Database.Device.Platforms Platform { get; set; }
     public string ConnectionId { get => data.Get<string>(Data.ConnectionId); set => data.Change(Data.ConnectionId, value); }
         public string Name
         {
@@ -77,7 +77,7 @@ namespace Net
         Socket socket = (Socket)args[0];
         Socket = socket;
         IP = ((IPEndPoint)socket.RemoteEndPoint).Address;
-        data.raw[Data.Language] = Logic.Text.Languages.ChineseSimplified;
+        data.raw[Data.Language] = global::Data.Text.Languages.ChineseSimplified;
         
         int port = ((IPEndPoint)socket.RemoteEndPoint).Port;
         ConnectionId = $"conn_{IP}:{port}";
@@ -111,7 +111,7 @@ namespace Net
                     new { StackTrace = ex.StackTrace, ClientName = Name, Protocol = args[0]?.GetType().Name });
                 
                 // In development mode, rethrow to allow debugger to break
-                if (Logic.Agent.Instance.IsDevelopment)
+                if (global::Data.Agent.Instance.IsDevelopment)
                 {
                     throw;
                 }
@@ -132,26 +132,26 @@ namespace Net
         #region Player Event Handlers
         private void OnBeforePlayerChanged(params object[] args)
         {
-            Logic.Player o = (Logic.Player)args[0];
-            Logic.Player v = (Logic.Player)args[1];
+            global::Data.Player o = (global::Data.Player)args[0];
+            global::Data.Player v = (global::Data.Player)args[1];
             if (o != null)
             {
-                o.data.after.Unregister(Logic.Life.Data.WalkScale, OnAfterPlayerWalkScaleChanged);
-                o.monitor.Unregister(Logic.Player.Event.QuitToMenu, OnPlayerQuitToMenu);
-                o.monitor.Unregister(Logic.Player.Event.QuitToDesktop, OnPlayerQuitToDesktop);
-                o.data.after.Unregister(Logic.Player.Data.AlipayOrder, OnAfterPlayerAlipayOrderChanged);
+                o.data.after.Unregister(global::Data.Life.Data.WalkScale, OnAfterPlayerWalkScaleChanged);
+                o.monitor.Unregister(global::Data.Player.Event.QuitToMenu, OnPlayerQuitToMenu);
+                o.monitor.Unregister(global::Data.Player.Event.QuitToDesktop, OnPlayerQuitToDesktop);
+                o.data.after.Unregister(global::Data.Player.Data.AlipayOrder, OnAfterPlayerAlipayOrderChanged);
 
             }
             if (v != null)
             {
-                v.data.after.Register(Logic.Life.Data.WalkScale, OnAfterPlayerWalkScaleChanged);
-                v.monitor.Register(Logic.Player.Event.QuitToMenu, OnPlayerQuitToMenu);
-                v.monitor.Register(Logic.Player.Event.QuitToDesktop, OnPlayerQuitToDesktop);
-                v.data.after.Unregister(Logic.Player.Data.AlipayOrder, OnAfterPlayerAlipayOrderChanged);
+                v.data.after.Register(global::Data.Life.Data.WalkScale, OnAfterPlayerWalkScaleChanged);
+                v.monitor.Register(global::Data.Player.Event.QuitToMenu, OnPlayerQuitToMenu);
+                v.monitor.Register(global::Data.Player.Event.QuitToDesktop, OnPlayerQuitToDesktop);
+                v.data.after.Unregister(global::Data.Player.Data.AlipayOrder, OnAfterPlayerAlipayOrderChanged);
                 
                 v.Language = this.Language;
                 
-                v.data.after.Register(Logic.Player.Data.Language, OnPlayerLanguageChanged);
+                v.data.after.Register(global::Data.Player.Data.Language, OnPlayerLanguageChanged);
                 
                 monitor.Fire(Event.PlayerBound, this, v);
             }

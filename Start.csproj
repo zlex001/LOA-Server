@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>Exe</OutputType>
@@ -46,8 +46,8 @@
   <ItemGroup>
     <Compile Remove="Basic\**" />
     <Compile Remove="bin\**" />
-    <Compile Remove="Domain\**" />
     <Compile Remove="Logic\**" />
+    <Compile Remove="Data\**" />
     <Compile Remove="Net\**" />
     <Compile Remove="Utils\**" />
     <Compile Remove="Tests\**" />
@@ -56,8 +56,8 @@
     <Compile Remove="Config\**" />
     <EmbeddedResource Remove="Basic\**" />
     <EmbeddedResource Remove="bin\**" />
-    <EmbeddedResource Remove="Domain\**" />
     <EmbeddedResource Remove="Logic\**" />
+    <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Net\**" />
     <EmbeddedResource Remove="Utils\**" />
     <EmbeddedResource Remove="Tests\**" />
@@ -65,8 +65,8 @@
     <EmbeddedResource Remove="Config\**" />
     <None Remove="Basic\**" />
     <None Remove="bin\**" />
-    <None Remove="Domain\**" />
     <None Remove="Logic\**" />
+    <None Remove="Data\**" />
     <None Remove="Net\**" />
     <None Remove="Utils\**" />
     <None Remove="Tests\**" />
@@ -107,7 +107,7 @@
     <ProjectReference Include="Basic\Basic.csproj" />
     <ProjectReference Include="Utils\Utils.csproj" />
     <ProjectReference Include="Net\Net.csproj" />
-    <ProjectReference Include="Domain\Domain.csproj" />
     <ProjectReference Include="Logic\Logic.csproj" />
+    <ProjectReference Include="Data\Data.csproj" />
   </ItemGroup>
 </Project>

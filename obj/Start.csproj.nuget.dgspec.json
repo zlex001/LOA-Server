@@ -71,71 +71,14 @@
         }
       }
     },
-    "/Users/zhangxi/LOA-Server/trunk/Domain/Domain.csproj": {
+    "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Domain/Domain.csproj",
-        "projectName": "Domain",
-        "projectPath": "/Users/zhangxi/LOA-Server/trunk/Domain/Domain.csproj",
+        "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj",
+        "projectName": "Data",
+        "projectPath": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj",
         "packagesPath": "/Users/zhangxi/.nuget/packages/",
-        "outputPath": "/Users/zhangxi/LOA-Server/trunk/Domain/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/Users/zhangxi/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net8.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
-            "projectReferences": {
-              "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj": {
-                "projectPath": "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.123/libexec/sdk/8.0.123/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj",
-        "projectName": "Logic",
-        "projectPath": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj",
-        "packagesPath": "/Users/zhangxi/.nuget/packages/",
-        "outputPath": "/Users/zhangxi/LOA-Server/trunk/Logic/obj/",
+        "outputPath": "/Users/zhangxi/LOA-Server/trunk/Data/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/zhangxi/.nuget/NuGet/NuGet.Config"
@@ -211,6 +154,63 @@
         }
       }
     },
+    "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj",
+        "projectName": "Logic",
+        "projectPath": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj",
+        "packagesPath": "/Users/zhangxi/.nuget/packages/",
+        "outputPath": "/Users/zhangxi/LOA-Server/trunk/Logic/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/zhangxi/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj": {
+                "projectPath": "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.123/libexec/sdk/8.0.123/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
     "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -233,8 +233,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj": {
-                "projectPath": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj"
+              "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj": {
+                "projectPath": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj"
               }
             }
           }
@@ -293,8 +293,8 @@
               "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj": {
                 "projectPath": "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj"
               },
-              "/Users/zhangxi/LOA-Server/trunk/Domain/Domain.csproj": {
-                "projectPath": "/Users/zhangxi/LOA-Server/trunk/Domain/Domain.csproj"
+              "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj": {
+                "projectPath": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj"
               },
               "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj": {
                 "projectPath": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj"

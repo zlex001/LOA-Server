@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Logic.Config
+namespace Data.Config
 {
-    public class Maze : Logic.Config.Ability
+    public class Maze : Data.Config.Ability
     {
         public int width;                          // 迷宫宽度
         public int height;                         // 迷宫高度
