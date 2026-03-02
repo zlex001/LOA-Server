@@ -1,10 +1,10 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Sockets;
 using Utils;
 
 namespace Data
 {
-    public class Agent : Basic.Ability
+    public class Agent : Core
     {
         public enum Data
         {

@@ -1,4 +1,4 @@
-﻿using Aop.Api.Request;
+using Aop.Api.Request;
 using Aop.Api;
 using Aop.Api.Response;
 using Data;
@@ -9,7 +9,7 @@ using Aop.Api.Util;
 
 namespace Data.Recharge
 {
-    public partial class Manager : Basic.Ability
+    public partial class Manager : Core
     {
 
         private static Manager instance;

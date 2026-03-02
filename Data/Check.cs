@@ -6,7 +6,7 @@ namespace Data
 {
 
 
-    public partial class Check : Basic.Ability
+    public partial class Check : Core
     {
         public enum Types
         {

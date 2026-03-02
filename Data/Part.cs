@@ -88,7 +88,7 @@ namespace Data
         private void OnAfterHpChanged(params object[] args)
         {
             // Hp变化的其他处理逻辑（如果需要）
-            // 状态转换由Domain.State.*.Update负责
+            // 状态转换由Logic.State.*.Update负责
         }
 
 

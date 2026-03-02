@@ -18,7 +18,7 @@ namespace Data
     }
     public class Player : Life
     {
-        // Delegate for Domain layer to provide visible characters (set by Perception system)
+        // Delegate for Logic layer to provide visible characters (set by Perception system)
         public static Func<Player, List<Character>> GetVisibleCharacters { get; set; }
 
         public Database.Player Database { get; set; }
@@ -202,7 +202,7 @@ namespace Data
             Content.Remove.Register(typeof(Option), OnContentRemoveOption);
             Content.Add.Register(typeof(Warehouse), OnContentAddWarehouse);
 
-            // 仓库处理已移至业务层Domain.Deposit负责
+            // 仓库处理已移至业务层Logic.Deposit负责
             foreach (Database.Payment payment in Database.payments) Create<Payment>(payment);
 
             if (Database.signs?.Count > 0)

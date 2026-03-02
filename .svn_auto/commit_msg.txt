@@ -1,1 +1,1 @@
-[重构] 服务端分层重命名：Logic→Data, Domain→Logic，对齐客户端架构命名
+[重构] 分层重命名收尾：清理Domain残留引用、修复IDE配置、对齐namespace与物理目录

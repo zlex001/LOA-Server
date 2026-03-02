@@ -302,7 +302,7 @@ namespace Net.Protocol
 
     public class Map : Base
     {
-        // 已移除业务逻辑构造函数，业务逻辑转移至Domain.ProtocolService
+        // 已移除业务逻辑构造函数，业务逻辑转移至Logic.ProtocolService
 
         public Map(string name, int[] pos)
         {
@@ -328,7 +328,7 @@ namespace Net.Protocol
     public class Scene : Base
     {
         // Net层只负责数据传输，不处理业务逻辑
-        // 业务逻辑已移至Domain.ProtocolService.CreateScene
+        // 业务逻辑已移至Logic.ProtocolService.CreateScene
         public Scene(int[] pos, List<Map> maps, string sceneName = "")
         {
             this.pos = pos;

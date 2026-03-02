@@ -5,7 +5,7 @@ using Utils;
 
 namespace Logic
 {
-    public class Manager : Basic.Ability
+    public class Manager : Data.Core
     {
         #region Singleton Pattern
         private static Manager instance;

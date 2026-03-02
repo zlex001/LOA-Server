@@ -11,7 +11,7 @@ namespace Data.Validation
         Completed,
     }
 
-    public class Agent : Basic.Ability
+    public class Agent : Core
     {
         private static Agent instance;
         public static Agent Instance { get { if (instance == null) { instance = new Agent(); } return instance; } }

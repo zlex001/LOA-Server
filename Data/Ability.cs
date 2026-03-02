@@ -4,7 +4,7 @@ using Data.Config;
 
 namespace Data
 {
-    public class Ability : Basic.Ability
+    public class Ability : Core
     {
 
         public enum Data

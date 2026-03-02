@@ -36,7 +36,7 @@ namespace Data.BehaviorTree
     /// Behavior tree node
     /// Supports Action, Condition, Sequence, Selector, Inverter node types
     /// </summary>
-    public class Node : Basic.Ability
+    public class Node : Core
     {
         /// <summary>
         /// Behavior tree node type enumeration

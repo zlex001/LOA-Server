@@ -7,7 +7,7 @@ using Utils;
 
 namespace Data.Config
 {
-    public class Manager : Basic.Ability
+    public class Manager : Core
     {
         #region Singleton 
         private static Manager instance;

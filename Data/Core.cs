@@ -1,11 +1,11 @@
-﻿using Basic;
+using Basic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Basic
+namespace Data
 {
-    public partial class Ability : Basic.Manager
+    public class Core : Basic.Manager
     {
         public O Load<C, O>(int id) where O : Element where C : global::Data.Config.Ability
         {

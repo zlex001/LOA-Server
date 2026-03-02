@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Basic;
 
-namespace Basic
+namespace Data
 {
-    public class Tree : global::Data.Ability
+    public class Tree : Ability
     {
-        public class Node : Manager
+        public class Node : Basic.Manager
         {
             public enum Data
             {
