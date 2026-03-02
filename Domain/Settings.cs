@@ -148,6 +148,8 @@ namespace Domain
             
             var uiTexts = Domain.Text.Agent.Instance.GetUITexts(player.Language);
             Net.Tcp.Instance.Send(player, new Net.Protocol.Texts(uiTexts));
+            var startSettingsTexts = Domain.Text.Agent.Instance.GetStartSettingsTexts(player.Language);
+            Net.Tcp.Instance.Send(player, new Net.Protocol.StartSettingsTexts(startSettingsTexts));
         }
 
         private static Net.Protocol.HomeUI CreateHomeUI(Logic.Player player)

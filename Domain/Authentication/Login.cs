@@ -274,7 +274,9 @@ namespace Domain.Authentication
             
             var uiTexts = Domain.Text.Agent.Instance.GetUITexts(client.Player.Language);
             Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Texts(uiTexts));
-            
+            var startSettingsTexts = Domain.Text.Agent.Instance.GetStartSettingsTexts(client.Player.Language);
+            Net.Tcp.Instance.Send(client.Player, new Net.Protocol.StartSettingsTexts(startSettingsTexts));
+
             // 推送世界地图数据
             var worldMap = Display.Agent.CreateWorldMap(client.Player);
             Net.Tcp.Instance.Send(client.Player, worldMap);

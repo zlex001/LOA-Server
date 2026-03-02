@@ -933,4 +933,14 @@ namespace Net.Protocol
             this.data = data;
         }
     }
+
+    public class StartSettingsTexts : Base
+    {
+        public Dictionary<string, string> data;
+
+        public StartSettingsTexts(Dictionary<string, string> data)
+        {
+            this.data = data;
+        }
+    }
 }

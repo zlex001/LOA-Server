@@ -142,6 +142,26 @@ namespace Domain.Text
             return result;
         }
 
+        private const string StartSettingsCidPrefix = "StartSettings.";
+
+        /// <summary>
+        /// Get settings panel UI texts for client DataManager.StartSettingsTexts (key: accounts, general, ...; value: localized string).
+        /// </summary>
+        public Dictionary<string, string> GetStartSettingsTexts(Logic.Text.Languages language)
+        {
+            var result = new Dictionary<string, string>();
+            foreach (var pair in Logic.Text.Instance.CidToId)
+            {
+                if (pair.Key == null || !pair.Key.StartsWith(StartSettingsCidPrefix))
+                    continue;
+                var key = pair.Key.Substring(StartSettingsCidPrefix.Length);
+                var text = Get(pair.Value, language);
+                if (!string.IsNullOrEmpty(text))
+                    result[key] = text;
+            }
+            return result;
+        }
+
         /// <summary>
         /// Get translation by cid (content id string)
         /// </summary>
