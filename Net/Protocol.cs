@@ -82,7 +82,14 @@ namespace Net.Protocol
 
         public override void Processed(Client client)
         {
-            client.monitor.Fire(Client.Event.Login, client, id, password, device, version, platform, language);
+            if (string.IsNullOrEmpty(id) && string.IsNullOrEmpty(password))
+            {
+                client.monitor.Fire(Client.Event.QuickStart, client, device, version, platform, language);
+            }
+            else
+            {
+                client.monitor.Fire(Client.Event.Login, client, id, password, device, version, platform, language);
+            }
         }
     }
 
@@ -97,12 +104,18 @@ namespace Net.Protocol
         }
 
         public int code;
-        public string message;
+        public string accountId;
+        public string password;
+        public bool isGuest;
+        public bool isNewAccount;
 
-        public LoginResponse(Code code, string message = "")
+        public LoginResponse(Code code, string accountId = "", string password = "", bool isGuest = false, bool isNewAccount = false)
         {
             this.code = (int)code;
-            this.message = message;
+            this.accountId = accountId;
+            this.password = password;
+            this.isGuest = isGuest;
+            this.isNewAccount = isNewAccount;
         }
     }
 

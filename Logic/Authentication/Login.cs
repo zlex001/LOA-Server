@@ -17,8 +17,7 @@ namespace Logic.Authentication
             if (!Utils.Mathematics.VersionAdapt(Utils.Text.Version(version), global::Data.Config.Agent.Instance.ClientVersion))
             {
                 Utils.Debug.Log.Info("AUTH", $"[QuickStart] Version check failed");
-                string errorMessage = GetErrorMessage(LoginResponse.Code.AppVersionUnfit, lang);
-                client.Send(new LoginResponse(LoginResponse.Code.AppVersionUnfit, errorMessage));
+                client.Send(new LoginResponse(LoginResponse.Code.AppVersionUnfit));
                 return;
             }
             
@@ -69,8 +68,7 @@ namespace Logic.Authentication
             if (map == null)
             {
                 Utils.Debug.Log.Error("AUTH", $"[QuickStart] Cannot find map at position {string.Join(",", newDatabase.pos)} for guest {guestName}");
-                string errorMessage = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.InitializeErrorNameEmpty, client.Language);
-                client.Send(new LoginResponse(LoginResponse.Code.PasswordError, errorMessage));
+                client.Send(new LoginResponse(LoginResponse.Code.PasswordError));
                 return;
             }
             
@@ -89,7 +87,7 @@ namespace Logic.Authentication
             Device.Bind(device, guestId);
             
             CompleteLogin(client, device, guestId);
-            client.Send(new LoginResponse(LoginResponse.Code.Success, ""));
+            client.Send(new LoginResponse(LoginResponse.Code.Success, guestId, "", isGuest: true, isNewAccount: true));
             
             Utils.Debug.Log.Info("AUTH", $"[QuickStart] Complete - guest account {guestId} created and logged in");
         }
@@ -117,7 +115,7 @@ namespace Logic.Authentication
                 {
                     CreatePlayerAtInitialMap(client, database, lang);
                 }
-                Success(client, device, id);
+                Success(client, device, id, pw);
             }
             else if (errorCode == AccountNotFound)
             {
@@ -127,8 +125,7 @@ namespace Logic.Authentication
             else
             {
                 Utils.Debug.Log.Info("AUTH", $"[Login.Do] Login failed with error code: {errorCode}");
-                string errorMessage = GetErrorMessage(errorCode, lang);
-                client.Send(new LoginResponse(errorCode, errorMessage));
+                client.Send(new LoginResponse(errorCode));
             }
             Utils.Debug.Log.Info("AUTH", $"[Login.Do] End - id={id}");
         }
@@ -229,22 +226,11 @@ namespace Logic.Authentication
             database.pos = map.Database.pos;
         }
 
-        public static void Success(Client client, string device, string id)
+        public static void Success(Client client, string device, string id, string pw)
         {
             CompleteLogin(client, device, id);
-            client.Send(new LoginResponse(LoginResponse.Code.Success, ""));
-        }
-
-        private static string GetErrorMessage(LoginResponse.Code code, global::Data.Text.Languages language)
-        {
-            global::Data.Text.Labels label = code switch
-            {
-                LoginResponse.Code.PasswordError => global::Data.Text.Labels.LoginPasswordError,
-                LoginResponse.Code.AppVersionUnfit => global::Data.Text.Labels.LoginAppVersionUnfit,
-                LoginResponse.Code.UnsafeAccount => global::Data.Text.Labels.LoginUnsafeAccount,
-                _ => global::Data.Text.Labels.LoginPasswordError
-            };
-            return Logic.Text.Agent.Instance.Get(label, language);
+            bool isGuest = id.StartsWith("Traveler");
+            client.Send(new LoginResponse(LoginResponse.Code.Success, id, pw, isGuest));
         }
 
         public static void CompleteLogin(Client client, string device, string id)

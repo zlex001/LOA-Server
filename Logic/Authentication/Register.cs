@@ -167,7 +167,7 @@ namespace Logic.Authentication
                     client.Language = deviceRecord.PreferredLanguage;
                 }
                 
-                client.Send(new LoginResponse(LoginResponse.Code.Success, ""));
+                client.Send(new LoginResponse(LoginResponse.Code.Success, id, pw, isGuest: false, isNewAccount: true));
                 Utils.Debug.Log.Info("AUTH", $"[Register.Satart] LoginResponse.Success sent, creating player database");
                 global::Data.Database.Player database = new global::Data.Database.Player(id, pw);
                 
@@ -186,8 +186,7 @@ namespace Logic.Authentication
             else
             {
                 Utils.Debug.Log.Info("AUTH", $"[Register.Satart] Can() failed - unsafe account id={id}");
-                string errorMessage = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.LoginUnsafeAccount, client.Language);
-                client.Send(new LoginResponse(LoginResponse.Code.UnsafeAccount, errorMessage));
+                client.Send(new LoginResponse(LoginResponse.Code.UnsafeAccount));
             }
             Utils.Debug.Log.Info("AUTH", $"[Register.Satart] End - id={id}");
         }

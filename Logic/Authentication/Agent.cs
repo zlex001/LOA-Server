@@ -82,38 +82,20 @@ namespace Logic.Authentication
             var context = (HttpListenerContext)args[0];
             var language = Net.Http.Instance.GetLanguage(context);
 
-            var servers = global::Data.Database.Agent.Instance.GetAllServers();
-            
-            var serverList = servers.Select(s => new
-            {
-                id = s.Id,
-                name = Logic.Text.Agent.Instance.Get(s.name, language),
-                ip = s.ip,
-                port = s.port
-            }).ToList();
+            var allServers = global::Data.Database.Agent.Instance.GetAllServers();
 
-            var response = new
+            var servers = new Dictionary<string, object>();
+            var texts = Logic.Text.Agent.Instance.GetGatewayTexts(language);
+
+            for (int i = 0; i < allServers.Count; i++)
             {
-                servers = serverList,
-                ui = new
-                {
-                    name = "Start",
-                    data = new
-                    {
-                        title = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.StartTitle, language),
-                        tip = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.StartTip, language),
-                        loginButton = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.StartLogin, language),
-                        footer = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.StartFooter, language),
-                        accountIdPlaceholder = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.AccountIdPlaceholder, language),
-                        accountPasswordPlaceholder = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.AccountPasswordPlaceholder, language),
-                        accountNotePlaceholder = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.AccountNotePlaceholder, language),
-                        errorAccountEmpty = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.ErrorAccountEmpty, language),
-                        errorAccountFormat = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.ErrorAccountFormat, language),
-                        errorPasswordEmpty = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.ErrorPasswordEmpty, language),
-                        errorPasswordFormat = Logic.Text.Agent.Instance.Get(global::Data.Text.Labels.ErrorPasswordFormat, language)
-                    }
-                }
-            };
+                var s = allServers[i];
+                var key = $"server{i}";
+                servers[key] = new { ip = s.ip, port = s.port };
+                texts[key] = Logic.Text.Agent.Instance.Get(s.name, language);
+            }
+
+            var response = new { servers, texts };
 
             await Net.Http.Instance.SendJson(context.Response, response);
         }

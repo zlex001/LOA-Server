@@ -1,1 +1,1 @@
-[重构] 分层重命名收尾：清理Domain残留引用、修复IDE配置、对齐namespace与物理目录
+[功能] 认证系统接口重构：GatewayResponse servers改字典+texts扁平化，合并Login/QuickStart协议，LoginResponse移除message新增accountId/password/isGuest/isNewAccount字段

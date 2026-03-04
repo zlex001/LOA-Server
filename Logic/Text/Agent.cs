@@ -162,6 +162,59 @@ namespace Logic.Text
             return result;
         }
 
+        private const string GatewayCidPrefix = "Gateway.";
+
+        private static readonly (string key, global::Data.Text.Labels label)[] GatewayLabelMappings = new[]
+        {
+            ("title", global::Data.Text.Labels.StartTitle),
+            ("tip", global::Data.Text.Labels.StartLogin),
+            ("footer", global::Data.Text.Labels.StartFooter),
+            ("accountIdPlaceholder", global::Data.Text.Labels.AccountIdPlaceholder),
+            ("accountPasswordPlaceholder", global::Data.Text.Labels.AccountPasswordPlaceholder),
+            ("accountNotePlaceholder", global::Data.Text.Labels.AccountNotePlaceholder),
+            ("errorAccountEmpty", global::Data.Text.Labels.ErrorAccountEmpty),
+            ("errorAccountFormat", global::Data.Text.Labels.ErrorAccountFormat),
+            ("errorPasswordEmpty", global::Data.Text.Labels.ErrorPasswordEmpty),
+            ("errorPasswordFormat", global::Data.Text.Labels.ErrorPasswordFormat),
+            ("loginPasswordError", global::Data.Text.Labels.LoginPasswordError),
+            ("loginAppVersionUnfit", global::Data.Text.Labels.LoginAppVersionUnfit),
+            ("loginUnsafeAccount", global::Data.Text.Labels.LoginUnsafeAccount),
+        };
+
+        public Dictionary<string, string> GetGatewayTexts(global::Data.Text.Languages language)
+        {
+            var texts = new Dictionary<string, string>();
+
+            foreach (var (key, label) in GatewayLabelMappings)
+            {
+                var text = Get(label, language);
+                if (!string.IsNullOrEmpty(text))
+                    texts[key] = text;
+            }
+
+            foreach (var pair in global::Data.Text.Instance.CidToId)
+            {
+                if (pair.Key == null) continue;
+
+                if (pair.Key.StartsWith(StartSettingsCidPrefix))
+                {
+                    var key = pair.Key.Substring(StartSettingsCidPrefix.Length);
+                    var text = Get(pair.Value, language);
+                    if (!string.IsNullOrEmpty(text))
+                        texts[key] = text;
+                }
+                else if (pair.Key.StartsWith(GatewayCidPrefix))
+                {
+                    var key = pair.Key.Substring(GatewayCidPrefix.Length);
+                    var text = Get(pair.Value, language);
+                    if (!string.IsNullOrEmpty(text))
+                        texts[key] = text;
+                }
+            }
+
+            return texts;
+        }
+
         /// <summary>
         /// Get translation by cid (content id string)
         /// </summary>
