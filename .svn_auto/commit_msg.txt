@@ -1,1 +1,1 @@
-[配置] 同步提交记录 work_history.jsonl
+[配置] 同步 work_history 至服务器
