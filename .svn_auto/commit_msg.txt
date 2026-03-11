@@ -1,1 +1,1 @@
-[功能] 认证系统接口重构：GatewayResponse servers改字典+texts扁平化，合并Login/QuickStart协议，LoginResponse移除message新增accountId/password/isGuest/isNewAccount字段
+[配置] 确保本地与服务器一致
