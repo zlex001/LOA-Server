@@ -31,3 +31,9 @@ authors.txt
 *.tmp
 *.bak
 *.cache
+
+# Large binary (exceeds GitHub 100MB limit; keep locally only)
+Library/Config/Shortest.bin
+
+# Git commit message temp file (AI task-complete flow)
+.git_commit_msg.txt

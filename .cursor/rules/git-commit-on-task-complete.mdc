@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+---
+
+# 任务完成时的 Git 提交规则
+
+项目已从 SVN 迁移至 Git，不再使用 `.svn_auto`。任务完成时按以下流程提交并推送。
+
+## 执行流程
+
+1. **生成 commit message**  
+   格式：`[分类] 简短描述`。分类同前：`[功能]` `[修复]` `[重构]` `[优化]` `[文档]` `[配置]` `[删除]`。
+
+2. **写入 message 文件**  
+   将上述内容写入仓库根目录的 `.git_commit_msg.txt`（该文件已加入 .gitignore，不会提交）。
+
+3. **执行提交与推送**  
+   在仓库根目录执行：
+   - Mac/Linux: `bash .cursor/scripts/git_commit_and_push.sh`
+   - 或手动：`git add -A && git commit -F .git_commit_msg.txt && git push`
+
+4. **错误处理**  
+   若推送失败，向用户报告错误信息，不自动重试。`.git_commit_msg.txt` 保留供人工处理。
+
+## 任务完成的判断
+
+- 用户明确表示完成；或
+- 所有 TODO 已标记为 completed；或
+- 已完成用户最后一次请求的全部操作且无待办。
+
+**说明**：若你在 Cursor 的「用户规则」里仍保留旧的 SVN 自动提交规则（`.svn_auto/commit_msg.txt` 与 `start_auto.sh`），请删除或关闭该条，避免与本节冲突。

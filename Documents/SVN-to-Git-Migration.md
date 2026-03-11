@@ -164,3 +164,14 @@ git push -u origin main
 - **仓库根 URL**：`https://106.15.248.25/svn/LOA-Server`
 - **trunk URL**：`https://106.15.248.25/svn/LOA-Server/trunk`
 - 本手册与脚本基于上述地址编写；若仓库地址变更，请替换脚本与文档中的 URL 后重新执行。
+
+---
+
+## 九、迁移后清理与规则
+
+**SVN 残留清理**  
+若已完全在 **LOA-Server-git** 下开发，可清理旧 SVN 工作副本：删除旧目录下的 `.svn/` 与 `.svn_auto/`；或整目录备份后删除，仅保留 LOA-Server-git。
+
+**项目规则**  
+- 任务完成后的提交已改为 Git：见本仓库 `.cursor/rules/git-commit-on-task-complete.mdc`，使用 `.git_commit_msg.txt` 与 `.cursor/scripts/git_commit_and_push.sh`。
+- 请在 Cursor 的「用户规则」中删除或关闭原先的 SVN 自动提交规则（`.svn_auto` / `start_auto.sh`），避免冲突。
