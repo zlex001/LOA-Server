@@ -1,0 +1,6 @@
+# SVN username to Git "Name <email>" for git svn clone --authors-file
+# Copy to authors.txt and fill in. One line per SVN user.
+# Get SVN users: svn log -q | awk -F '|' '/^r/ {print $2}' | sort -u
+#
+# Example:
+# ZhangXi = Your Name <your-email@example.com>

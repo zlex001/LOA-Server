@@ -19,8 +19,12 @@ packages/
 *.DS_Store
 Thumbs.db
 
-# SVN
+# SVN (and SVN auto-commit helper; not needed in Git repo)
 .svn/
+.svn_auto/
+
+# Migration: local author mapping (use authors.txt.example as template)
+authors.txt
 
 # 日志/缓存
 *.log

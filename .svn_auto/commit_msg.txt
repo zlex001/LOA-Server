@@ -1,1 +1,1 @@
-[配置] 同步 work_history 至服务器
+[文档] SVN 迁 Git 操作手册与一键脚本；更新 .gitignore
