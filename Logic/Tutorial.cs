@@ -235,9 +235,10 @@ namespace Logic
                     PlacePlayerInCopy(player, copy);
                 }
 
-                // Save and send hint
+                // Save progress. For WalkToSand, do not send hint here; Login sends it after Home so client has map grid ready.
                 SaveProgress(player, state);
-                SendPhaseHint(player, state);
+                if (state.Phase != Phase.WalkToSand)
+                    SendPhaseHint(player, state);
 
                 // Check if already at targets
                 if (state.Phase == Phase.WalkToSand)
@@ -366,6 +367,18 @@ namespace Logic
         {
             var phase = GetCurrentPhase(player);
             return phase != Phase.None && phase != Phase.Completed;
+        }
+
+        /// <summary>
+        /// Send current phase hint if it is a map-based hint (e.g. WalkToSand).
+        /// Called by Login after sending Home so the client has the map grid before receiving the hint.
+        /// </summary>
+        public void SendCurrentPhaseHintIfNeeded(Player player)
+        {
+            if (player == null) return;
+            if (!_playerStates.TryGetValue(player.GetHashCode(), out var state)) return;
+            if (state.Phase == Phase.WalkToSand)
+                SendWalkToSandHint(player);
         }
 
         /// <summary>

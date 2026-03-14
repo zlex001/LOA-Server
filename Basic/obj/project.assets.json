@@ -2333,11 +2333,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj",
+      "projectUniqueName": "/Users/zhangxi/LOA/Server/Basic/Basic.csproj",
       "projectName": "Basic",
-      "projectPath": "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj",
+      "projectPath": "/Users/zhangxi/LOA/Server/Basic/Basic.csproj",
       "packagesPath": "/Users/zhangxi/.nuget/packages/",
-      "outputPath": "/Users/zhangxi/LOA-Server/trunk/Basic/obj/",
+      "outputPath": "/Users/zhangxi/LOA/Server/Basic/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/zhangxi/.nuget/NuGet/NuGet.Config"
@@ -2352,8 +2352,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/Users/zhangxi/LOA-Server/trunk/Utils/Utils.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Utils/Utils.csproj"
+            "/Users/zhangxi/LOA/Server/Utils/Utils.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Utils/Utils.csproj"
             }
           }
         }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "KH/OUBTHqlv6mHesLjiKpgJPnl8qToZIKhmYWEnQ6+TPh4ZWNYaefZquwMra7R2bVdFmos4NNx3kRBF3FreCtQ==",
+  "dgSpecHash": "uB4uKHZ7hSwC9dcsxznohInlia4Flhd/J2LafVasm47IjeEOODYy1w11rh26GSAHKBt8kmR+ZjsPSkUdHY8lcA==",
   "success": true,
-  "projectFilePath": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj",
+  "projectFilePath": "/Users/zhangxi/LOA/Server/Logic/Logic.csproj",
   "expectedPackageFiles": [
     "/Users/zhangxi/.nuget/packages/alipaysdknet.standard/4.9.481/alipaysdknet.standard.4.9.481.nupkg.sha512",
     "/Users/zhangxi/.nuget/packages/antlr4.runtime.standard/4.13.1/antlr4.runtime.standard.4.13.1.nupkg.sha512",

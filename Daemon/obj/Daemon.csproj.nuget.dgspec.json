@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/zhangxi/LOA-Server/trunk/Daemon/Daemon.csproj": {}
+    "/Users/zhangxi/LOA/Server/Daemon/Daemon.csproj": {}
   },
   "projects": {
-    "/Users/zhangxi/LOA-Server/trunk/Daemon/Daemon.csproj": {
+    "/Users/zhangxi/LOA/Server/Daemon/Daemon.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Daemon/Daemon.csproj",
+        "projectUniqueName": "/Users/zhangxi/LOA/Server/Daemon/Daemon.csproj",
         "projectName": "Daemon",
-        "projectPath": "/Users/zhangxi/LOA-Server/trunk/Daemon/Daemon.csproj",
+        "projectPath": "/Users/zhangxi/LOA/Server/Daemon/Daemon.csproj",
         "packagesPath": "/Users/zhangxi/.nuget/packages/",
-        "outputPath": "/Users/zhangxi/LOA-Server/trunk/Daemon/obj/",
+        "outputPath": "/Users/zhangxi/LOA/Server/Daemon/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/zhangxi/.nuget/NuGet/NuGet.Config"

@@ -3964,11 +3964,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Start.csproj",
+      "projectUniqueName": "/Users/zhangxi/LOA/Server/Start.csproj",
       "projectName": "world-service",
-      "projectPath": "/Users/zhangxi/LOA-Server/trunk/Start.csproj",
+      "projectPath": "/Users/zhangxi/LOA/Server/Start.csproj",
       "packagesPath": "/Users/zhangxi/.nuget/packages/",
-      "outputPath": "/Users/zhangxi/LOA-Server/trunk/obj/",
+      "outputPath": "/Users/zhangxi/LOA/Server/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/zhangxi/.nuget/NuGet/NuGet.Config"
@@ -3983,20 +3983,20 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj"
+            "/Users/zhangxi/LOA/Server/Basic/Basic.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Basic/Basic.csproj"
             },
-            "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj"
+            "/Users/zhangxi/LOA/Server/Data/Data.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Data/Data.csproj"
             },
-            "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Logic/Logic.csproj"
+            "/Users/zhangxi/LOA/Server/Logic/Logic.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Logic/Logic.csproj"
             },
-            "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Net/Net.csproj"
+            "/Users/zhangxi/LOA/Server/Net/Net.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Net/Net.csproj"
             },
-            "/Users/zhangxi/LOA-Server/trunk/Utils/Utils.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Utils/Utils.csproj"
+            "/Users/zhangxi/LOA/Server/Utils/Utils.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Utils/Utils.csproj"
             }
           }
         }

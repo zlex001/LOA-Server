@@ -1025,11 +1025,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Utils/Utils.csproj",
+      "projectUniqueName": "/Users/zhangxi/LOA/Server/Utils/Utils.csproj",
       "projectName": "Utils",
-      "projectPath": "/Users/zhangxi/LOA-Server/trunk/Utils/Utils.csproj",
+      "projectPath": "/Users/zhangxi/LOA/Server/Utils/Utils.csproj",
       "packagesPath": "/Users/zhangxi/.nuget/packages/",
-      "outputPath": "/Users/zhangxi/LOA-Server/trunk/Utils/obj/",
+      "outputPath": "/Users/zhangxi/LOA/Server/Utils/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/zhangxi/.nuget/NuGet/NuGet.Config"

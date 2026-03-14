@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Wjo+L6Wlvw9EGEVCdjYx1c2K6MMvYL0LVQCiwp5ZE6luS9M1UXLKczwKasLzOC2CP3VAvcxGGB0DQxRM6019BQ==",
+  "dgSpecHash": "oWwJTJ5A2JLOK4OsOcoL7LRh32ykIj2pOw/6PpcS3+MiyIoMZnOBs3uN3ktTe95fjLWuW15oPnm1WsEklPaQpg==",
   "success": true,
-  "projectFilePath": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj",
+  "projectFilePath": "/Users/zhangxi/LOA/Server/Data/Data.csproj",
   "expectedPackageFiles": [
     "/Users/zhangxi/.nuget/packages/alipaysdknet.standard/4.9.481/alipaysdknet.standard.4.9.481.nupkg.sha512",
     "/Users/zhangxi/.nuget/packages/antlr4.runtime.standard/4.13.1/antlr4.runtime.standard.4.13.1.nupkg.sha512",

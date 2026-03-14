@@ -259,7 +259,9 @@ namespace Logic.Authentication
             var ui = CreateHomeUI(client.Player);
             
             Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Home(resources, scene, characters, walkableArea, ui));
-            
+
+            Tutorial.Instance.SendCurrentPhaseHintIfNeeded(client.Player);
+
             var uiTexts = Logic.Text.Agent.Instance.GetUITexts(client.Player.Language);
             Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Texts(uiTexts));
             var startSettingsTexts = Logic.Text.Agent.Instance.GetStartSettingsTexts(client.Player.Language);

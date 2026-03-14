@@ -2812,11 +2812,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj",
+      "projectUniqueName": "/Users/zhangxi/LOA/Server/Data/Data.csproj",
       "projectName": "Data",
-      "projectPath": "/Users/zhangxi/LOA-Server/trunk/Data/Data.csproj",
+      "projectPath": "/Users/zhangxi/LOA/Server/Data/Data.csproj",
       "packagesPath": "/Users/zhangxi/.nuget/packages/",
-      "outputPath": "/Users/zhangxi/LOA-Server/trunk/Data/obj/",
+      "outputPath": "/Users/zhangxi/LOA/Server/Data/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/zhangxi/.nuget/NuGet/NuGet.Config"
@@ -2831,8 +2831,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj": {
-              "projectPath": "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj"
+            "/Users/zhangxi/LOA/Server/Basic/Basic.csproj": {
+              "projectPath": "/Users/zhangxi/LOA/Server/Basic/Basic.csproj"
             }
           }
         }

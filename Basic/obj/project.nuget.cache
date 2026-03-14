@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "khRaW4YmCvOfv5D0P9iIjzE1ld8a4LAooI0w6ZaDbrdkkkHS83xUPptHhRBIlouSaJNEHgpFdoUHYsyi+LJe8Q==",
+  "dgSpecHash": "m/9E9LzD2+zZ7zpZalll2bAbXBJAOJ96cJBulg+h/kRciBvBuJZAMWAPKaCQGkADzWmVPnsXrVRebxbOj9JWUQ==",
   "success": true,
-  "projectFilePath": "/Users/zhangxi/LOA-Server/trunk/Basic/Basic.csproj",
+  "projectFilePath": "/Users/zhangxi/LOA/Server/Basic/Basic.csproj",
   "expectedPackageFiles": [
     "/Users/zhangxi/.nuget/packages/bouncycastle.cryptography/2.5.1/bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "/Users/zhangxi/.nuget/packages/enums.net/4.0.1/enums.net.4.0.1.nupkg.sha512",
