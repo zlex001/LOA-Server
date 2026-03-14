@@ -1,4 +1,4 @@
-﻿id,cid,label,ChineseSimplified,ChineseTraditional,English,Japanese,Korean,French,German,Spanish,Portuguese,Russian,Turkish,Thai,Indonesian,Vietnamese,Italian,Polish,Dutch,Swedish,Norwegian,Danish,Finnish,Ukrainian
+id,cid,label,ChineseSimplified,ChineseTraditional,English,Japanese,Korean,French,German,Spanish,Portuguese,Russian,Turkish,Thai,Indonesian,Vietnamese,Italian,Polish,Dutch,Swedish,Norwegian,Danish,Finnish,Ukrainian
 1100,,,???,???,,,,,,,,,,,,,,,,,,,,
 3000,,,杀过人的,杀人犯,,,,,,,,,,,,,,,,,,,,
 3001,,,打过人的,施暴者,,,,,,,,,,,,,,,,,,,,
@@ -884,6 +884,7 @@
 500038,StartSettings.langUkrainian,,乌克兰语,烏克蘭語,Ukrainian,ウクライナ語,우크라이나어,Ukrainien,Ukrainisch,Ucraniano,Ucraniano,Украинский,Ukraynaca,ยูเครน,Ukraina,Tiếng Ukraina,Ucraino,Ukraiński,Oekraïens,Ukrainska,Ukrainsk,Ukrainsk,Ukraina,Українська
 500039,StartSettings.langThai,,泰语,泰語,Thai,タイ語,태국어,Thaï,Thailändisch,Tailandés,Tailandês,Тайский,Tayca,ไทย,Thailand,Tiếng Thái,Tailandese,Tajski,Thais,Thailändska,Thai,Thai,Thai,Тайська
 500040,StartSettings.langVietnamese,,越南语,越南語,Vietnamese,ベトナム語,베트남어,Vietnamien,Vietnamesisch,Vietnamita,Vietnamita,Вьетнамский,Vietnamca,เวียดนาม,Vietnam,Tiếng Việt,Vietnamita,Wietnamski,Vietnamees,Vietnamesiska,Vietnamesisk,Vietnamesisk,Vietnam,В'єтнамська
+500045,StartSettings.langIndonesian,,印尼语,印尼語,Indonesian,インドネシア語,인도네시아어,Indonésien,Indonesisch,Indonesio,Indonésio,Индонезийский,Endonezce,อินโดนีเซีย,Indonesia,Tiếng Indonesia,Indonesiano,Indonezyjski,Indonesisch,Indonesiska,Indonesisk,Indonesisk,Indonesia,Індонезійська
 500041,StartSettings.langArabic,,阿拉伯语,阿拉伯語,Arabic,アラビア語,아랍어,Arabe,Arabisch,Árabe,Árabe,Арабский,Arapça,อาหรับ,Arab,Tiếng Ả Rập,Arabo,Arabski,Arabisch,Arabiska,Arabisk,Arabisk,Arabia,Арабська
 500042,StartSettings.langGreek,,希腊语,希臘語,Greek,ギリシャ語,그리스어,Grec,Griechisch,Griego,Grego,Греческий,Yunanca,กรีก,Yunani,Tiếng Hy Lạp,Greco,Grecki,Grieks,Grekiska,Gresk,Græsk,Kreikka,Грецька
 500043,StartSettings.langCzech,,捷克语,捷克語,Czech,チェコ語,체코어,Tchèque,Tschechisch,Checo,Tcheco,Чешский,Çekçe,เช็ก,Ceko,Tiếng Séc,Ceco,Czeski,Tsjechisch,Tjeckiska,Tsjekkisk,Tjekkisk,Tšekki,Чеська

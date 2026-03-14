@@ -181,6 +181,31 @@ namespace Logic.Text
             ("loginUnsafeAccount", global::Data.Text.Labels.LoginUnsafeAccount),
         };
 
+        /// <summary>
+        /// Maps server camelCase / langXxx keys to client-expected snake_case and lang_EnumName keys.
+        /// </summary>
+        private static string ToClientSettingsKey(string serverKey)
+        {
+            if (string.IsNullOrEmpty(serverKey)) return null;
+            if (serverKey.StartsWith("lang") && serverKey.Length > 4)
+                return "lang_" + serverKey.Substring(4);
+            switch (serverKey)
+            {
+                case "fontSize": return "font_size";
+                case "fontSizeSmall": return "font_size_small";
+                case "fontSizeMedium": return "font_size_medium";
+                case "fontSizeLarge": return "font_size_large";
+                case "fontSizeExtraLarge": return "font_size_extra_large";
+                case "uiSound": return "ui_sound";
+                case "addAccount": return "add_account";
+                case "editAccount": return "edit_account";
+                case "accountId": return "account_id";
+                case "noteOptional": return "note_optional";
+                case "deleteConfirm": return "delete_confirm";
+                default: return null;
+            }
+        }
+
         public Dictionary<string, string> GetGatewayTexts(global::Data.Text.Languages language)
         {
             var texts = new Dictionary<string, string>();
@@ -201,7 +226,12 @@ namespace Logic.Text
                     var key = pair.Key.Substring(StartSettingsCidPrefix.Length);
                     var text = Get(pair.Value, language);
                     if (!string.IsNullOrEmpty(text))
+                    {
                         texts[key] = text;
+                        var clientKey = ToClientSettingsKey(key);
+                        if (clientKey != null)
+                            texts[clientKey] = text;
+                    }
                 }
                 else if (pair.Key.StartsWith(GatewayCidPrefix))
                 {
