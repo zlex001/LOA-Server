@@ -167,7 +167,7 @@ namespace Logic.Text
         private static readonly (string key, global::Data.Text.Labels label)[] GatewayLabelMappings = new[]
         {
             ("title", global::Data.Text.Labels.StartTitle),
-            ("tip", global::Data.Text.Labels.StartLogin),
+            ("tip", global::Data.Text.Labels.StartTip),
             ("footer", global::Data.Text.Labels.StartFooter),
             ("accountIdPlaceholder", global::Data.Text.Labels.AccountIdPlaceholder),
             ("accountPasswordPlaceholder", global::Data.Text.Labels.AccountPasswordPlaceholder),
