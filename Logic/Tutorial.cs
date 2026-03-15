@@ -1062,13 +1062,14 @@ namespace Logic
         {
             var pos = GetFirstStepWalkablePos(player);
             Utils.Debug.Log.Info("TUTORIAL", $"[SendWalkToSandHint] walkable pos={pos?.Length ?? -1}, playerMap gid={player.Map?.Database.gid ?? 0}");
+            string hintText = Logic.Text.Agent.Instance.GetByCid("tutorial_walk", player);
             var protocol = new Net.Protocol.Tutorial(
                 (int)Phase.WalkToSand,
                 (int)TargetType.Map,
                 0,
                 "",
                 pos,
-                ""
+                hintText ?? ""
             );
             Net.Tcp.Instance.Send(player, protocol);
         }
