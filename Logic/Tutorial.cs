@@ -1063,6 +1063,8 @@ namespace Logic
             var pos = GetFirstStepWalkablePos(player);
             Utils.Debug.Log.Info("TUTORIAL", $"[SendWalkToSandHint] walkable pos={pos?.Length ?? -1}, playerMap gid={player.Map?.Database.gid ?? 0}");
             string hintText = Logic.Text.Agent.Instance.GetByCid("tutorial_walk", player);
+            string posStr = pos != null && pos.Length >= 3 ? $"[{pos[0]},{pos[1]},{pos[2]}]" : "null";
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendWalkToSandHint] targetPos={posStr}, hintEmpty={string.IsNullOrEmpty(hintText)}, hintLen={hintText?.Length ?? 0}");
             var protocol = new Net.Protocol.Tutorial(
                 (int)Phase.WalkToSand,
                 (int)TargetType.Map,
