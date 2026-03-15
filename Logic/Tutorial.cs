@@ -27,7 +27,7 @@ namespace Logic
         public enum Phase
         {
             None = 0,
-            WalkToSand = 1,      // Guide player to walk to sand map
+            WalkToSand = 1,      // Guide player to a walkable map tile
             Explore = 2,         // Parallel: interact with gold mine AND defeat lizard (order flexible)
             Collect = 3,         // Collect dropped items (gold ore + raw meat)
             Offering = 4,        // Find stele and give items
@@ -91,6 +91,7 @@ namespace Logic
         private class PlayerState
         {
             public Phase Phase { get; set; } = Phase.None;
+            public int InitialMapGid { get; set; } = 0;   // Map gid when first step started (to detect "left spawn tile")
             public ExploreTask ExploreCompleted { get; set; } = ExploreTask.None;
             public ExploreTask CurrentExploreTarget { get; set; } = ExploreTask.None;
             public ExploreAction CurrentAction { get; set; } = ExploreAction.None;
@@ -182,73 +183,55 @@ namespace Logic
 
         /// <summary>
         /// Tutorial entry point (called by Login.CompleteLogin for all players).
-        /// Detects saved progress and handles: None=new start, incomplete=recovery, Complete=skip.
+        /// No tutorial data in DB -> normal login (full UI). Has tutorial step (1..99) -> apply phase-to-UI mapping. Completed (100) -> full UI.
         /// </summary>
         public void Start(Player player)
         {
             if (player == null) return;
 
-            // Load saved phase from database
             Phase savedPhase = LoadProgress(player);
-            Utils.Debug.Log.Info("TUTORIAL", $"[Start] Player phase={savedPhase}");
+            Utils.Debug.Log.Info("TUTORIAL", $"[Start] playerId={player.Id} savedPhase={savedPhase} (int={(int)savedPhase})");
 
-            // Skip if tutorial already completed
-            if (savedPhase == Phase.Completed)
+            // No tutorial data or completed -> normal login (full UI)
+            if (savedPhase == Phase.None || savedPhase == Phase.Completed)
             {
-                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Tutorial already completed, unlocking all UI");
+                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Branch: normal login (UnlockAll), playerId={player.Id} (savedPhase={savedPhase})");
                 Display.Agent.Instance.UnlockAllHomePanels(player);
                 return;
             }
 
-            // Create tutorial copy (for both new players and recovery)
-            if (savedPhase == Phase.None || (int)savedPhase > 0 && (int)savedPhase < 100)
+            // Has tutorial step (1..99) -> in tutorial: create/restore copy and apply phase-to-UI mapping
+            if ((int)savedPhase > 0 && (int)savedPhase < 100)
             {
+                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Branch: in tutorial, phase={savedPhase}, creating copy, playerId={player.Id}");
                 var copy = CreateTutorialCopy(player);
                 if (copy == null)
                 {
-                    Utils.Debug.Log.Warning("TUTORIAL", "[Start] Failed to create tutorial copy, skipping tutorial");
+                    Utils.Debug.Log.Warning("TUTORIAL", $"[Start] Failed to create tutorial copy, skipping tutorial, playerId={player.Id}");
+                    Display.Agent.Instance.UnlockAllHomePanels(player);
                     return;
                 }
 
-                // Register map change listener
                 RegisterPlayerMapListener(player);
-
-                // Initialize or restore state
                 var state = GetOrCreateState(player);
+                state.Phase = savedPhase;
+                state.ExploreCompleted = (ExploreTask)player.Database.GetRecord(RecordExploreCompleted);
 
-                if (savedPhase == Phase.None)
-                {
-                    // New player: start from beginning
-                    Utils.Debug.Log.Info("TUTORIAL", $"[Start] New player, starting tutorial");
-                    Display.Agent.Instance.InitializeUILock(player);
-                    state.Phase = Phase.WalkToSand;
-                    copy.Start.AddAsParent(player);
-                }
-                else
-                {
-                    // Recovery: restore to saved phase
-                    Utils.Debug.Log.Info("TUTORIAL", $"[Start] Recovering tutorial from phase={savedPhase}");
-                    state.Phase = savedPhase;
-                    state.ExploreCompleted = (ExploreTask)player.Database.GetRecord(RecordExploreCompleted);
+                PlacePlayerInCopy(player, copy);
+                if (state.Phase == Phase.WalkToSand)
+                    state.InitialMapGid = player.Map?.Database.gid ?? 0;
 
-                    // Find map matching player's saved position and place them there
-                    PlacePlayerInCopy(player, copy);
-                }
+                ApplyUILockForPhase(player, state.Phase);
+                Utils.Debug.Log.Info("TUTORIAL", $"[Start] Applied UILock for phase={state.Phase}, playerId={player.Id}");
 
-                // Save progress. For WalkToSand, do not send hint here; Login sends it after Home so client has map grid ready.
                 SaveProgress(player, state);
                 if (state.Phase != Phase.WalkToSand)
                     SendPhaseHint(player, state);
 
-                // Check if already at targets
                 if (state.Phase == Phase.WalkToSand)
-                {
                     CheckInitialVisibility(player, state);
-                }
                 else if (state.Phase == Phase.Explore)
-                {
                     SelectNearestExploreTarget(player, state);
-                }
             }
         }
 
@@ -387,7 +370,10 @@ namespace Logic
         public Phase LoadProgress(Player player)
         {
             int phaseValue = player.Database.GetRecord(RecordPhase);
-            return Enum.IsDefined(typeof(Phase), phaseValue) ? (Phase)phaseValue : Phase.None;
+            bool hasKey = player.Database.record.TryGetValue(RecordPhase, out _);
+            var phase = Enum.IsDefined(typeof(Phase), phaseValue) ? (Phase)phaseValue : Phase.None;
+            Utils.Debug.Log.Info("TUTORIAL", $"[LoadProgress] playerId={player.Id} recordHasTutorialPhase={hasKey} rawValue={phaseValue} resolvedPhase={phase}");
+            return phase;
         }
 
         /// <summary>
@@ -631,9 +617,9 @@ namespace Logic
             switch (state.Phase)
             {
                 case Phase.WalkToSand:
-                    if (currentMap.Config.Id == _tutorialSandMapId)
+                    if (currentMap.Database.gid != state.InitialMapGid)
                     {
-                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Arrived at sand map, advancing to Explore");
+                        Utils.Debug.Log.Info("TUTORIAL", $"[OnPlayerMoved] Reached a walkable tile (left spawn), advancing to Explore");
                         AdvancePhase(player, state, Phase.Explore);
                     }
                     break;
@@ -824,6 +810,31 @@ namespace Logic
                     {
                         SendWalkToTowerHint(player);
                     }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Apply and send UI lock state for the given tutorial phase (used on recovery so client sees correct panels on re-login).
+        /// </summary>
+        private void ApplyUILockForPhase(Player player, Phase phase)
+        {
+            switch (phase)
+            {
+                case Phase.None:
+                case Phase.WalkToSand:
+                    Display.Agent.Instance.InitializeUILock(player);
+                    break;
+                case Phase.Explore:
+                case Phase.Collect:
+                case Phase.Offering:
+                    Display.Agent.Instance.InitializeUILock(player);
+                    Display.Agent.Instance.UnlockHomePanels(player,
+                        Display.Agent.HomePanels.Area,
+                        Display.Agent.HomePanels.Information);
+                    break;
+                case Phase.Completed:
+                    Display.Agent.Instance.UnlockAllHomePanels(player);
                     break;
             }
         }
@@ -1048,8 +1059,8 @@ namespace Logic
 
         private void SendWalkToSandHint(Player player)
         {
-            var pos = GetMapPos(_tutorialSandMapId, player);
-            Utils.Debug.Log.Info("TUTORIAL", $"[SendWalkToSandHint] sandMapId={_tutorialSandMapId}, pos={pos?.Length ?? -1}, playerMap={player.Map?.Config?.Id ?? 0}");
+            var pos = GetFirstStepWalkablePos(player);
+            Utils.Debug.Log.Info("TUTORIAL", $"[SendWalkToSandHint] walkable pos={pos?.Length ?? -1}, playerMap gid={player.Map?.Database.gid ?? 0}");
             var protocol = new Net.Protocol.Tutorial(
                 (int)Phase.WalkToSand,
                 (int)TargetType.Map,
@@ -1171,6 +1182,40 @@ namespace Logic
             // Note: step=0 and targetType=0 signals client to clear/hide tutorial UI
             var protocol = new Net.Protocol.Tutorial(0, 0, 0, "", null, "");
             Net.Tcp.Instance.Send(player, protocol);
+        }
+
+        /// <summary>
+        /// Get position of a walkable tile to guide the player to (first step). Prefer tile toward explore map if configured.
+        /// </summary>
+        private int[] GetFirstStepWalkablePos(Player player)
+        {
+            var currentMap = player.Map;
+            if (currentMap == null || currentMap.Scene == null)
+                return null;
+            var scene = currentMap.Scene;
+            Map exploreMap = null;
+            if (_tutorialSandMapId > 0 && currentMap.Copy != null)
+                exploreMap = currentMap.Copy.Content.Get<Map>(m => m.Config.Id == _tutorialSandMapId);
+            Map chosen = null;
+            int minDist = int.MaxValue;
+            foreach (var m in scene.Content.Gets<Map>())
+            {
+                if (m == currentMap) continue;
+                double dist = Move.Distance.Get(player.Map, m);
+                if (dist > player.ViewScale) continue;
+                if (exploreMap != null)
+                {
+                    int d = Move.Distance.Get(exploreMap, m);
+                    if (d < minDist) { minDist = d; chosen = m; }
+                }
+                else if (chosen == null)
+                {
+                    chosen = m;
+                }
+            }
+            if (chosen == null)
+                return null;
+            return chosen.Database.pos;
         }
 
         private int[] GetMapPos(int mapId, Player player)
