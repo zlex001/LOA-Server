@@ -217,9 +217,10 @@ namespace Logic
                 state.Phase = savedPhase;
                 state.ExploreCompleted = (ExploreTask)player.Database.GetRecord(RecordExploreCompleted);
 
-                PlacePlayerInCopy(player, copy);
                 if (state.Phase == Phase.WalkToSand)
-                    state.InitialMapGid = player.Map?.Database.gid ?? 0;
+                    state.InitialMapGid = copy.Start?.Database.gid ?? 0;
+
+                PlacePlayerInCopy(player, copy);
 
                 ApplyUILockForPhase(player, state.Phase);
                 Utils.Debug.Log.Info("TUTORIAL", $"[Start] Applied UILock for phase={state.Phase}, playerId={player.Id}");
