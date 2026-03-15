@@ -170,8 +170,8 @@ namespace Logic
             _registeredPlayers.Add(playerHash);
             Utils.Debug.Log.Info("TUTORIAL", $"[RegisterPlayerMapListener] Registering map change listener for player");
 
-            // Register for map changes using closure to capture player reference
-            player.data.after.Register(Basic.Element.Data.Parent, (object[] parentArgs) =>
+            // Register for logical map changes (Character.Data.Map), not Content tree Parent, so we are not triggered by Remove's Parent->null before Map is updated
+            player.data.after.Register(global::Data.Character.Data.Map, (object[] args) =>
             {
                 OnPlayerMoved(player);
             });
