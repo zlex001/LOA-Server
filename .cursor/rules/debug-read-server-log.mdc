@@ -1,0 +1,13 @@
+---
+description: When debugging server behavior, read persistent dev log from workspace.
+---
+
+# Debug: read server log
+
+When debugging server behavior (e.g. login, tutorial, auth, display), prefer reading the persistent dev log from the workspace instead of asking the user to paste logs.
+
+- **Primary path**: `Server/Logs/Server/server_latest.log`
+- If that file does not exist or is empty, check for other `server_*.log` in the same directory or under `Server/Logs/`.
+- This file is written only when the server runs in development mode (`IsDevelopment` true) with `EnableDevLogFile` enabled (default). If the user has not run the server in dev, ask for the log path or pasted output.
+
+Use the log to correlate requests, tutorial phase, UILock, and errors when investigating issues the user describes.
