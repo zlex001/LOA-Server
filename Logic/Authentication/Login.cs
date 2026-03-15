@@ -59,7 +59,9 @@ namespace Logic.Authentication
             client.Add(newDatabase);
             
             Register.GenerateRandomCharacter(newDatabase);
-            
+            newDatabase.record["TutorialPhase"] = 1;   // New account: start in tutorial step 1
+            Utils.Debug.Log.Info("AUTH", $"[Login.QuickStart] Set TutorialPhase=1 for guest id={guestId}");
+
             newDatabase.text["Name"] = guestName;
             newDatabase.time["Register"] = newDatabase.time["SignOut"] = DateTime.Now.ToString();
             global::Data.Database.Agent.Instance.AddAsParent(newDatabase);
@@ -72,7 +74,10 @@ namespace Logic.Authentication
                 return;
             }
             
-            client.Player = map.Create<global::Data.Player>(newDatabase);
+            var player = Activator.CreateInstance<global::Data.Player>();
+            player.Init(newDatabase);
+            client.Player = player;
+            map.AddAsParent(player);
             client.Player.data.Full<int>(Life.Data.Mp);
             client.Player.data.Full<double>(Life.Data.Lp);
             foreach (global::Data.Part part in client.Player.Content.Gets<global::Data.Part>())
@@ -210,7 +215,10 @@ namespace Logic.Authentication
         private static void CreatePlayerAtPosition(Client client, global::Data.Database.Player database, global::Data.Text.Languages language)
         {
             var map = global::Data.Agent.Instance.Content.Get<global::Data.Map>(m => Enumerable.SequenceEqual(m.Database.pos, database.pos));
-            client.Player = map.Create<global::Data.Player>(database);
+            var player = Activator.CreateInstance<global::Data.Player>();
+            player.Init(database);
+            client.Player = player;
+            map.AddAsParent(player);
             client.Player.SignIn = DateTime.Now;
             client.Player.Language = language;
         }
@@ -219,8 +227,11 @@ namespace Logic.Authentication
         {
             var map = global::Data.SpawnPoint.GetRandomInitialMap();
             if (map == null) return;
-            
-            client.Player = map.Create<global::Data.Player>(database);
+
+            var player = Activator.CreateInstance<global::Data.Player>();
+            player.Init(database);
+            client.Player = player;
+            map.AddAsParent(player);
             client.Player.SignIn = DateTime.Now;
             client.Player.Language = language;
             database.pos = map.Database.pos;
@@ -238,9 +249,11 @@ namespace Logic.Authentication
             Device.Bind(device, id);
             
             RestoreCompanions(client.Player);
-            
+
+            var p = client.Player;
+            var hasTutorial = p.Database.record.TryGetValue("TutorialPhase", out int tutorialVal);
+            Utils.Debug.Log.Info("AUTH", $"[CompleteLogin] Before Tutorial.Start playerId={p.Id} record.TutorialPhase present={hasTutorial} value={tutorialVal}");
             // Tutorial: Initialize UI lock state before sending Home protocol
-            // This ensures UILock protocol is sent before Home, so client knows which panels to show
             Tutorial.Instance.Start(client.Player);
             
             var walkableArea = Move.Walk.Area(client.Player);
@@ -258,22 +271,22 @@ namespace Logic.Authentication
             // 创建UI本地化数据
             var ui = CreateHomeUI(client.Player);
             
-            Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Home(resources, scene, characters, walkableArea, ui));
+            Net.Tcp.Instance.Send(client, new Net.Protocol.Home(resources, scene, characters, walkableArea, ui));
 
             Tutorial.Instance.SendCurrentPhaseHintIfNeeded(client.Player);
 
             var uiTexts = Logic.Text.Agent.Instance.GetUITexts(client.Player.Language);
-            Net.Tcp.Instance.Send(client.Player, new Net.Protocol.Texts(uiTexts));
+            Net.Tcp.Instance.Send(client, new Net.Protocol.Texts(uiTexts));
             var startSettingsTexts = Logic.Text.Agent.Instance.GetStartSettingsTexts(client.Player.Language);
-            Net.Tcp.Instance.Send(client.Player, new Net.Protocol.StartSettingsTexts(startSettingsTexts));
+            Net.Tcp.Instance.Send(client, new Net.Protocol.StartSettingsTexts(startSettingsTexts));
 
             // 推送世界地图数据
             var worldMap = Display.Agent.CreateWorldMap(client.Player);
-            Net.Tcp.Instance.Send(client.Player, worldMap);
-            
+            Net.Tcp.Instance.Send(client, worldMap);
+
             // 推送屏幕自适应值
             int screenAdaptation = client.Player.ScreenUIAdaptation > 0 ? client.Player.ScreenUIAdaptation : 100;
-            Net.Tcp.Instance.Send(client.Player, new Net.Protocol.ScreenAdaptation(screenAdaptation));
+            Net.Tcp.Instance.Send(client, new Net.Protocol.ScreenAdaptation(screenAdaptation));
         }
 
         private static Net.Protocol.HomeUI CreateHomeUI(global::Data.Player player)

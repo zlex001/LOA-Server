@@ -52,6 +52,8 @@ namespace Logic.Authentication
         {
             database.text["Name"] = name;
             database.time["Register"] = database.time["SignOut"] = DateTime.Now.ToString();
+            database.record["TutorialPhase"] = 1;   // New account: start in tutorial step 1
+            Utils.Debug.Log.Info("AUTH", $"[Register.CompleteRegistration] Set TutorialPhase=1 for new account id={database.Id} name={name}");
             global::Data.Database.Agent.Instance.AddAsParent(database);
             
             var map = global::Data.Agent.Instance.Content.Get<global::Data.Map>(m => Enumerable.SequenceEqual(m.Database.pos, database.pos));
@@ -62,7 +64,10 @@ namespace Logic.Authentication
                 return;
             }
             
-            client.Player = map.Create<global::Data.Player>(database);
+            var player = Activator.CreateInstance<global::Data.Player>();
+            player.Init(database);
+            client.Player = player;
+            map.AddAsParent(player);
             client.Player.data.Full<int>(Life.Data.Mp);
             client.Player.data.Full<double>(Life.Data.Lp);
             foreach (global::Data.Part part in client.Player.Content.Gets<global::Data.Part>())
