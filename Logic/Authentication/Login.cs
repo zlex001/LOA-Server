@@ -250,6 +250,8 @@ namespace Logic.Authentication
             
             RestoreCompanions(client.Player);
 
+            client.Player.Language = client.Language;
+
             var p = client.Player;
             var hasTutorial = p.Database.record.TryGetValue("TutorialPhase", out int tutorialVal);
             Utils.Debug.Log.Info("AUTH", $"[CompleteLogin] Before Tutorial.Start playerId={p.Id} record.TutorialPhase present={hasTutorial} value={tutorialVal}");

@@ -148,9 +148,7 @@ namespace Net
                 v.monitor.Register(global::Data.Player.Event.QuitToMenu, OnPlayerQuitToMenu);
                 v.monitor.Register(global::Data.Player.Event.QuitToDesktop, OnPlayerQuitToDesktop);
                 v.data.after.Unregister(global::Data.Player.Data.AlipayOrder, OnAfterPlayerAlipayOrderChanged);
-                
-                v.Language = this.Language;
-                
+
                 v.data.after.Register(global::Data.Player.Data.Language, OnPlayerLanguageChanged);
                 
                 monitor.Fire(Event.PlayerBound, this, v);
@@ -170,7 +168,7 @@ namespace Net
 
         private void OnPlayerQuitToMenu(params object[] args)
         {
-            Destroy();
+            Send(new Protocol.QuitToMenu());
         }
 
         private void OnAfterPlayerWalkScaleChanged(params object[] args)
