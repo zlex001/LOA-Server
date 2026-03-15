@@ -122,6 +122,7 @@ namespace Logic
         {
             global::Data.Text.Languages languages = (global::Data.Text.Languages)args[0];
             global::Data.Player player = (global::Data.Player)args[1];
+            if (player.Map == null) return;
             var walkableArea = Move.Walk.Area(player);
             
             // 使用统一的资源显示API
@@ -178,6 +179,8 @@ namespace Logic
         
         private static Net.Protocol.Scene CreateScene(global::Data.Player player, global::Data.Map map)
         {
+            if (map == null)
+                return new Net.Protocol.Scene(System.Array.Empty<int>(), new System.Collections.Generic.List<Net.Protocol.Map>(), "");
             var pos = map.Database.pos;
             var maps = new List<Net.Protocol.Map>();
             string sceneName = "";
